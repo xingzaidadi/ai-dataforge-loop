@@ -1,0 +1,66 @@
+name: SAP订单数据生成路由器
+description: '订单类型路由: ZDO, ZNB, ZSC, ZYZ, ZWW, ZWW_SEMI'
+inputs:
+  orderType:
+    label: 订单类型
+    required: true
+    example: ZDO
+  stockOrg:
+    label: 库存组织
+    required: true
+    example: MI_WEAR
+  purchaseOrg:
+    label: 采购组织
+    required: true
+    example: 111J
+  supplierCode:
+    label: 供应商编码
+    required: true
+    example: '100283'
+  materials:
+    label: 物料列表
+    required: true
+    type: object
+    example: '{"materialCode1": "1240104000041B"}'
+  projectCode:
+    label: 项目编码
+    required: false
+    example: P01-AL
+  shipLocCode:
+    label: 发货地点
+    required: true
+    example: CN01
+config:
+  db_uri: ${SCM_DB_URI}
+  cookie_url: ${SCM_COOKIE_URL}
+  scm_base: ${SCM_BASE_URL}
+  bpm_base: ${BPM_APPROVE_URL}
+steps:
+- id: get_cookie
+  action: http_call
+  params:
+    url: '{{config.cookie_url}}'
+    method: GET
+  extract:
+    cookie: $.body.data.result.cookie
+  on_error:
+    message: cookie获取失败，请联系管理员
+- id: route_order
+  action: route
+  switch_on: '{{inputs.orderType}}'
+  routes:
+    ZDO: configs/zdo-prpo.yaml
+    ZNB: configs/znb-prpo.yaml
+    ZSC: configs/zsc-prpo.yaml
+    ZWW: configs/zww-prpo.yaml
+    ZWW_SEMI: configs/zww-semi-prpo.yaml
+    ZYZ: configs/zyz-prpo.yaml
+  default_config: configs/zdo-prpo.yaml
+  goto_fail: END_ROUTE_FAIL
+terminals:
+  SUCCESS:
+    type: success
+    message: 路由执行完成
+  END_ROUTE_FAIL:
+    type: error
+    message: 路由失败：不支持的订单类型 {{inputs.orderType}}

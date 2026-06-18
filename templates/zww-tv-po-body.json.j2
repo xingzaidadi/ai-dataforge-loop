@@ -1,0 +1,74 @@
+{
+  "companyCode": "{{ company_code }}",
+  "purchaseItemList": [
+    {
+      "id": {{ item_id }},
+      "number": 100,
+      "receiveDate": 1797048732000,
+      "status": "S",
+      "supplierCode": "0000{{ supplier_code }}",
+      "supplierShortName": "{{ supplier_short_name }}",
+      "projectCode": "{{ project_code }}",
+      "price": 200,
+      "prodMaterialCode": "{{ prod_material_code }}",
+      "isMpnId": false,
+      "stockPlace": "F000-米电电视商品库(WMS)",
+      "priceList": [
+        {
+          "purchaseOrderItemId": {{ item_id }},
+          "materialCode": "{{ sku }}",
+          "prodMaterialCode": "{{ prod_material_code }}",
+          "materialDesc": "小米电视65寸 直下一体（T21） 高配版 量产",
+          "expenseTypeAsl": "MVAFee",
+          "expenseTypePrice": "MVAFee",
+          "expenseDesc": "加工费",
+          "number": 100,
+          "taxTotalPrice": 0.01,
+          "taxPrice": 1,
+          "priceUnit": 10000,
+          "currency": "CNY",
+          "taxCode": "J2",
+          "taxRate": 0.13,
+          "taxAmount": 0.0011504425,
+          "supplierCode": "0000{{ supplier_code }}",
+          "supplierShortName": "{{ supplier_short_name }}",
+          "isMainPrice": true,
+          "supplierSelectList": [
+            {
+              "label": "0000{{ supplier_code }}",
+              "value": "{{ supplier_short_name }}"
+            }
+          ],
+          "baseLineTaxPrice": 1,
+          "baseLinePriceUnit": 10000,
+          "warnThreshold": 0.1,
+          "errorThreshold": 0.2
+        },
+        {
+          "purchaseOrderItemId": {{ item_id }},
+          "materialCode": "{{ sku }}",
+          "prodMaterialCode": "{{ prod_material_code }}",
+          "materialDesc": "小米电视65寸 直下一体（T21） 高配版 量产",
+          "expenseTypeAsl": "ODMOwnedFee",
+          "expenseTypePrice": "ODMOwnedFee",
+          "expenseDesc": "ODM自采自用费",
+          "number": 100,
+          "taxTotalPrice": 0.01,
+          "taxPrice": 1,
+          "priceUnit": 10000,
+          "currency": "CNY",
+          "taxCode": "J2",
+          "taxRate": 0.13,
+          "taxAmount": 0.0011504425,
+          "supplierCode": "0000{{ supplier_code }}",
+          "supplierShortName": "{{ supplier_short_name }}",
+          "isMainPrice": false,
+          "baseLineTaxPrice": 1,
+          "baseLinePriceUnit": 10000,
+          "warnThreshold": 0.1,
+          "errorThreshold": 0.2
+        }
+      ]
+    }
+  ]
+}

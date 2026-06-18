@@ -1,0 +1,117 @@
+# ZWW半成品PRPO造单流程配置 v2
+# 共享步骤通过 use 引用
+name: ZWW半成品PRPO造单
+description: ZWW半成品场景 → 查询代工厂 → 创建PR → 查询PR/PO/ERP
+
+use:
+  - common-steps.get_cookie          # ①
+  - common-steps.check_asl           # ②
+  - common-steps.query_factory       # ③
+  - common-steps.approve_pr          # ⑦
+  - common-steps.approve_po          # ⑩
+  - common-steps.query_erp           # ⑪
+  - common-steps.repush_erp          # ⑬
+
+inputs:
+  stockOrg:       { label: 库存组织, required: true, example: "MI_TV" }
+  purchaseOrg:    { label: 采购组织, required: true, example: "1111" }
+  supplierCode:   { label: 供应商编码, required: true, example: "133490" }
+  materials:      { label: 物料列表, required: true, type: object, example: '{"materialCode1": "D430240000006"}' }
+  projectCode:    { label: 项目编码, required: true, example: "MN110GL455" }
+  shipLocCode:    { label: 发货地点, required: false, example: "143307" }
+
+config:
+  db_uri: "${SCM_DB_URI}"
+  cookie_url: "${SCM_COOKIE_URL}"
+  scm_base: "${SCM_BASE_URL}"
+  bpm_base: "${BPM_APPROVE_URL}"
+
+steps:
+  # ① get_cookie → 引用共享
+  # ② check_asl → 引用共享
+  # ③ query_factory → 引用共享
+
+  # ④ 拼PR请求体（半成品特有）
+  - id: build_pr
+    action: template
+    template: "templates/zww-semi-pr-body.json.j2"
+    context:
+      stockOrg: "{{inputs.stockOrg}}"
+      purchaseOrg: "{{inputs.purchaseOrg}}"
+      supplierCode: "{{inputs.supplierCode}}"
+      projectCode: "{{inputs.projectCode}}"
+      materials: "{{inputs.materials}}"
+      factoryId: "{{steps.query_factory.extracted.factory_id}}"
+
+  # ⑤ 创建PR（半成品：/mrp/purchase/entrust）
+  - id: create_pr
+    action: http_call
+    params:
+      url: "{{config.scm_base}}/mrp/purchase/entrust"
+      method: POST
+      headers:
+        Cookie: "{{steps.get_cookie.extracted.cookie}}"
+      body: "{{steps.build_pr.output}}"
+    extract:
+      code: "$.body.code"
+      message: "$.body.message"
+    on_error:
+      message: "{{steps.create_pr.extracted.message}}"
+
+  # ⑥ 检查PR
+  - id: check_pr
+    action: condition
+    if: "{{steps.create_pr.extracted.code}} == '0'"
+    then: query_pr_no
+    else: END_PR_FAIL
+
+  # ⑦ 查purchase_no（半成品特有）
+  - id: query_pr_no
+    action: sql_query
+    wait: 5
+    retry: {max: 8, interval_ms: 5000}
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: "SELECT p.purchase_no,p.business_key FROM m_purchase p JOIN m_purchase_item i ON p.purchase_no=i.purchase_no WHERE i.xm_code IN({{materials_sql_in}}) AND i.supplier_code='{{inputs.supplierCode}}' AND p.stock_org='{{inputs.stockOrg}}' AND p.status >= 10 ORDER BY p.id DESC LIMIT 1"
+    extract:
+      purchase_no: "$.rows[0].purchase_no"
+      business_key: "$.rows[0].business_key"
+
+  # ⑧ approve_pr → 引用共享
+
+  # ⑨ 查PO号（半成品特有）
+  - id: query_po_no
+    action: sql_query
+    wait: 5
+    retry: {max: 8, interval_ms: 5000}
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: "SELECT purchase_order_no, business_key AS po_business_key FROM m_purchase_order WHERE source_no='{{steps.query_pr_no.extracted.purchase_no}}' ORDER BY id DESC LIMIT 1"
+    extract:
+      purchase_order_no: "$.rows[0].purchase_order_no"
+      po_business_key: "$.rows[0].po_business_key"
+
+  # ⑩ approve_po → 引用共享
+  # ⑪ query_erp → 引用共享
+
+  # ⑫ 检查ERP
+  - id: check_erp
+    action: condition
+    if: "{{steps.query_erp.extracted.erp_no}} != ''"
+    then: SUCCESS
+    else: repush_erp
+
+  # ⑬ repush_erp → 引用共享
+
+terminals:
+  SUCCESS:
+    type: success
+    message: |
+      🎉 造单成功！
+      PR号: {{steps.query_pr_no.extracted.purchase_no}}
+      PO号: {{steps.query_po_no.extracted.purchase_order_no}}
+      ERP单号: {{steps.query_erp.extracted.erp_no}}
+
+  END_PR_FAIL:
+    type: error
+    message: "PR创建失败: {{steps.create_pr.extracted.message}}"

@@ -1,0 +1,66 @@
+{
+  "stockOrg": "{{ stockOrg }}",
+  "receiveFactoryId": {{ factory_id }},
+  "materials": [
+    {% for key, code in materials.items() %}
+    {
+      "description": "物料描述_{{ code }}",
+      "purchaseOrg": "{{ purchaseOrg }}",
+      "manufacturer": "未知",
+      "spCode": "未知",
+      "pnCode": "{{ code[:11] }}",
+      "baseUom": "PC",
+      "key": {{ loop.index }},
+      "materialCode": "{{ code }}",
+      "materialDesc": "物料描述_{{ code }}",
+      "brand": "未知",
+      "label": "{{ code }}(物料描述)",
+      "value": "{{ code }}",
+      "catePathCode": "000.00.00",
+      "codeDescEn": "Material",
+      "catePathName": "物料",
+      "materialGroupCode": "R0000000",
+      "materialGroup": "物料",
+      "projects": "",
+      "mgroup": {
+        "code": "R0000000",
+        "name": "物料"
+      },
+      "mpq": "10",
+      "mpnSupplier": [
+        {
+          "supplierCode": "{{ supplierCode }}",
+          "lt": "7",
+          "mpq": "10",
+          "moq": "10",
+          "xmCode": "{{ code }}"
+        }
+      ],
+      "cvpnCode": "{{ code[:11] }}",
+      "inStatus": "-",
+      "outStatus": "-",
+      "stockStatus": "良品",
+      "xmCode": "{{ code }}",
+      "unit": "PC",
+      "number": 11111,
+      "supplierCode": "{{ supplierCode }}",
+      "receiveDate": 1884182400000,
+      "isNew": 1,
+      "supplierCodeOption": {
+        "label": "{{ supplierCode }}",
+        "value": "{{ supplierCode }}",
+        "key": "{{ supplierCode }}"
+      },
+      "receiveDateTimeStamp": 1775000000000,
+      "remarks": ""
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ],
+  "projectCode": "{{ projectCode }}",
+  "projectDesc": "",
+  "productionType": 1,
+  "trialStage": "P0",
+  "isSubmit": true,
+  "purchaseType": 3,
+  "stageRemark": ""
+}

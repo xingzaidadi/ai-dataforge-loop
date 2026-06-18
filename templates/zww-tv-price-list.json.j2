@@ -1,0 +1,60 @@
+[
+  {
+    "purchaseOrderItemId": {{ item_id }},
+    "materialCode": "{{ sku }}",
+    "prodMaterialCode": "{{ prod_material_code }}",
+    "materialDesc": "小米电视65寸 直下一体（T21） 高配版 量产",
+    "expenseTypeAsl": "{{ mva_fee }}",
+    "expenseDesc": "加工费",
+    "number": 100,
+    "currency": "CNY",
+    "supplierCode": "0000{{ supplier_code }}",
+    "supplierShortName": "{{ supplier_short_name }}",
+    "isMainPrice": true,
+    "supplierSelectList": [
+      {
+        "label": "0000{{ supplier_code }}",
+        "value": "{{ supplier_short_name }}"
+      }
+    ],
+    "baseLineTaxPrice": 10,
+    "baseLinePriceUnit": 10000,
+    "warnThreshold": 0.1,
+    "errorThreshold": 0.2,
+    "priceRowNo": 1,
+    "priceRowkey": "{{ item_id }}_1",
+    "taxAmount": "",
+    "taxPrice": "1",
+    "taxTotalPrice": "",
+    "company": "{{ company_code }}",
+    "isMpnId": false,
+    "priceUnit": 10000,
+    "taxCode": "J2"
+  },
+  {
+    "purchaseOrderItemId": {{ item_id }},
+    "materialCode": "{{ sku }}",
+    "prodMaterialCode": "{{ prod_material_code }}",
+    "materialDesc": "小米电视65寸 直下一体（T21） 高配版 量产",
+    "expenseTypeAsl": "{{ odm_fee }}",
+    "expenseDesc": "ODM自采自用费",
+    "number": 100,
+    "currency": "CNY",
+    "supplierCode": "0000{{ supplier_code }}",
+    "supplierShortName": "{{ supplier_short_name }}",
+    "isMainPrice": false,
+    "baseLineTaxPrice": 20,
+    "baseLinePriceUnit": 10000,
+    "warnThreshold": 0.1,
+    "errorThreshold": 0.2,
+    "priceRowNo": 2,
+    "priceRowkey": "{{ item_id }}_2",
+    "taxAmount": "",
+    "taxPrice": "1",
+    "taxTotalPrice": "",
+    "company": "{{ company_code }}",
+    "isMpnId": false,
+    "priceUnit": 10000,
+    "taxCode": "J2"
+  }
+]
