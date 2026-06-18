@@ -45,36 +45,24 @@ tags: [造数, 测试数据, 供应链, 流程编排, Agent, 跨系统, PRPO]
 
 ## 3. 交互契约（三道闸）
 
-以下规则必须严格遵守，违反任意一条即为 Skill 执行失败：
-
 ### 闸 1：必填校验
 
-参数不完整时禁止执行。缺少以下任意一项，必须追问补齐，不得自行猜测或填充默认值：
+参数不完整时禁止执行，必须追问补齐：
 - 订单类型（ZNB/ZWW/ZDO 等）
 - 采购组织
 - 供应商编码
 - 物料信息（物料编码 + 数量）
 
-### 闸 2：条件必填
+条件必填——不同订单类型动态追加：寄售 → 供应商库存地 | 跨公司 → 收发公司编码 | 委外 → 工序路线。
 
-不同订单类型动态追加必填项：
-- 寄售 → 需供应商库存地
-- 跨公司 → 需收发公司编码
-- 委外 → 需工序路线
+### 闸 2：执行前确认
 
-缺则继续追问，不执行。
+参数齐备后，必须生成参数确认卡片，逐项列出最终参数。用户回复"确认"后才执行；拒绝或沉默时中止并告知"已取消"。
 
-### 闸 3：执行前确认
+### 闸 3：业务映射 & 脱敏
 
-参数齐备后，必须生成参数确认卡片，逐项列出最终参数。用户明确回复"确认"后才真正执行。用户拒绝或沉默时，必须中止执行并告知"已取消"。
-
-### 业务映射（自然语言 → 系统字段）
-
-Agent 负责把口语化业务词映射为系统字段（见下方采购组织映射表）。禁止让用户自己查编码。
-
-### 脱敏输出
-
-日志和输出中禁止暴露数据库密码、API Token 等凭证信息。执行结果只展示业务数据（单号、状态、关键字段），不展示原始 HTTP 响应体全文。
+- Agent 负责把口语化业务词映射为系统字段（见采购组织映射表），禁止让用户自己查编码。
+- 输出中禁止暴露数据库密码、API Token 等凭证；只展示业务数据（单号、状态），不展示原始 HTTP 响应体。
 
 ## 4. 五层架构
 
@@ -120,123 +108,47 @@ Agent 负责把口语化业务词映射为系统字段（见下方采购组织�
 
 ```
 mify-data-factory/
-├── SKILL.md                  # 本文件（Skill 声明）
-├── prompt.md                 # 对话层提示词（参数收集/确认/映射）
-├── design.md                 # 详细设计方案
-├── engine.py                 # 通用编排引擎（9 种 Action 实现）
-├── lib/                      # 引擎核心模块
-│   ├── client.py             # HTTP/SSE 客户端
-│   ├── config.py             # 配置加载
-│   ├── flow.py               # 流程控制
-│   ├── renderer.py           # Jinja2 渲染
-│   └── resolver.py           # 变量解析
-├── configs/                  # YAML 流程定义（按订单类型一份）
-│   ├── mify-endpoint.yaml    # mify 平台连接配置
-│   ├── znb-prpo.yaml         # ZNB 标准采购 PRPO
-│   ├── znb-prpo-nouser.yaml  # ZNB 无物料信息
-│   ├── zww-prpo.yaml         # ZWW 成品 PRPO
-│   ├── zww-prpo-nouser.yaml  # ZWW 无物料信息
-│   └── ...                   # 更多订单类型
-├── templates/                # Jinja2 请求体模板
-│   ├── znb-pr-body-v3.json.j2
-│   ├── zww-pr-body-v3.json.j2
-│   ├── prpo-params.json.j2
-│   └── ...
-├── shared/
-│   └── common-steps.yaml     # 可复用的共享步骤（审批/查询/Cookie 等）
-└── examples/                 # 脱敏测试 Case 集
+├── SKILL.md            # 本文件
+├── prompt.md           # 对话层提示词
+├── engine.py           # 通用编排引擎
+├── lib/                # 引擎核心模块（client/config/flow/renderer/resolver）
+├── configs/            # YAML 流程定义（znb-prpo.yaml, zww-prpo.yaml, ...）
+├── templates/          # Jinja2 请求体模板
+└── shared/             # 可复用共享步骤（审批/查询/Cookie）
 ```
 
 ## 7. 端到端示例
 
-以 ZNB 标准采购订单为例，完整流程（精简展示关键步骤）：
+以 ZNB 标准采购订单为例（完整 YAML 见 `configs/znb-prpo-v4.yaml`）：
 
 ```yaml
 name: ZNB普通物料PRPO造单
 description: 查询物料元数据 → ASL校验 → 创建PR → PR审批 → 查合同 → PR转PO → PO审批 → 查ERP单号
-
-use:
-  - common-steps.get_cookie
-
+use: [common-steps.get_cookie]
 inputs:
   stockOrg:     { label: 库存组织, required: true, example: "MI_IOT" }
   purchaseOrg:  { label: 采购组织, required: true, example: "2120" }
   supplierCode: { label: 供应商编码, required: true }
   materials:    { label: 物料列表, required: true, type: object }
   shipLocCode:  { label: 发货地点, required: true }
-
 steps:
-  # ① 获取认证 Cookie（共享步骤）
-  # ② 物料元数据查询与过滤（共享步骤）
-  # ③ ASL 校验（共享步骤）
-
-  # ④ 拼 PR 请求体
-  - id: build_pr
+  - id: build_pr            # ④ 拼 PR 请求体
     action: template
     template: "templates/znb-pr-body-v3.json.j2"
-    context:
-      stockOrg: "{{inputs.stockOrg}}"
-      purchaseOrg: "{{inputs.purchaseOrg}}"
-      supplierCode: "{{inputs.supplierCode}}"
-      materials: "{{steps.filter_materials.output}}"
-
-  # ⑤ 创建 PR
-  - id: create_pr
+  - id: create_pr           # ⑤ 创建 PR
     action: http_call
-    params:
-      url: "{{config.scm_base}}/mrp/pr/ordinary"
-      method: POST
-      headers:
-        Cookie: "{{steps.get_cookie.extracted.cookie}}"
-      body: "{{steps.build_pr.output}}"
-    extract:
-      code: "$.body.code"
-      message: "$.body.message"
-
-  # ⑥ 查 PR（含 retry/polling —— 等待异步落库）
-  - id: query_pr_info
+    params: { url: "{{config.scm_base}}/mrp/pr/ordinary", method: POST }
+  - id: query_pr_info       # ⑥ 查 PR（含 retry/polling）
     action: sql_query
-    wait: 5
     retry: { max: 8, interval_ms: 7000 }
-    params:
-      db_uri: "{{config.db_uri}}"
-      query: "SELECT purchase_no, business_key FROM m_purchase WHERE ... ORDER BY id DESC LIMIT 1"
-    extract:
-      purchase_no: "$.rows[0].purchase_no"
-      business_key: "$.rows[0].business_key"
-
-  # ⑦ PR 审批（共享步骤）
-  # ⑧ 查合同（共享步骤）
-  # ⑨ PR 转 PO
-  # ⑩ PO 审批（共享步骤）
-
-  # ⑪ 查 ERP 单号（含 retry/polling）
-  - id: query_erp
-    action: sql_query
-    retry: { max: 10, interval_ms: 10000 }
-    params:
-      db_uri: "{{config.db_uri}}"
-      query: "SELECT erp_no FROM m_purchase_order WHERE purchase_order_no = '{{steps.query_po_info.extracted.purchase_order_no}}'"
-    extract:
-      erp_no: "$.rows[0].erp_no"
-
-  # ⑫ 条件判断：有 ERP 单号则成功，否则重新推送
-  - id: check_erp
+  - id: check_erp           # ⑫ 条件判断
     action: condition
     if: "{{steps.query_erp.extracted.erp_no}} != ''"
     then: SUCCESS
     else: repush_erp
-
 terminals:
-  SUCCESS:
-    type: success
-    message: |
-      PR号: {{steps.query_pr_info.extracted.purchase_no}}
-      PO号: {{steps.query_po_info.extracted.purchase_order_no}}
-      ERP单号: {{steps.query_erp.extracted.erp_no}}
-  END_PO_FAIL:
-    type: error
-    message: "PO创建失败: {{steps.pr_to_po.extracted.message}}"
+  SUCCESS: { type: success, message: "PR号/PO号/ERP单号: ..." }
+  END_PO_FAIL: { type: error, message: "PO创建失败" }
 ```
 
 ## 8. 两种执行模式
@@ -292,44 +204,27 @@ terminals:
 | BPM 审批地址 | `BPM_APPROVE_URL` | 审批系统接口 |
 | Cookie 获取地址 | `SCM_COOKIE_URL` | 认证 Cookie |
 
-**调用格式：**
-```json
-{
-  "inputs": { "url": "...", "method": "POST", "headers": "{}", "body": "" },
-  "user": "skill-runner",
-  "response_mode": "streaming"
-}
-```
-
-**返回格式（SSE streaming）：**
-- `workflow_started` → 开始
-- `node_finished` → 每个节点完成，含 outputs
-- `workflow_finished` → 结束，outputs 包含最终结果（body, status_code）
+调用方式：streaming SSE（`workflow_started` → `node_finished` → `workflow_finished`）。
 
 ### 采购组织映射表
 
-| 采购组织中文名 | stockOrg | purchaseOrg |
-|---------------|----------|-------------|
+| 中文名 | stockOrg | purchaseOrg |
+|--------|----------|-------------|
 | 生态链 | MI_IOT | 2120 |
 | 手机 | MI_PHONE | 1110 |
 | 可穿戴 | MI_WEAR | 111J |
 | 笔记本 | MI_NOTEBOOK | 111K |
 | 空调 | MI_AIRCONDITION | 1131 |
 | 电视 | MI_TV | 1111 |
-| 空调M5 | MI_AIRCONDITION_M5 | 1134 |
-| 冰箱 | MI_REFRIGERATOR | 1132 |
-| 洗衣机 | MI_LAUNDRYCARE | 1133 |
-| 汽车电子 | MI_AUTOEACC | 111N |
 
-> 此映射表为唯一权威来源。`prompt.md` 中如有重复映射，以本文件为准。
+> 完整映射含 10 个组织，见 `configs/router.yaml`。此处为高频子集。
 
 ## 12. 安全与合规
 
 - **仅写入测试环境**，不接触生产数据库和生产接口。
-- **全链路日志脱敏**：密码、Token、Cookie 自动遮蔽，安全可追溯。
-- **执行前确认闸门**：防止 Agent 猜测关键字段导致脏数据。
-- **凭证外部化**：所有敏感信息通过环境变量注入，SKILL.md 和 configs 不含真实凭证。
-- **`sql_execute` 写操作**须经用户确认闸门，禁止静默执行。
+- **全链路日志脱敏**：密码、Token、Cookie 自动遮蔽。
+- **执行前确认闸门**：所有写操作（含 `sql_execute`）须经用户确认，禁止静默执行。
+- **凭证外部化**：敏感信息通过环境变量注入，代码仓库不含真实凭证。
 
 ## 13. 限制与边界
 
@@ -349,70 +244,23 @@ terminals:
 
 ---
 
-## 支持的方法（对话层 → 执行层映射）
+### 支持的方法（对话层 → 执行层映射）
 
-| 对话层方法 | 材料类型 | 物料信息 | 状态 | 执行命令 |
-|-----------|---------|---------|------|---------|
-| `getPRPOPULLByUser` | 原材料/半成品 | 已准备 | ✅ 已上线 | `engine.py configs/znb-prpo.yaml --...` |
-| `getPRPOPULLNoUser` | 原材料/半成品 | 未准备 | ⚠️ 待接入 | 须明确告知"该场景暂未上线" |
-| `getPRPOZWWByUser` | 成品 | 已准备 | ✅ 已上线 | `engine.py configs/zww-prpo.yaml --...` |
-| `getZWWPRPONoUsers` | 成品 | 未准备 | ⚠️ 待接入 | 须明确告知"该场景暂未上线" |
+| 方法 | 材料类型 | 状态 | 行为 |
+|------|---------|------|------|
+| `getPRPOPULLByUser` | 原材料/半成品（物料已准备） | ✅ 已上线 | 执行 `configs/znb-prpo.yaml` |
+| `getPRPOPULLNoUser` | 原材料/半成品（物料未准备） | ⚠️ 待接入 | 告知"该场景暂未上线" |
+| `getPRPOZWWByUser` | 成品（物料已准备） | ✅ 已上线 | 执行 `configs/zww-prpo.yaml` |
+| `getZWWPRPONoUsers` | 成品（物料未准备） | ⚠️ 待接入 | 告知"该场景暂未上线" |
 
-> 标记为"待接入"的方法，当用户触发时必须明确告知"该场景尚未上线，暂不支持"，禁止尝试执行或给出模糊回复。
+> 待接入方法触发时，必须明确告知用户并拒绝执行。
 
-## 使用方式
+### 使用方式
 
-### 对话式（推荐）
+**对话式**：用户说"帮我造一条生态链的标准采购订单" → Agent 追问缺失参数 → 展示确认卡片 → 用户确认 → 执行出结果。
 
-```
-用户：帮我造一条生态链的标准采购订单
+**命令式**：`python3 engine.py configs/znb-prpo.yaml --stockOrg MI_IOT --purchaseOrg 2120 --supplierCode 108062 --materials '{"m1":"1710301000006A"}' --shipLocCode 129797`
 
-Agent：已识别场景：ZNB 标准采购订单造数
-      还需要：供应商编码、物料信息、发货地点
+### 新增造单场景
 
-用户：供应商 108062，物料 1710301000006A，发货地点 129797
-
-Agent：请确认本次造数参数：
-      - 订单类型：ZNB 标准采购
-      - 采购组织：生态链（MI_IOT / 2120）
-      - 供应商编码：108062
-      - 物料：1710301000006A × 1
-      - 发货地点：129797
-      确认后开始执行。
-
-用户：确认
-
-Agent：✅ 执行完成（耗时约 3 分钟）
-      - 采购申请号：PR-XXXXXXXX
-      - 采购订单号：PO-XXXXXXXX
-      - ERP 推送单号：已回写，状态正常
-```
-
-### 命令式
-
-```bash
-cd ~/.openclaw/workspace/skills/mify-data-factory
-python3 engine.py configs/znb-prpo.yaml \
-  --stockOrg MI_IOT \
-  --purchaseOrg 2120 \
-  --supplierCode 108062 \
-  --materials '{"materialCode1": "1710301000006A"}' \
-  --shipLocCode 129797
-```
-
-## 新增造单场景
-
-只需要：
-1. 写一个新的 `configs/xxx.yaml`（流程配置，声明式）
-2. 写对应的 Jinja2 模板（如需要）
-3. 在 `prompt.md` 中补充方法映射
-4. **不改任何 Python 代码！**
-
-`engine.py` 是通用编排引擎，自动读 YAML → 调 mify → 解析返回 → 条件分支/循环。
-
-## 质量基线
-
-最近一次 SkillSentry 测评结果（2026-06-17）：
-- 测试用例：8 条，断言通过率 44/44 = **100%**
-- 覆盖场景：4 种方法 × 3 种状态 = 12 种组合
-- 评级：**PASS**（凭证外部化修复后）
+新增场景只需：① 写 `configs/xxx.yaml` ② 写对应 Jinja2 模板 ③ 在 `prompt.md` 补映射。不改 Python 代码。
