@@ -1,0 +1,136 @@
+# Mify SQL Query 工作流
+# Dify 导入格式：接收SQL连接串和查询语句，执行SQL，返回结果
+app:
+  description: 通用SQL查询工具，由Skill编排调用
+  icon: 🗄️
+  icon_background: '#E3F2FD'
+  mode: workflow
+  name: mify-sql-query
+  use_icon_as_answer_icon: false
+version: 0.3.1
+kind: app
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      enabled: false
+    opening_statement: ''
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+  graph:
+    nodes:
+      # ── 开始节点：接收参数 ──
+      - data:
+          desc: ''
+          title: 开始
+          type: start
+          variables:
+            - label: db_uri
+              max_length: 500
+              required: true
+              type: secret-input
+              variable: db_uri
+            - label: query
+              max_length: 50000
+              required: true
+              type: paragraph
+              variable: query
+            - label: format
+              max_length: 10
+              options: [json, md, csv]
+              required: false
+              type: select
+              variable: format
+              default: json
+          id: '2001'
+          type: custom
+          width: 244
+
+      # ── SQL执行节点 ──
+      - data:
+          desc: 执行SQL查询
+          is_team_authorization: true
+          output_schema: null
+          params:
+            config_options: ''
+            db_uri: ''
+            format: ''
+            query: ''
+          provider_id: database
+          provider_name: database
+          provider_type: builtin
+          tool_configurations:
+            config_options:
+              type: mixed
+              value: null
+            format:
+              type: mixed
+              value: '{{#2001.format#}}'
+          tool_name: sql_execute
+          tool_parameters:
+            db_uri:
+              type: mixed
+              value: '{{#2001.db_uri#}}'
+            query:
+              type: mixed
+              value: '{{#2001.query#}}'
+          title: 执行SQL
+          type: tool
+          id: '2002'
+          type: custom
+          width: 244
+
+      # ── 成功结束：返回结果 ──
+      - data:
+          desc: 返回SQL查询结果
+          outputs:
+            - value_selector:
+                - '2002'
+                - json
+              value_type: array[object]
+              variable: rows
+            - value_selector:
+                - '2002'
+                - text
+              value_type: string
+              variable: raw_text
+          title: 返回成功
+          type: end
+          id: '2003'
+          type: custom
+          width: 244
+
+      # ── 失败结束：返回错误 ──
+      - data:
+          desc: SQL执行失败
+          outputs:
+            - value_selector:
+                - '2002'
+                - error_message
+              value_type: string
+              variable: error
+          title: 返回失败
+          type: end
+          id: '2004'
+          type: custom
+          width: 244
+
+    edges:
+      - source: '2001'
+        target: '2002'
+      - source: '2002'
+        sourceHandle: source
+        target: '2003'
+      - source: '2002'
+        sourceHandle: fail-branch
+        target: '2004'

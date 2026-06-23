@@ -102,19 +102,20 @@ tags: [造数, 测试数据, 供应链, 流程编排, Agent, 跨系统, PRPO]
 | `route` | 路由到子流程（orderType/routes） | 否 |
 | `filter_collection` | 集合过滤（source/match_field） | 否 |
 
-新增一种业务场景 = 新增 `configs/xxx.yaml` + 新增 Jinja2 模板 + 在 prompt 补映射，**不改任何 Python 代码**。
-
 ## 6. 目录结构
 
 ```
 mify-data-factory/
-├── SKILL.md            # 本文件
+├── SKILL.md            # 本文件（技能声明）
 ├── prompt.md           # 对话层提示词
 ├── engine.py           # 通用编排引擎
 ├── lib/                # 引擎核心模块（client/config/flow/renderer/resolver）
 ├── configs/            # YAML 流程定义（znb-prpo.yaml, zww-prpo.yaml, ...）
 ├── templates/          # Jinja2 请求体模板
-└── shared/             # 可复用共享步骤（审批/查询/Cookie）
+├── shared/             # 可复用共享步骤（审批/查询/Cookie）
+├── references/         # 原始 Dify 工作流导出（演进前对照）
+├── mify-apps/          # mify 平台工具定义（http-call/sql-query）
+└── runners/            # 执行器（飞书推送/批量测试脚本）
 ```
 
 ## 7. 端到端示例
@@ -342,6 +343,14 @@ Agent：这属于只读查询场景，不在造数 Skill 的管辖范围内。
 | 单步重试上限 | 10 次 × 10s | 用于异步落库轮询（如 ERP 回写） |
 | 并发限制 | 1 条/次 | 当前不支持批量并行造数 |
 | 失败恢复 | 支持断点诊断 | 报告失败步骤 + 前序上下文，不支持自动续跑 |
+
+### 使用方式
+
+**对话式**（推荐）：用户说"帮我造一条生态链的标准采购订单" → Agent 追问缺失参数 → 展示确认卡片 → 用户确认 → 执行出结果。
+
+**命令式**：`python3 engine.py configs/znb-prpo.yaml --stockOrg MI_IOT --purchaseOrg 2120 --supplierCode 108062 --materials '{"m1":"1710301000006A"}' --shipLocCode 129797`
+
+**飞书推送**：`python3 runners/run_with_feishu.py configs/znb-prpo.yaml --stockOrg MI_IOT ...`（执行进度实时推送到飞书消息）
 
 ### 新增造单场景
 

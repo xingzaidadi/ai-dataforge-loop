@@ -1,0 +1,5474 @@
+app:
+  description: 物料自己输入
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: workflow
+  name: ZSC-PRPO
+  use_icon_as_answer_icon: false
+dependencies: []
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables:
+  - description: ''
+    id: b1c4f8fe-5a1c-43a7-894a-572e8b5a6a6c
+    name: shipLocCodeFail
+    selector:
+    - env
+    - shipLocCodeFail
+    value: 代工厂数据不存在，请在SCM配置
+    value_type: string
+  - description: ''
+    id: 52d991f9-21ef-400b-b103-77174ee1dbc6
+    name: scmDatabase
+    selector:
+    - env
+    - scmDatabase
+    value: mysql+pymysql://isc_scm_test_wn:vKoc3jfIM2v4z4pPwruR6YaUpCOaHZep@ksc.test.mysql01.b2c.srv:3304/isc_scm_test
+    value_type: string
+  - description: ''
+    id: c98dca5e-7b10-475f-9e4c-7defa48e977d
+    name: erpPoFail
+    selector:
+    - env
+    - erpPoFail
+    value: erp订单号未生成，请咨询SAP系统相关人员
+    value_type: string
+  - description: ''
+    id: 46ef1577-ae71-4838-81fb-c0643ce2f9ba
+    name: poFial
+    selector:
+    - env
+    - poFial
+    value: po创建失败，请联系管理员-刘四星解决
+    value_type: string
+  - description: ''
+    id: bbf643cf-0c6d-49e0-9f26-5f1325419afb
+    name: prfail
+    selector:
+    - env
+    - prfail
+    value: PR创建失败，可能是无ASL、无价格等问题
+    value_type: string
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 100
+        batch_count_limit: 5
+        feishu_file_count_limit: 20
+        feishu_url_count_limit: 20
+        file_size_limit: 100
+        image_file_size_limit: 30
+        video_file_size_limit: 800
+        workflow_file_upload_limit: 50
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: http-request
+        targetType: tool
+      id: 1762307872474-source-1762307907778-target
+      selected: false
+      source: '1762307872474'
+      sourceHandle: source
+      target: '1762307907778'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: parameter-extractor
+      id: 1762312882973-source-1762323675592-target
+      selected: false
+      source: '1762312882973'
+      sourceHandle: source
+      target: '1762323675592'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: http-request
+        targetType: parameter-extractor
+      id: 1762323499306-source-1762324346376-target
+      selected: false
+      source: '1762323499306'
+      sourceHandle: source
+      target: '1762324346376'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: parameter-extractor
+        targetType: if-else
+      id: 1762324346376-source-1762324320185-target
+      selected: false
+      source: '1762324346376'
+      sourceHandle: source
+      target: '1762324320185'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: end
+      id: 1762324320185-false-1762324412046-target
+      selected: false
+      source: '1762324320185'
+      sourceHandle: 'false'
+      target: '1762324412046'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: parameter-extractor
+        targetType: if-else
+      id: 1762323675592-source-1762326869671-target
+      selected: false
+      source: '1762323675592'
+      sourceHandle: source
+      target: '1762326869671'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1762326869671-true-1762323499306-target
+      selected: false
+      source: '1762326869671'
+      sourceHandle: 'true'
+      target: '1762323499306'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: end
+      id: 1762326869671-false-1762326926705-target
+      selected: false
+      source: '1762326869671'
+      sourceHandle: 'false'
+      target: '1762326926705'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: http-request
+      id: 1762304563504-source-1762307872474-target
+      selected: false
+      source: '1762304563504'
+      sourceHandle: source
+      target: '1762307872474'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: tool
+      id: 1762345939587-source-1762312882973-target
+      selected: false
+      source: '1762345939587'
+      sourceHandle: source
+      target: '1762312882973'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762397765773'
+        sourceType: iteration-start
+        targetType: tool
+      id: 1762397765773start-source-1762397834128-target
+      selected: false
+      source: 1762397765773start
+      sourceHandle: source
+      target: '1762397834128'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: code
+      id: 1762391845550-source-1762398885872-target
+      selected: false
+      source: '1762391845550'
+      sourceHandle: source
+      target: '1762398885872'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: tool
+      id: 1762324320185-true-1762400336582-target
+      selected: false
+      source: '1762324320185'
+      sourceHandle: 'true'
+      target: '1762400336582'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: tool
+      id: 1762400336582-source-1762391845550-target
+      selected: false
+      source: '1762400336582'
+      sourceHandle: source
+      target: '1762391845550'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: http-request
+      id: 1762400196015-source-1762413343495-target
+      selected: false
+      source: '1762400196015'
+      sourceHandle: source
+      target: '1762413343495'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: tool
+        targetType: parameter-extractor
+      id: 1762416119111-source-17624163896421-target
+      selected: false
+      source: '1762416119111'
+      sourceHandle: source
+      target: '17624163896421'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: parameter-extractor
+        targetType: if-else
+      id: 17624163896421-source-17624163896425-target
+      selected: false
+      source: '17624163896421'
+      sourceHandle: source
+      target: '17624163896425'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 17624163896425-true-17624163896420-target
+      selected: false
+      source: '17624163896425'
+      sourceHandle: 'true'
+      target: '17624163896420'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: end
+      id: 17624163896425-false-17624163896426-target
+      selected: false
+      source: '17624163896425'
+      sourceHandle: 'false'
+      target: '17624163896426'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: parameter-extractor
+      id: 17624163896420-source-17624163896423-target
+      selected: false
+      source: '17624163896420'
+      sourceHandle: source
+      target: '17624163896423'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: parameter-extractor
+        targetType: if-else
+      id: 17624163896423-source-17624163896422-target
+      selected: false
+      source: '17624163896423'
+      sourceHandle: source
+      target: '17624163896422'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: code
+      id: 17624163896422-true-1762418407013-target
+      selected: false
+      source: '17624163896422'
+      sourceHandle: 'true'
+      target: '1762418407013'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: tool
+      id: 1762418407013-source-1762416838766-target
+      selected: false
+      source: '1762418407013'
+      sourceHandle: source
+      target: '1762416838766'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: parameter-extractor
+      id: 1762416838766-source-1762418585936-target
+      selected: false
+      source: '1762416838766'
+      sourceHandle: source
+      target: '1762418585936'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: parameter-extractor
+        targetType: if-else
+      id: 1762418585936-source-1762418630447-target
+      selected: false
+      source: '1762418585936'
+      sourceHandle: source
+      target: '1762418630447'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: 1762420041906-source-17624163896424-target
+      selected: false
+      source: '1762420041906'
+      sourceHandle: source
+      target: '17624163896424'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: http-request
+        targetType: end
+      id: 1762307947118-fail-branch-1762427039735-target
+      selected: false
+      source: '1762307947118'
+      sourceHandle: fail-branch
+      target: '1762427039735'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: http-request
+        targetType: parameter-extractor
+      id: 1762307947118-source-1762427419599-target
+      selected: false
+      source: '1762307947118'
+      sourceHandle: source
+      target: '1762427419599'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: parameter-extractor
+        targetType: if-else
+      id: 1762427419599-source-1762427491734-target
+      selected: false
+      source: '1762427419599'
+      sourceHandle: source
+      target: '1762427491734'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1762427491734-true-1762345939587-target
+      selected: false
+      source: '1762427491734'
+      sourceHandle: 'true'
+      target: '1762345939587'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: end
+      id: 1762427491734-false-1762427513379-target
+      selected: false
+      source: '1762427491734'
+      sourceHandle: 'false'
+      target: '1762427513379'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: http-request
+        targetType: end
+      id: 1762413343495-fail-branch-1762428171197-target
+      selected: false
+      source: '1762413343495'
+      sourceHandle: fail-branch
+      target: '1762428171197'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: http-request
+        targetType: parameter-extractor
+      id: 1762413343495-source-1762429190325-target
+      selected: false
+      source: '1762413343495'
+      sourceHandle: source
+      target: '1762429190325'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: parameter-extractor
+        targetType: if-else
+      id: 1762429190325-source-1762429218766-target
+      selected: false
+      source: '1762429190325'
+      sourceHandle: source
+      target: '1762429218766'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: tool
+      id: 1762429218766-true-1762416119111-target
+      selected: false
+      source: '1762429218766'
+      sourceHandle: 'true'
+      target: '1762416119111'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: end
+      id: 1762429218766-false-1762429233908-target
+      selected: false
+      source: '1762429218766'
+      sourceHandle: 'false'
+      target: '1762429233908'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762433518268'
+        sourceType: iteration-start
+        targetType: http-request
+      id: 1762433518268start-source-1762433571540-target
+      selected: false
+      source: 1762433518268start
+      sourceHandle: source
+      target: '1762433571540'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: code
+      id: 1762307907778-source-1762434225353-target
+      selected: false
+      source: '1762307907778'
+      sourceHandle: source
+      target: '1762434225353'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: iteration
+      id: 1762434225353-source-1762433518268-target
+      selected: false
+      source: '1762434225353'
+      sourceHandle: source
+      target: '1762433518268'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: http-request
+      id: 1762307462829-source-1762307947118-target
+      selected: false
+      source: '1762307462829'
+      sourceHandle: source
+      target: '1762307947118'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: iteration
+        targetType: llm
+      id: 1762433518268-source-1762435207335-target
+      selected: false
+      source: '1762433518268'
+      sourceHandle: source
+      target: '1762435207335'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: if-else
+      id: 1762435207335-source-1762435566704-target
+      selected: false
+      source: '1762435207335'
+      sourceHandle: source
+      target: '1762435566704'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: end
+      id: 1762435566704-false-1762435673633-target
+      selected: false
+      source: '1762435566704'
+      sourceHandle: 'false'
+      target: '1762435673633'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1762435566704-true-1762497770195-target
+      selected: false
+      source: '1762435566704'
+      sourceHandle: 'true'
+      target: '1762497770195'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762499361375'
+        sourceType: iteration-start
+        targetType: llm
+      id: 1762499361375start-source-1762499538167-target
+      selected: false
+      source: 1762499361375start
+      sourceHandle: source
+      target: '1762499538167'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: iteration
+      id: 1762497770195-source-1762499361375-target
+      selected: false
+      source: '1762497770195'
+      sourceHandle: source
+      target: '1762499361375'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: iteration
+        targetType: if-else
+      id: 1762499361375-source-1762504103126-target
+      selected: false
+      source: '1762499361375'
+      sourceHandle: source
+      target: '1762504103126'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: code
+      id: 1762504103126-false-1762504845492-target
+      selected: false
+      source: '1762504103126'
+      sourceHandle: 'false'
+      target: '1762504845492'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: end
+      id: 1762504845492-source-1762504115720-target
+      selected: false
+      source: '1762504845492'
+      sourceHandle: source
+      target: '1762504115720'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: tool
+      id: 1762504103126-true-1762742136902-target
+      selected: false
+      source: '1762504103126'
+      sourceHandle: 'true'
+      target: '1762742136902'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: parameter-extractor
+      id: 1762742136902-source-1762742159387-target
+      selected: false
+      source: '1762742136902'
+      sourceHandle: source
+      target: '1762742159387'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: parameter-extractor
+        targetType: if-else
+      id: 1762742159387-source-1762742208401-target
+      selected: false
+      source: '1762742159387'
+      sourceHandle: source
+      target: '1762742208401'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1762742208401-true-1762307462829-target
+      selected: false
+      source: '1762742208401'
+      sourceHandle: 'true'
+      target: '1762307462829'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: end
+      id: 1762742208401-false-1762742220429-target
+      selected: false
+      source: '1762742208401'
+      sourceHandle: 'false'
+      target: '1762742220429'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1762418630447-true-1762420041906-target
+      selected: false
+      source: '1762418630447'
+      sourceHandle: 'true'
+      target: '1762420041906'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: 17627567355890-source-1762756746831-target
+      selected: false
+      source: '17627567355890'
+      sourceHandle: source
+      target: '1762756746831'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: tool
+      id: 1762418630447-false-1762757421946-target
+      selected: false
+      source: '1762418630447'
+      sourceHandle: 'false'
+      target: '1762757421946'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: parameter-extractor
+      id: 1762757421946-source-1762757466499-target
+      selected: false
+      source: '1762757421946'
+      sourceHandle: source
+      target: '1762757466499'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: parameter-extractor
+        targetType: llm
+      id: 1762757466499-source-17627567355890-target
+      selected: false
+      source: '1762757466499'
+      sourceHandle: source
+      target: '17627567355890'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762862227628'
+        sourceType: iteration-start
+        targetType: tool
+      id: 1762862227628start-source-1762862246091-target
+      selected: false
+      source: 1762862227628start
+      sourceHandle: source
+      target: '1762862246091'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: iteration
+        targetType: llm
+      id: 1762862227628-source-1762862575465-target
+      selected: false
+      source: '1762862227628'
+      sourceHandle: source
+      target: '1762862575465'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: code
+      id: 1762862575465-source-1762863300092-target
+      selected: false
+      source: '1762862575465'
+      sourceHandle: source
+      target: '1762863300092'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: iteration
+      id: 1762863300092-source-1762864022005-target
+      selected: false
+      source: '1762863300092'
+      sourceHandle: source
+      target: '1762864022005'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762864022005'
+        sourceType: iteration-start
+        targetType: tool
+      id: 1762864022005start-source-1762864033623-target
+      selected: false
+      source: 1762864022005start
+      sourceHandle: source
+      target: '1762864033623'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInLoop: false
+        sourceType: iteration
+        targetType: llm
+      id: 1762864022005-source-1762400196015-target
+      selected: false
+      source: '1762864022005'
+      sourceHandle: source
+      target: '1762400196015'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: iteration
+        targetType: llm
+      id: 1762397765773-source-1762400196015-target
+      selected: false
+      source: '1762397765773'
+      sourceHandle: source
+      target: '1762400196015'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: if-else
+      id: 1762398885872-source-1762930252972-target
+      selected: false
+      source: '1762398885872'
+      sourceHandle: source
+      target: '1762930252972'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: iteration
+      id: 1762930252972-true-1762862227628-target
+      selected: false
+      source: '1762930252972'
+      sourceHandle: 'true'
+      target: '1762862227628'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: iteration
+      id: 1762930252972-701d804e-0193-4b09-b10d-8fe15378cd90-1762862227628-target
+      selected: false
+      source: '1762930252972'
+      sourceHandle: 701d804e-0193-4b09-b10d-8fe15378cd90
+      target: '1762862227628'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: iteration
+      id: 1762930252972-895426e0-a87c-4dc1-8e5a-2e3783a9e052-1762862227628-target
+      selected: false
+      source: '1762930252972'
+      sourceHandle: 895426e0-a87c-4dc1-8e5a-2e3783a9e052
+      target: '1762862227628'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: iteration
+      id: 1762930252972-791a1872-56ac-44e3-921b-0aa89a06a33f-1762862227628-target
+      selected: false
+      source: '1762930252972'
+      sourceHandle: 791a1872-56ac-44e3-921b-0aa89a06a33f
+      target: '1762862227628'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: iteration
+      id: 1762930252972-false-1762397765773-target
+      selected: false
+      source: '1762930252972'
+      sourceHandle: 'false'
+      target: '1762397765773'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: iteration
+      id: 1762930252972-true-1762397765773-target
+      selected: false
+      source: '1762930252972'
+      sourceHandle: 'true'
+      target: '1762397765773'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: iteration
+      id: 1762930252972-701d804e-0193-4b09-b10d-8fe15378cd90-1762397765773-target
+      selected: false
+      source: '1762930252972'
+      sourceHandle: 701d804e-0193-4b09-b10d-8fe15378cd90
+      target: '1762397765773'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: iteration
+      id: 1762930252972-895426e0-a87c-4dc1-8e5a-2e3783a9e052-1762397765773-target
+      selected: false
+      source: '1762930252972'
+      sourceHandle: 895426e0-a87c-4dc1-8e5a-2e3783a9e052
+      target: '1762397765773'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: iteration
+      id: 1762930252972-791a1872-56ac-44e3-921b-0aa89a06a33f-1762397765773-target
+      selected: false
+      source: '1762930252972'
+      sourceHandle: 791a1872-56ac-44e3-921b-0aa89a06a33f
+      target: '1762397765773'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: 开始
+        type: start
+        variables:
+        - label: stockOrg
+          max_length: 48
+          options: []
+          required: true
+          type: text-input
+          variable: stockOrg
+        - label: purchaseOrg
+          max_length: 48
+          options: []
+          required: true
+          type: text-input
+          variable: purchaseOrg
+        - label: supplierCode
+          max_length: 48
+          options: []
+          required: true
+          type: text-input
+          variable: supplierCode
+        - label: materials
+          max_length: 480
+          options: []
+          required: true
+          type: paragraph
+          variable: materials
+        - label: projectCode
+          max_length: 48
+          options: []
+          required: false
+          type: text-input
+          variable: projectCode
+        - label: shipLocCode
+          max_length: 48
+          options: []
+          required: true
+          type: text-input
+          variable: shipLocCode
+      height: 219
+      id: '1762304563504'
+      position:
+        x: -6.900832429892034
+        y: 328.3810190641612
+      positionAbsolute:
+        x: -6.900832429892034
+        y: 328.3810190641612
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1762304563504'
+          - materials
+        desc: ''
+        model:
+          completion_params: {}
+          mode: chat
+          name: gpt-4.1_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        prompt_template:
+        - id: c484a005-887c-4d86-860c-7cdf4aa44bd7
+          role: system
+          text: "你是一个json转换器，可以将给定的数据按要求填充到json中，最终返回一个可以直接拿来发送请求的json。\n请帮我将“待替换内容”（实际内容会动态变化，含id:{{#1762742159387.id#}}、stockOrg:{{#1762304563504.stockOrg#}}、purchaseOrg:{{#1762304563504.purchaseOrg#}}、supplierCode:{{#1762304563504.supplierCode#}}、projectCode:{{#1762304563504.projectCode#}}及1个或多个materialCode通过{{#1762304563504.materials#}}对象提供）精准替换到“目标JSON”（见下文目标JSON）中，核心要求是**所有替换后的value仅保留待替换内容中的纯字段值，完全不含原字段名（如stockOrg、purchaseOrg等）作为前缀，也不附加任何后缀或多余字符**，具体规则如下：\n\
+            \n1. 替换逻辑（通用适配，纯值替换，无多余内容）：\n   - 待替换内容中的\"id\"字段值，仅填入“目标JSON”顶层“receiveFactoryId”的value，值中绝对不含“id”前缀；\n\
+            \   - 待替换内容中的“stockOrg”字段值，仅填入“目标JSON”顶层“stockOrg”的value，值中绝对不含“stockOrg”前缀；\n\
+            \   - 待替换内容中的“purchaseOrg”字段值，仅填入“目标JSON”内“materials”数组所有元素的“purchaseOrg”value，值中绝对不含“purchaseOrg”前缀；\n\
+            \   - 根据待替换内容中“materials”对象的键值对数量确定物料数量N（键为“materialCode1”、“materialCode2”…“materialCodeN”）。“目标JSON”中的“materials”数组应包含恰好N个元素，每个元素基于以下规则生成：\n\
+            \        - 使用“目标JSON”中“materials”数组的第一个元素作为模板结构\n        - 对于第i个元素（i从1到N）：\n\
+            \             - “id”字段设置为i（从1开始自增：第一个元素id为1，第二个为2，以此类推）\n            \
+            \ - “key”字段设置为i（与id保持同步）\n             - “xmCode”字段填入对应“materialCodei”的值\n\
+            \             - “materialCode”字段填入对应“materialCodei”的值\n             -\
+            \ “value”字段填入对应“materialCodei”的值\n             - “purchaseOrg”字段填入待替换内容中的“purchaseOrg”值\n\
+            \             - “supplierCode”字段填入待替换内容中的“supplierCode”值\n        - 其他字段保留模板中的值\n\
+            \   - 待替换内容中的“supplierCode”字段值，仅填入“目标JSON”内“materials”数组所有元素的“supplierCode”value，值中绝对不含“supplierCode”前缀；\n\
+            \   - 待替换内容中的“projectCode”字段值，仅填入“目标JSON”顶层“projectCode”的value，值中绝对不含“projectCode”前缀。\n\
+            \n2. 示例说明（仅作参考，实际内容动态变化，重点看纯值替换效果和动态数量适配）：\n   - 示例待替换内容（1个物料）：\n    \
+            \ {\n       \"id\": \"12345\",\n       \"stockOrg\": \"MI_IOT\",\n   \
+            \    \"purchaseOrg\": \"2120\",\n       \"supplierCode\": \"108062\",\n\
+            \       \"projectCode\": \"EcoOdmJdm20240708220947-EU\",\n       \"materials\"\
+            : {\"materialCode1\": \"1710301000006B\"}\n     }\n   - 示例目标JSON替换后（仅展示关键替换位置，materials数组数量为1）：\n\
+            \     {\n       \"stockOrg\": \"MI_IOT\",\n       \"receiveFactoryId\"\
+            : \"12345\",\n       \"specialApprove\": 0,\n       \"materials\": [\n\
+            \         {\n           \"id\": 1,\n           \"key\": 1,\n         \
+            \  \"xmCode\": \"1710301000006B\",\n           \"materialCode\": \"1710301000006B\"\
+            ,\n           \"value\": \"1710301000006B\",\n           \"purchaseOrg\"\
+            : \"2120\",\n           \"supplierCode\": \"108062\",\n           // 其他字段保留模板值\n\
+            \         }\n       ],\n       \"projectCode\": \"EcoOdmJdm20240708220947-EU\"\
+            ,\n       // 其他字段保留模板值\n     }\n\n3. 输出要求：\n   - **最终只输出一个完整的JSON对象**，其materials数组元素数量严格等于待替换内容中的物料数量N\n\
+            \   - 每个materials元素的id从1开始自增\n   - 不包含任何额外文字说明、注释或格式标记\n\n目标JSON（作为结构模板参考）：\n\
+            {\n  \"stockOrg\": \"MI_IOT\",\n  \"receiveFactoryId\": 666,\n  \"specialApprove\"\
+            : 0,\n  \"materials\": [\n    {\n      \"description\": \"生态链结构件_注塑件_注塑件_1_4\
+            \ Kg_4_STL001_1234990_Longcheer\",\n      \"pnCode\": \"1710301000006\"\
+            ,\n      \"purchaseOrg\": \"2120\",\n      \"applicationNum\": 11111,\n\
+            \      \"baseUom\": \"PC\",\n      \"key\": 1,\n      \"xmCode\": \"1710301000006A\"\
+            ,\n      \"number\": 11111,\n      \"receiveDate\": 1885651199999,\n \
+            \     \"isNew\": 1,\n      \"materialCode\": \"1710301000006A\",\n   \
+            \   \"materialDesc\": \"生态链结构件_注塑件_注塑件_1_4 Kg_4_STL001_1234990_Longcheer\"\
+            ,\n      \"manufacturer\": \"Longcheer\",\n      \"spCode\": \"1234990\"\
+            ,\n      \"brand\": \"AIT\",\n      \"label\": \"1710301000006A(生态链结构件_注塑件_注塑件_1_4\
+            \ Kg_4_STL001_1234990_Longcheer)\",\n      \"value\": \"1710301000006A\"\
+            ,\n      \"catePathCode\": \"171.03.01\",\n      \"codeDescEn\": \"Plastic_Part_1_4\
+            \ Kg_4_STL001_1234990_Longcheer\",\n      \"catePathName\": \"生态链结构件.注塑件.注塑件\"\
+            ,\n      \"materialGroupCode\": \"R8717103\",\n      \"materialGroup\"\
+            : \"生态链结构件-注塑件\",\n      \"mgroup\": {\n        \"code\": \"R8717103\"\
+            ,\n        \"name\": \"生态链结构件-注塑件\"\n      },\n      \"mpnSupplier\":\
+            \ [\n        {\n          \"supplierCode\": \"0000123511\",\n        \
+            \  \"lt\": \"90\",\n          \"mpq\": \"10000\",\n          \"moq\":\
+            \ \"10000\",\n          \"xmCode\": \"1710301000006A\"\n        },\n \
+            \       {\n          \"supplierCode\": \"0000100227\",\n          \"lt\"\
+            : \"90\",\n          \"mpq\": \"10000\",\n          \"moq\": \"10000\"\
+            ,\n          \"xmCode\": \"1710301000006A\"\n        },\n        {\n \
+            \         \"supplierCode\": \"0000105033\",\n          \"lt\": \"90\"\
+            ,\n          \"mpq\": \"10000\",\n          \"moq\": \"10000\",\n    \
+            \      \"xmCode\": \"1710301000006A\"\n        },\n        {\n       \
+            \   \"supplierCode\": \"0000108062\",\n          \"lt\": \"90\",\n   \
+            \       \"mpq\": \"1\",\n          \"moq\": \"1\",\n          \"xmCode\"\
+            : \"1710301000006A\"\n        },\n        {\n          \"supplierCode\"\
+            : \"0000124899\",\n          \"lt\": \"90\",\n          \"mpq\": \"10000\"\
+            ,\n          \"moq\": \"10000\",\n          \"xmCode\": \"1710301000006A\"\
+            \n        },\n        {\n          \"supplierCode\": \"0000126929\",\n\
+            \          \"lt\": \"90\",\n          \"mpq\": \"10000\",\n          \"\
+            moq\": \"10000\",\n          \"xmCode\": \"1710301000006A\"\n        },\n\
+            \        {\n          \"supplierCode\": \"0000101178\",\n          \"\
+            lt\": \"88\",\n          \"mpq\": \"77\",\n          \"moq\": \"66\",\n\
+            \          \"xmCode\": \"1710301000006A\"\n        },\n        {\n   \
+            \       \"supplierCode\": \"0000129797\",\n          \"lt\": \"10\",\n\
+            \          \"mpq\": \"10\",\n          \"moq\": \"10\",\n          \"\
+            xmCode\": \"1710301000006A\"\n        },\n        {\n          \"supplierCode\"\
+            : \"0000101408\",\n          \"lt\": \"10\",\n          \"mpq\": \"10\"\
+            ,\n          \"moq\": \"10\",\n          \"xmCode\": \"1710301000006A\"\
+            \n        },\n        {\n          \"supplierCode\": \"0000101550\",\n\
+            \          \"lt\": \"10\",\n          \"mpq\": \"10\",\n          \"moq\"\
+            : \"10\",\n          \"xmCode\": \"1710301000006A\"\n        },\n    \
+            \    {\n          \"supplierCode\": \"0000100277\",\n          \"lt\"\
+            : \"10\",\n          \"mpq\": \"10\",\n          \"moq\": \"10\",\n  \
+            \        \"xmCode\": \"1710301000006A\"\n        }\n      ],\n      \"\
+            receiveDateTimeStamp\": 1762324193546,\n      \"remarks\": \"\"\n    },\n\
+            \    {\n      \"description\": \"生态链结构件_注塑件_注塑件_1_4 Kg_4_STL001_3443231_Longcheer\"\
+            ,\n      \"pnCode\": \"1710301000006\",\n      \"purchaseOrg\": \"2120\"\
+            ,\n      \"applicationNum\": 11111,\n      \"baseUom\": \"PC\",\n    \
+            \  \"key\": 2,\n      \"isNew\": 1,\n      \"materialCode\": \"1710301000006B\"\
+            ,\n      \"materialDesc\": \"生态链结构件_注塑件_注塑件_1_4 Kg_4_STL001_3443231_Longcheer\"\
+            ,\n      \"manufacturer\": \"Longcheer\",\n      \"spCode\": \"3443231\"\
+            ,\n      \"brand\": \"AIT\",\n      \"label\": \"1710301000006B(生态链结构件_注塑件_注塑件_1_4\
+            \ Kg_4_STL001_3443231_Longcheer)\",\n      \"value\": \"1710301000006B\"\
+            ,\n      \"catePathCode\": \"171.03.01\",\n      \"codeDescEn\": \"Plastic_Part_1_4\
+            \ Kg_4_STL001_3443231_Longcheer\",\n      \"catePathName\": \"生态链结构件.注塑件.注塑件\"\
+            ,\n      \"materialGroupCode\": \"R8717103\",\n      \"materialGroup\"\
+            : \"生态链结构件-注塑件\",\n      \"projects\": \"STL001\",\n      \"mgroup\":\
+            \ {\n        \"code\": \"R8717103\",\n        \"name\": \"生态链结构件-注塑件\"\
+            \n      },\n      \"mpq\": \"10000\",\n      \"mpnSupplier\": [\n    \
+            \    {\n          \"supplierCode\": \"0000126929\",\n          \"lt\"\
+            : \"90\",\n          \"mpq\": \"10000\",\n          \"moq\": \"10000\"\
+            ,\n          \"xmCode\": \"1710301000006B\"\n        },\n        {\n \
+            \         \"supplierCode\": \"0000100227\",\n          \"lt\": \"90\"\
+            ,\n          \"mpq\": \"10000\",\n          \"moq\": \"10000\",\n    \
+            \      \"xmCode\": \"1710301000006B\"\n        },\n        {\n       \
+            \   \"supplierCode\": \"0000105033\",\n          \"lt\": \"90\",\n   \
+            \       \"mpq\": \"10000\",\n          \"moq\": \"10000\",\n         \
+            \ \"xmCode\": \"1710301000006B\"\n        },\n        {\n          \"\
+            supplierCode\": \"0000108062\",\n          \"lt\": \"10\",\n         \
+            \ \"mpq\": \"10\",\n          \"moq\": \"10\",\n          \"xmCode\":\
+            \ \"1710301000006B\"\n        },\n        {\n          \"supplierCode\"\
+            : \"0000124899\",\n          \"lt\": \"90\",\n          \"mpq\": \"10000\"\
+            ,\n          \"moq\": \"10000\",\n          \"xmCode\": \"1710301000006B\"\
+            \n        },\n        {\n          \"supplierCode\": \"0000101408\",\n\
+            \          \"lt\": \"90\",\n          \"mpq\": \"10000\",\n          \"\
+            moq\": \"10000\",\n          \"xmCode\": \"1710301000006B\"\n        },\n\
+            \        {\n          \"supplierCode\": \"0000101550\",\n          \"\
+            lt\": \"10\",\n          \"mpq\": \"10\",\n          \"moq\": \"10\",\n\
+            \          \"xmCode\": \"1710301000006B\"\n        },\n        {\n   \
+            \       \"supplierCode\": \"0000100277\",\n          \"lt\": \"10\",\n\
+            \          \"mpq\": \"10\",\n          \"moq\": \"10\",\n          \"\
+            xmCode\": \"1710301000006B\"\n        }\n      ],\n      \"inStatus\"\
+            : \"-\",\n      \"outStatus\": \"-\",\n      \"stockStatus\": \"良品\",\n\
+            \      \"xmCode\": \"1710301000006B\",\n      \"unit\": \"PC\",\n    \
+            \  \"number\": 11111,\n      \"receiveDate\": 1885651199999,\n      \"\
+            receiveDateTimeStamp\": 1762324193546,\n      \"remarks\": \"\"\n    }\n\
+            \  ],\n  \"projectCode\": \"EcoOdmJdm20240708220947-EU\",\n  \"projectDesc\"\
+            : \"\",\n  \"trialStage\": \"P0\",\n  \"isSubmit\": true,\n  \"purchaseType\"\
+            : 4,\n  \"stageRemark\": \"\"\n}\n\n请严格按上述规则处理，无论待替换内容中的materialCode数量如何变化，均确保：\n\
+            - materials数组元素数量与物料数量完全一致\n- 每个元素的id从1开始自增\n- 所有替换后的value仅为纯字段值，完全不含对应原字段名作为前缀，也无任何其他多余字符\n\
+            最终仅输出一个完整的替换后JSON对象，不带任何json格式、文字说明或额外内容。"
+        selected: false
+        title: 物料与ZSC-PR的请求合并
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '1762307462829'
+      position:
+        x: 5160.520532920057
+        y: 286.0000000000007
+      positionAbsolute:
+        x: 5160.520532920057
+        y: 286.0000000000007
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        default_value:
+        - key: body
+          type: string
+          value: cookie获取失败，尝试联系管理员-刘四星
+        - key: status_code
+          type: number
+          value: '40000'
+        - key: headers
+          type: object
+          value: '{}'
+        desc: ''
+        error_strategy: default-value
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: cookie
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/getSCMCookie
+        variables: []
+      height: 174
+      id: '1762307872474'
+      position:
+        x: 325.03070936090796
+        y: 338.92030026322425
+      positionAbsolute:
+        x: 325.03070936090796
+        y: 338.92030026322425
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        is_team_authorization: true
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: JSON data
+            ja_JP: JSON data
+            pt_BR: JSON数据
+            zh_Hans: JSON数据
+          label:
+            en_US: JSON data
+            ja_JP: JSON data
+            pt_BR: JSON data
+            zh_Hans: JSON数据
+          llm_description: JSON data to be processed
+          max: null
+          min: null
+          name: content
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: JSON fields to be parsed
+            ja_JP: JSON fields to be parsed
+            pt_BR: JSON fields to be parsed
+            zh_Hans: 需要解析的 JSON 字段
+          label:
+            en_US: JSON filter
+            ja_JP: JSON filter
+            pt_BR: JSON filter
+            zh_Hans: JSON解析对象
+          llm_description: JSON fields to be parsed
+          max: null
+          min: null
+          name: json_filter
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: 1
+          form: form
+          human_description:
+            en_US: Ensure the JSON output is ASCII encoded
+            ja_JP: Ensure the JSON output is ASCII encoded
+            pt_BR: Ensure the JSON output is ASCII encoded
+            zh_Hans: 确保输出的 JSON 是 ASCII 编码
+          label:
+            en_US: Ensure ASCII
+            ja_JP: Ensure ASCII
+            pt_BR: Ensure ASCII
+            zh_Hans: 确保 ASCII
+          llm_description: null
+          max: null
+          min: null
+          name: ensure_ascii
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: boolean
+        params:
+          content: ''
+          ensure_ascii: ''
+          json_filter: ''
+        provider_id: json_process
+        provider_name: json_process
+        provider_type: builtin
+        selected: false
+        title: 解析cookie
+        tool_configurations:
+          ensure_ascii:
+            type: constant
+            value: true
+        tool_description: 一个解析JSON对象的工具
+        tool_label: JSON 解析
+        tool_name: parse
+        tool_node_version: '2'
+        tool_parameters:
+          content:
+            type: mixed
+            value: '{{#1762307872474.body#}}'
+          json_filter:
+            type: mixed
+            value: data.result.cookie
+        type: tool
+      height: 89
+      id: '1762307907778'
+      position:
+        x: 656.5319127835778
+        y: 338.92030026322425
+      positionAbsolute:
+        x: 656.5319127835778
+        y: 338.92030026322425
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-504
+            key: ''
+            type: text
+            value: '{{#1762307462829.text#}}'
+          type: json
+        desc: ''
+        error_strategy: fail-branch
+        headers: Cookie:{{#1762307907778.text#}}
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 创建ZSC-PR
+        type: http-request
+        url: https://scm.test.mioffice.cn/mrp/purchase/trail
+        variables: []
+      height: 174
+      id: '1762307947118'
+      position:
+        x: 5460.491717242731
+        y: 286.0000000000007
+      positionAbsolute:
+        x: 5460.491717242731
+        y: 286.0000000000007
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: 用于PR审批
+        is_team_authorization: true
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The SQL query string.
+            ja_JP: The SQL query string.
+            pt_BR: The SQL query string.
+            zh_Hans: SQL 查询语句。
+          label:
+            en_US: SQL Query
+            ja_JP: SQL Query
+            pt_BR: SQL Query
+            zh_Hans: SQL 查询语句
+          llm_description: The SQL query string.
+          max: null
+          min: null
+          name: query
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: database connection.
+            ja_JP: database connection.
+            pt_BR: database connection.
+            zh_Hans: 数据库连接。
+          label:
+            en_US: DB URI
+            ja_JP: DB URI
+            pt_BR: DB URI
+            zh_Hans: DB URI
+          llm_description: null
+          max: null
+          min: null
+          name: db_uri
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: secret-input
+        - auto_generate: null
+          default: json
+          form: form
+          human_description:
+            en_US: Choose the output format.
+            ja_JP: Choose the output format.
+            pt_BR: Choose the output format.
+            zh_Hans: 选择输出格式。
+          label:
+            en_US: Output format
+            ja_JP: Output format
+            pt_BR: Output format
+            zh_Hans: 输出格式
+          llm_description: null
+          max: null
+          min: null
+          name: format
+          options:
+          - icon: null
+            label:
+              en_US: JSON
+              ja_JP: JSON
+              pt_BR: JSON
+              zh_Hans: JSON
+            value: json
+          - icon: null
+            label:
+              en_US: CSV
+              ja_JP: CSV
+              pt_BR: CSV
+              zh_Hans: CSV
+            value: csv
+          - icon: null
+            label:
+              en_US: YAML
+              ja_JP: YAML
+              pt_BR: YAML
+              zh_Hans: YAML
+            value: yaml
+          - icon: null
+            label:
+              en_US: Markdown
+              ja_JP: Markdown
+              pt_BR: Markdown
+              zh_Hans: Markdown
+            value: md
+          - icon: null
+            label:
+              en_US: Excel
+              ja_JP: Excel
+              pt_BR: Excel
+              zh_Hans: Excel
+            value: xlsx
+          - icon: null
+            label:
+              en_US: HTML
+              ja_JP: HTML
+              pt_BR: HTML
+              zh_Hans: HTML
+            value: html
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            ja_JP: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            pt_BR: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            zh_Hans: '选填项。例如 {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              更多连接选项可参考 https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+          label:
+            en_US: DB Config Options
+            ja_JP: DB Config Options
+            pt_BR: DB Config Options
+            zh_Hans: 数据库连接配置选项
+          llm_description: null
+          max: null
+          min: null
+          name: config_options
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        params:
+          config_options: ''
+          db_uri: ''
+          format: ''
+          query: ''
+        provider_id: database
+        provider_name: database
+        provider_type: builtin
+        selected: false
+        title: 查询businesskey
+        tool_configurations:
+          config_options:
+            type: mixed
+            value: null
+          format:
+            type: constant
+            value: md
+        tool_description: 此工具用于在已存在的数据库中执行 SQL 查询。
+        tool_label: SQL Execute
+        tool_name: sql_execute
+        tool_node_version: '2'
+        tool_parameters:
+          db_uri:
+            type: mixed
+            value: mysql+pymysql://isc_scm_test_wn:vKoc3jfIM2v4z4pPwruR6YaUpCOaHZep@ksc.test.mysql01.b2c.srv:3304/isc_scm_test
+          query:
+            type: mixed
+            value: '{{#1762345939587.text#}}'
+        type: tool
+      height: 143
+      id: '1762312882973'
+      position:
+        x: 6748.4000000000015
+        y: 282
+      positionAbsolute:
+        x: 6748.4000000000015
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        default_value:
+        - key: body
+          type: string
+          value: PR审批报错，尝试联系管理员-刘四星
+        - key: status_code
+          type: number
+          value: '40000'
+        - key: headers
+          type: object
+          value: '{}'
+        desc: ''
+        error_strategy: default-value
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 10
+          retry_enabled: true
+          retry_interval: '200'
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: PR审批
+        type: http-request
+        url: https://bpm-infra.test.mioffice.cn/bpmtool/api/bpmThree/approve?businessKey={{#1762323675592.business_key#}}&username=&toNode=&toNumber=
+        variables: []
+      height: 241
+      id: '1762323499306'
+      position:
+        x: 7874.018980935839
+        y: 118.38101906416136
+      positionAbsolute:
+        x: 7874.018980935839
+        y: 118.38101906416136
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        instruction: 从{{#1762312882973.text#}}中提取business_key和purchase_no的值
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        parameters:
+        - description: business_key
+          name: business_key
+          required: false
+          type: string
+        - description: purchase_no
+          name: purchase_no
+          required: false
+          type: string
+        query:
+        - '1762312882973'
+        - text
+        reasoning_mode: prompt
+        selected: false
+        title: 获取businesskey和PRno
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '1762323675592'
+      position:
+        x: 7096.875803692367
+        y: 282
+      positionAbsolute:
+        x: 7096.875803692367
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: 72edf78d-5e92-4d06-ad41-4cd16fd268e6
+            value: '0'
+            varType: string
+            variable_selector:
+            - '1762324346376'
+            - code
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 审批是否成功
+        type: if-else
+      height: 125
+      id: '1762324320185'
+      position:
+        x: 8546.018980935838
+        y: 118.38101906416136
+      positionAbsolute:
+        x: 8546.018980935838
+        y: 118.38101906416136
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        instruction: 从{{#1762323499306.body#}}中获取code的值
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        parameters:
+        - description: code
+          name: code
+          required: false
+          type: string
+        query:
+        - '1762323499306'
+        - body
+        reasoning_mode: prompt
+        selected: false
+        title: 审批code获取
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '1762324346376'
+      position:
+        x: 8225.626491223904
+        y: 118.38101906416136
+      positionAbsolute:
+        x: 8225.626491223904
+        y: 118.38101906416136
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1762323499306'
+          - body
+          value_type: string
+          variable: data
+        selected: false
+        title: 审批失败
+        type: end
+      height: 89
+      id: '1762324412046'
+      position:
+        x: 8981.902464036955
+        y: 646.4987594898848
+      positionAbsolute:
+        x: 8981.902464036955
+        y: 646.4987594898848
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: not empty
+            id: 11c17e21-cbe5-47aa-b7e3-b22d830cf2f5
+            value: ''
+            varType: string
+            variable_selector:
+            - '1762323675592'
+            - purchase_no
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 是否成功创建了PR
+        type: if-else
+      height: 125
+      id: '1762326869671'
+      position:
+        x: 7410.400000000001
+        y: 282
+      positionAbsolute:
+        x: 7410.400000000001
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - env
+          - prfail
+          value_type: string
+          variable: data
+        selected: false
+        title: 创建PR失败
+        type: end
+      height: 89
+      id: '1762326926705'
+      position:
+        x: 7980.859614841789
+        y: 557.928043803766
+      positionAbsolute:
+        x: 7980.859614841789
+        y: 557.928043803766
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        author: 刘四星
+        desc: ''
+        height: 291
+        selected: false
+        showAuthor: true
+        text: '{"root":{"children":[{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"查询是否有ASL：","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"https://scm.test.mioffice.cn/mrp/purchase/material-supplier-relations/batch","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[{"detail":0,"format":0,"mode":"normal","style":"","text":"request：{\"moduleCode\":\"Purchase9\",\"batch\":[{\"stockOrg\":\"MI_AIRCONDITION\",\"xmCode\":\"1020101000325\"}]}","type":"text","version":1}],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[],"direction":"ltr","format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""},{"children":[],"direction":null,"format":"","indent":0,"type":"paragraph","version":1,"textFormat":0,"textStyle":""}],"direction":"ltr","format":"","indent":0,"type":"root","version":1}}'
+        theme: blue
+        title: ''
+        type: ''
+        width: 596
+      height: 291
+      id: '1762328481558'
+      position:
+        x: 223.8945459839174
+        y: -204.3514949403105
+      positionAbsolute:
+        x: 223.8945459839174
+        y: -204.3514949403105
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-note
+      width: 596
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1762304563504'
+          - materials
+        desc: ''
+        model:
+          completion_params: {}
+          mode: chat
+          name: gpt-4.1_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        prompt_template:
+        - id: 25fedfdf-c574-486e-841f-57fa74fd6fc5
+          role: system
+          text: "请帮我根据{{#context#}}内容（含materialCode相关字段）、从上文获取的字段（stockOrg：{{#1762304563504.stockOrg#}}、projectCode：{{#1762304563504.projectCode#}}，值均为纯文本，无多余前缀）和数据表结构，生成一条并发安全的SQL查询语句，具体要求如下：\n\
+            \n1. **查询目标**：获取符合条件的、m_purchase表中status为10的最新数据的purchase_no和business_key，确保在并发环境下数据一致性。\n\
+            \n2. **动态字段处理规则**（所有值仅保留纯原始内容，不附加任何前缀）：\n   - JSON中包含一个或多个以\"materialCode\"\
+            为前缀的字段（如materialCode1、materialCode2等），其值直接作为m_purchase_item表\"xm_code\"\
+            字段的筛选条件，用IN子句包含（例如值为\"1710301000006B\"则直接填入，无额外字符）；\n   - 从上文获取的\"stockOrg\"\
+            值（如\"MI_IOT\"），直接作为m_purchase表\"stock_org\"字段的筛选值（格式为mp.stock_org = 'MI_IOT'）；\n\
+            \   - 从上文获取的\"projectCode\"值：若该值有内容，则直接作为m_purchase表\"project_code\"字段的筛选值（格式为mp.project_code\
+            \ = '值'）；若该值无内容（含空字符串），则不在SQL语句中拼接该筛选条件；\n   - 不使用从上文获取的\"purchaseOrg\"\
+            作为筛选条件。\n\n3. **表连接**：通过m_purchase表的\"purchase_no\"与m_purchase_item表的\"\
+            purchase_no\"进行内连接。\n\n4. **筛选条件**：需同时满足上述字段映射关系（空值字段除外），且m_purchase表的\"\
+            status\"字段值为10。\n\n5. **最新数据**：按m_purchase表的\"id\"字段降序排序，取第一条数据。\n\n6.\
+            \ **并发安全**：使用FOR UPDATE确保在事务中锁定查询到的记录，防止并发冲突。\n\n7. **输出格式要求**：最终输出完整的SQL语句，结构如下：\n\
+            \nSELECT \n    mp.purchase_no, \n    mp.business_key \nFROM \n    m_purchase\
+            \ mp \nWHERE \n    mp.id = (\n        SELECT \n            mp2.id \n \
+            \       FROM \n            m_purchase mp2 \n        INNER JOIN \n    \
+            \        m_purchase_item mpi ON mp2.purchase_no = mpi.purchase_no \n \
+            \       WHERE \n            mp2.status = 10 \n            AND mp2.stock_org\
+            \ = '[stockOrg值]'  \n            [AND mp2.project_code = '[projectCode值]'\
+            \  仅当projectCode有值时包含]\n            AND mpi.xm_code IN ([materialCode值列表])\n\
+            \        ORDER BY \n            mp2.id DESC \n        LIMIT 1\n    )\n\
+            FOR UPDATE;\n\n动态值替换说明：\n- [stockOrg值]：替换为从上文获取的stockOrg实际值（如'MI_IOT'）\n\
+            - [projectCode值]：仅当projectCode有值时包含该条件行，替换为实际值（如'EcoOdmJdm20240708220947-EU'）\n\
+            - [materialCode值列表]：根据JSON中materialCode字段数量动态生成，格式为'值1','值2',...（如'1710301000006B','1710301000006A'）\n\
+            \nJSON内容示例（仅含materialCode相关字段，值为纯文本）：\n{\n\"materialCode1\":\"1710301000006B\"\
+            ,\n\"materialCode2\":\"1710301000006A\"\n}\n\n并发安全说明：\n- 使用FOR UPDATE确保在事务中锁定查询到的记录\n\
+            - 防止在并发环境下多个查询同时修改同一数据导致的不一致问题\n- 建议在事务中使用此SQL语句\n\n请仅输出生成的完整SQL语句，不需要携带```sql，且不要包含任何额外文字说明。"
+        selected: false
+        title: 生成查询businesskey的sql
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '1762345939587'
+      position:
+        x: 6402.6100159655725
+        y: 263.49485596707893
+      positionAbsolute:
+        x: 6402.6100159655725
+        y: 263.49485596707893
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: pr转po的入参使用
+        is_team_authorization: true
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The SQL query string.
+            ja_JP: The SQL query string.
+            pt_BR: The SQL query string.
+            zh_Hans: SQL 查询语句。
+          label:
+            en_US: SQL Query
+            ja_JP: SQL Query
+            pt_BR: SQL Query
+            zh_Hans: SQL 查询语句
+          llm_description: The SQL query string.
+          max: null
+          min: null
+          name: query
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: database connection.
+            ja_JP: database connection.
+            pt_BR: database connection.
+            zh_Hans: 数据库连接。
+          label:
+            en_US: DB URI
+            ja_JP: DB URI
+            pt_BR: DB URI
+            zh_Hans: DB URI
+          llm_description: null
+          max: null
+          min: null
+          name: db_uri
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: secret-input
+        - auto_generate: null
+          default: json
+          form: form
+          human_description:
+            en_US: Choose the output format.
+            ja_JP: Choose the output format.
+            pt_BR: Choose the output format.
+            zh_Hans: 选择输出格式。
+          label:
+            en_US: Output format
+            ja_JP: Output format
+            pt_BR: Output format
+            zh_Hans: 输出格式
+          llm_description: null
+          max: null
+          min: null
+          name: format
+          options:
+          - icon: null
+            label:
+              en_US: JSON
+              ja_JP: JSON
+              pt_BR: JSON
+              zh_Hans: JSON
+            value: json
+          - icon: null
+            label:
+              en_US: CSV
+              ja_JP: CSV
+              pt_BR: CSV
+              zh_Hans: CSV
+            value: csv
+          - icon: null
+            label:
+              en_US: YAML
+              ja_JP: YAML
+              pt_BR: YAML
+              zh_Hans: YAML
+            value: yaml
+          - icon: null
+            label:
+              en_US: Markdown
+              ja_JP: Markdown
+              pt_BR: Markdown
+              zh_Hans: Markdown
+            value: md
+          - icon: null
+            label:
+              en_US: Excel
+              ja_JP: Excel
+              pt_BR: Excel
+              zh_Hans: Excel
+            value: xlsx
+          - icon: null
+            label:
+              en_US: HTML
+              ja_JP: HTML
+              pt_BR: HTML
+              zh_Hans: HTML
+            value: html
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            ja_JP: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            pt_BR: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            zh_Hans: '选填项。例如 {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              更多连接选项可参考 https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+          label:
+            en_US: DB Config Options
+            ja_JP: DB Config Options
+            pt_BR: DB Config Options
+            zh_Hans: 数据库连接配置选项
+          llm_description: null
+          max: null
+          min: null
+          name: config_options
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        params:
+          config_options: ''
+          db_uri: ''
+          format: ''
+          query: ''
+        provider_id: database
+        provider_name: database
+        provider_type: builtin
+        selected: false
+        title: 查询PR的物料
+        tool_configurations:
+          config_options:
+            type: mixed
+            value: null
+          format:
+            type: constant
+            value: json
+        tool_description: 此工具用于在已存在的数据库中执行 SQL 查询。
+        tool_label: SQL Execute
+        tool_name: sql_execute
+        tool_node_version: '2'
+        tool_parameters:
+          db_uri:
+            type: mixed
+            value: mysql+pymysql://isc_scm_test_wn:vKoc3jfIM2v4z4pPwruR6YaUpCOaHZep@ksc.test.mysql01.b2c.srv:3304/isc_scm_test
+          query:
+            type: mixed
+            value: SELECT xm_code from m_purchase_item where purchase_no = '{{#1762323675592.purchase_no#}}'
+        type: tool
+      height: 143
+      id: '1762391845550'
+      position:
+        x: 9308.018980935838
+        y: 112.38101906416136
+      positionAbsolute:
+        x: 9308.018980935838
+        y: 112.38101906416136
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        error_handle_mode: terminated
+        height: 204
+        is_parallel: false
+        iterator_input_type: array[string]
+        iterator_selector:
+        - '1762398885872'
+        - result
+        output_selector:
+        - '1762397834128'
+        - text
+        output_type: array[string]
+        parallel_nums: 10
+        selected: false
+        start_node_id: 1762397765773start
+        title: 查询所有物料的合同号
+        type: iteration
+        width: 688
+      height: 204
+      id: '1762397765773'
+      position:
+        x: 10580.428745034505
+        y: 118.38101906416136
+      positionAbsolute:
+        x: 10580.428745034505
+        y: 118.38101906416136
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 688
+      zIndex: 1
+    - data:
+        desc: ''
+        isInIteration: true
+        selected: false
+        title: ''
+        type: iteration-start
+      draggable: false
+      height: 48
+      id: 1762397765773start
+      parentId: '1762397765773'
+      position:
+        x: 24
+        y: 68
+      positionAbsolute:
+        x: 10604.428745034505
+        y: 186.38101906416136
+      selectable: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-iteration-start
+      width: 44
+      zIndex: 1002
+    - data:
+        desc: ''
+        isInIteration: true
+        isInLoop: false
+        is_team_authorization: true
+        iteration_id: '1762397765773'
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The SQL query string.
+            ja_JP: The SQL query string.
+            pt_BR: The SQL query string.
+            zh_Hans: SQL 查询语句。
+          label:
+            en_US: SQL Query
+            ja_JP: SQL Query
+            pt_BR: SQL Query
+            zh_Hans: SQL 查询语句
+          llm_description: The SQL query string.
+          max: null
+          min: null
+          name: query
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: database connection.
+            ja_JP: database connection.
+            pt_BR: database connection.
+            zh_Hans: 数据库连接。
+          label:
+            en_US: DB URI
+            ja_JP: DB URI
+            pt_BR: DB URI
+            zh_Hans: DB URI
+          llm_description: null
+          max: null
+          min: null
+          name: db_uri
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: secret-input
+        - auto_generate: null
+          default: json
+          form: form
+          human_description:
+            en_US: Choose the output format.
+            ja_JP: Choose the output format.
+            pt_BR: Choose the output format.
+            zh_Hans: 选择输出格式。
+          label:
+            en_US: Output format
+            ja_JP: Output format
+            pt_BR: Output format
+            zh_Hans: 输出格式
+          llm_description: null
+          max: null
+          min: null
+          name: format
+          options:
+          - icon: null
+            label:
+              en_US: JSON
+              ja_JP: JSON
+              pt_BR: JSON
+              zh_Hans: JSON
+            value: json
+          - icon: null
+            label:
+              en_US: CSV
+              ja_JP: CSV
+              pt_BR: CSV
+              zh_Hans: CSV
+            value: csv
+          - icon: null
+            label:
+              en_US: YAML
+              ja_JP: YAML
+              pt_BR: YAML
+              zh_Hans: YAML
+            value: yaml
+          - icon: null
+            label:
+              en_US: Markdown
+              ja_JP: Markdown
+              pt_BR: Markdown
+              zh_Hans: Markdown
+            value: md
+          - icon: null
+            label:
+              en_US: Excel
+              ja_JP: Excel
+              pt_BR: Excel
+              zh_Hans: Excel
+            value: xlsx
+          - icon: null
+            label:
+              en_US: HTML
+              ja_JP: HTML
+              pt_BR: HTML
+              zh_Hans: HTML
+            value: html
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            ja_JP: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            pt_BR: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            zh_Hans: '选填项。例如 {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              更多连接选项可参考 https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+          label:
+            en_US: DB Config Options
+            ja_JP: DB Config Options
+            pt_BR: DB Config Options
+            zh_Hans: 数据库连接配置选项
+          llm_description: null
+          max: null
+          min: null
+          name: config_options
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        params:
+          config_options: ''
+          db_uri: ''
+          format: ''
+          query: ''
+        provider_id: database
+        provider_name: database
+        provider_type: builtin
+        selected: false
+        title: 查询合同号
+        tool_configurations:
+          config_options:
+            type: mixed
+            value: null
+          format:
+            type: constant
+            value: md
+        tool_description: 此工具用于在已存在的数据库中执行 SQL 查询。
+        tool_label: SQL Execute
+        tool_name: sql_execute
+        tool_node_version: '2'
+        tool_parameters:
+          db_uri:
+            type: mixed
+            value: mysql+pymysql://isc_scm_test_wn:vKoc3jfIM2v4z4pPwruR6YaUpCOaHZep@ksc.test.mysql01.b2c.srv:3304/isc_scm_test
+          query:
+            type: mixed
+            value: select gfa_no,gfa_row_no,material_code from m_purchase_srm_gfa
+              where gfa_enable=1 and sp_code={{#1762304563504.supplierCode#}} and
+              material_code='{{#1762397765773.item#}}'  and purchase_org='{{#1762304563504.purchaseOrg#}}'
+              AND UNIX_TIMESTAMP(CURRENT_TIMESTAMP) * 1000 < price_end_date order
+              by contract_date desc LIMIT 1
+        type: tool
+      height: 115
+      id: '1762397834128'
+      parentId: '1762397765773'
+      position:
+        x: 242.0000000000009
+        y: 65
+      positionAbsolute:
+        x: 10822.428745034507
+        y: 183.38101906416136
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+      zIndex: 1002
+    - data:
+        code: "\nimport json\ndef main(arg1) -> dict:\n\n    xm_codes = []\n    \n\
+          \    # 先确保入参是列表类型，否则直接返回空结果\n    if not isinstance(arg1, list):\n      \
+          \  return {\"result\": xm_codes}\n    \n    # 遍历外层数组的每个元素（每个元素是字典）\n   \
+          \ for item in arg1:\n        # 仅处理字典类型的元素\n        if not isinstance(item,\
+          \ dict):\n            continue\n        \n        # 获取当前字典中的\"result\"列表（若不存在或不是列表，忽略）\n\
+          \        inner_result = item.get(\"result\", [])\n        if not isinstance(inner_result,\
+          \ list):\n            continue\n        \n        # 遍历inner_result列表，提取每个元素中的\"\
+          xm_code\"\n        for sub_item in inner_result:\n            if isinstance(sub_item,\
+          \ dict) and \"xm_code\" in sub_item:\n                xm_codes.append(sub_item[\"\
+          xm_code\"])\n    \n    # 按指定结构返回结果\n    return {\"result\": xm_codes}"
+        code_language: python3
+        desc: ''
+        outputs:
+          result:
+            children: null
+            type: array[string]
+        selected: false
+        title: 代码执行
+        type: code
+        variables:
+        - value_selector:
+          - '1762391845550'
+          - json
+          value_type: array[object]
+          variable: arg1
+      height: 53
+      id: '1762398885872'
+      position:
+        x: 9706.72915655714
+        y: 118.38101906416136
+      positionAbsolute:
+        x: 9706.72915655714
+        y: 118.38101906416136
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1762397765773'
+          - output
+        desc: ''
+        model:
+          completion_params: {}
+          mode: chat
+          name: gpt-4.1_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        prompt_template:
+        - id: 5a7454aa-ca54-48f1-bedf-ce9d28dcde95
+          role: system
+          text: "你是一个json转换器，可将给定数据按要求填充到json中，最终返回可直接发送请求的json数组。\n\n转换规则：\n1. 数据提取与匹配：\n\
+            \   - 从实际ID数据{{#1762400336582.text#}}的\"result\"数组中提取所有对象（每个含\"id\"和\"\
+            xm_code\"），形成ID列表。\n   - 从实际合同数据{{#context#}}中提取所有对象（每个含\"gfa_no\"“gfa_row_no”“material_code”），形成合同列表。\n\
+            \   - 对合同列表中的每个对象，通过\"material_code\"与ID列表中对象的\"xm_code\"精确匹配，仅保留匹配成功的合同对象。\n\
+            2. 字段填充：\n   - 每个匹配的合同对象生成一个JSON对象，以模板结构为基础。\n   - 填充规则：\"gfaNo\"=合同对象\"\
+            gfa_no\"、\"gfaRowNo\"=合同对象\"gfa_row_no\"、\"id\"=匹配的ID对象\"id\"、\"receiveOrg\"\
+            =实际固定值stockOrg、\"supplierCode\"=实际固定值supplierCode、\"purchaseOrg\"=实际固定值purchaseOrg、\"\
+            purchaseNo\"=实际固定值purchaseNo，其他字段保留模板默认值（如\"number\":1000等）。\n3. 序号规则：\"\
+            rowNo\"从1开始按匹配顺序递增（第一个对象1，第二个2，以此类推）。\n4. 数量要求：生成的JSON数组对象数量**严格等于匹配成功的合同物料数量**，不遗漏任何匹配项。\n\
+            \n实际数据：\n- 实际ID数据：{{#1762400336582.text#}}\n- 实际合同数据：{{#context#}}\n-\
+            \ 实际固定值：stockOrg={{#1762304563504.stockOrg#}}、supplierCode={{#1762304563504.supplierCode#}}、purchaseOrg={{#1762304563504.purchaseOrg#}}、purchaseNo={{#1762323675592.purchase_no#}}\n\
+            \n模板结构（字段默认值参考）：\n[{\"number\": 1000, \"rowNo\": 1, \"priceUnit\": \"\
+            10000\", \"gfaNo\": \"\", \"purchaseNo\": \"\", \"receiveDate\": 1917516799999,\
+            \ \"id\": \"\", \"purchaseNum\": 1, \"supplierCode\": \"\", \"gfaRowNo\"\
+            : \"\", \"purchaseOrg\": \"\", \"canGeneratePo\": 1, \"quotaNo\": \"SQA5600000402\"\
+            , \"quotaRowNo\": 3, \"purchaseMpq\": 10, \"receiveOrg\": \"\"}]\n\n输出要求：仅返回生成的JSON数组，无任何额外文字，确保对象数量与匹配数量一致。"
+        selected: false
+        title: 生成PR转PO的入参
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '1762400196015'
+      position:
+        x: 12294.14890964356
+        y: 124.38101906416131
+      positionAbsolute:
+        x: 12294.14890964356
+        y: 124.38101906416131
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: 从此开始PR转PO
+        is_team_authorization: true
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The SQL query string.
+            ja_JP: The SQL query string.
+            pt_BR: The SQL query string.
+            zh_Hans: SQL 查询语句。
+          label:
+            en_US: SQL Query
+            ja_JP: SQL Query
+            pt_BR: SQL Query
+            zh_Hans: SQL 查询语句
+          llm_description: The SQL query string.
+          max: null
+          min: null
+          name: query
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: database connection.
+            ja_JP: database connection.
+            pt_BR: database connection.
+            zh_Hans: 数据库连接。
+          label:
+            en_US: DB URI
+            ja_JP: DB URI
+            pt_BR: DB URI
+            zh_Hans: DB URI
+          llm_description: null
+          max: null
+          min: null
+          name: db_uri
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: secret-input
+        - auto_generate: null
+          default: json
+          form: form
+          human_description:
+            en_US: Choose the output format.
+            ja_JP: Choose the output format.
+            pt_BR: Choose the output format.
+            zh_Hans: 选择输出格式。
+          label:
+            en_US: Output format
+            ja_JP: Output format
+            pt_BR: Output format
+            zh_Hans: 输出格式
+          llm_description: null
+          max: null
+          min: null
+          name: format
+          options:
+          - icon: null
+            label:
+              en_US: JSON
+              ja_JP: JSON
+              pt_BR: JSON
+              zh_Hans: JSON
+            value: json
+          - icon: null
+            label:
+              en_US: CSV
+              ja_JP: CSV
+              pt_BR: CSV
+              zh_Hans: CSV
+            value: csv
+          - icon: null
+            label:
+              en_US: YAML
+              ja_JP: YAML
+              pt_BR: YAML
+              zh_Hans: YAML
+            value: yaml
+          - icon: null
+            label:
+              en_US: Markdown
+              ja_JP: Markdown
+              pt_BR: Markdown
+              zh_Hans: Markdown
+            value: md
+          - icon: null
+            label:
+              en_US: Excel
+              ja_JP: Excel
+              pt_BR: Excel
+              zh_Hans: Excel
+            value: xlsx
+          - icon: null
+            label:
+              en_US: HTML
+              ja_JP: HTML
+              pt_BR: HTML
+              zh_Hans: HTML
+            value: html
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            ja_JP: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            pt_BR: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            zh_Hans: '选填项。例如 {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              更多连接选项可参考 https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+          label:
+            en_US: DB Config Options
+            ja_JP: DB Config Options
+            pt_BR: DB Config Options
+            zh_Hans: 数据库连接配置选项
+          llm_description: null
+          max: null
+          min: null
+          name: config_options
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        params:
+          config_options: ''
+          db_uri: ''
+          format: ''
+          query: ''
+        provider_id: database
+        provider_name: database
+        provider_type: builtin
+        selected: false
+        title: 查询PR的id
+        tool_configurations:
+          config_options:
+            type: mixed
+            value: null
+          format:
+            type: constant
+            value: md
+        tool_description: 此工具用于在已存在的数据库中执行 SQL 查询。
+        tool_label: SQL Execute
+        tool_name: sql_execute
+        tool_node_version: '2'
+        tool_parameters:
+          db_uri:
+            type: mixed
+            value: mysql+pymysql://isc_scm_test_wn:vKoc3jfIM2v4z4pPwruR6YaUpCOaHZep@ksc.test.mysql01.b2c.srv:3304/isc_scm_test
+          query:
+            type: mixed
+            value: SELECT id,xm_code from m_purchase_item where purchase_no = '{{#1762323675592.purchase_no#}}'
+        type: tool
+      height: 143
+      id: '1762400336582'
+      position:
+        x: 8981.902464036955
+        y: 112.38101906416136
+      positionAbsolute:
+        x: 8981.902464036955
+        y: 112.38101906416136
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-1872
+            key: ''
+            type: text
+            value: '{{#1762400196015.text#}}'
+          type: json
+        desc: ''
+        error_strategy: fail-branch
+        headers: Cookie:{{#1762307907778.text#}}
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: PR转PO
+        type: http-request
+        url: https://scm.test.mioffice.cn/mrp/purchase/prpo/generatePo
+        variables: []
+      height: 190
+      id: '1762413343495'
+      position:
+        x: 12632.72915655714
+        y: 124.38101906416131
+      positionAbsolute:
+        x: 12632.72915655714
+        y: 124.38101906416131
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        is_team_authorization: true
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The SQL query string.
+            ja_JP: The SQL query string.
+            pt_BR: The SQL query string.
+            zh_Hans: SQL 查询语句。
+          label:
+            en_US: SQL Query
+            ja_JP: SQL Query
+            pt_BR: SQL Query
+            zh_Hans: SQL 查询语句
+          llm_description: The SQL query string.
+          max: null
+          min: null
+          name: query
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: database connection.
+            ja_JP: database connection.
+            pt_BR: database connection.
+            zh_Hans: 数据库连接。
+          label:
+            en_US: DB URI
+            ja_JP: DB URI
+            pt_BR: DB URI
+            zh_Hans: DB URI
+          llm_description: null
+          max: null
+          min: null
+          name: db_uri
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: secret-input
+        - auto_generate: null
+          default: json
+          form: form
+          human_description:
+            en_US: Choose the output format.
+            ja_JP: Choose the output format.
+            pt_BR: Choose the output format.
+            zh_Hans: 选择输出格式。
+          label:
+            en_US: Output format
+            ja_JP: Output format
+            pt_BR: Output format
+            zh_Hans: 输出格式
+          llm_description: null
+          max: null
+          min: null
+          name: format
+          options:
+          - icon: null
+            label:
+              en_US: JSON
+              ja_JP: JSON
+              pt_BR: JSON
+              zh_Hans: JSON
+            value: json
+          - icon: null
+            label:
+              en_US: CSV
+              ja_JP: CSV
+              pt_BR: CSV
+              zh_Hans: CSV
+            value: csv
+          - icon: null
+            label:
+              en_US: YAML
+              ja_JP: YAML
+              pt_BR: YAML
+              zh_Hans: YAML
+            value: yaml
+          - icon: null
+            label:
+              en_US: Markdown
+              ja_JP: Markdown
+              pt_BR: Markdown
+              zh_Hans: Markdown
+            value: md
+          - icon: null
+            label:
+              en_US: Excel
+              ja_JP: Excel
+              pt_BR: Excel
+              zh_Hans: Excel
+            value: xlsx
+          - icon: null
+            label:
+              en_US: HTML
+              ja_JP: HTML
+              pt_BR: HTML
+              zh_Hans: HTML
+            value: html
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            ja_JP: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            pt_BR: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            zh_Hans: '选填项。例如 {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              更多连接选项可参考 https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+          label:
+            en_US: DB Config Options
+            ja_JP: DB Config Options
+            pt_BR: DB Config Options
+            zh_Hans: 数据库连接配置选项
+          llm_description: null
+          max: null
+          min: null
+          name: config_options
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        params:
+          config_options: ''
+          db_uri: ''
+          format: ''
+          query: ''
+        provider_id: database
+        provider_name: database
+        provider_type: builtin
+        selected: false
+        title: sql查询po的businesskey和PO_no
+        tool_configurations:
+          config_options:
+            type: mixed
+            value: ''
+          format:
+            type: constant
+            value: md
+        tool_description: 此工具用于在已存在的数据库中执行 SQL 查询。
+        tool_label: SQL Execute
+        tool_name: sql_execute
+        tool_node_version: '2'
+        tool_parameters:
+          db_uri:
+            type: mixed
+            value: mysql+pymysql://isc_scm_test_wn:vKoc3jfIM2v4z4pPwruR6YaUpCOaHZep@ksc.test.mysql01.b2c.srv:3304/isc_scm_test
+          query:
+            type: mixed
+            value: SELECT DISTINCT po.business_key,po.purchase_order_no FROM m_purchase_order
+              po INNER JOIN m_purchase_order_item poi ON po.id = poi.purchase_order_id
+              WHERE poi.source_no = '{{#1762323675592.purchase_no#}}';
+        type: tool
+      height: 115
+      id: '1762416119111'
+      position:
+        x: 13568.355870148007
+        y: 317.8081736908581
+      positionAbsolute:
+        x: 13568.355870148007
+        y: 317.8081736908581
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        default_value:
+        - key: body
+          type: string
+          value: PR审批报错，尝试联系管理员-刘四星
+        - key: status_code
+          type: number
+          value: '40000'
+        - key: headers
+          type: object
+          value: '{}'
+        desc: ''
+        error_strategy: default-value
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 'PO审批 '
+        type: http-request
+        url: https://bpm-infra.test.mioffice.cn/bpmtool/api/bpmThree/approve?businessKey={{#17624163896421.business_key#}}&username=&toNode=&toNumber=
+        variables: []
+      height: 241
+      id: '17624163896420'
+      position:
+        x: 14684.057809768092
+        y: 191.714585788725
+      positionAbsolute:
+        x: 14684.057809768092
+        y: 191.714585788725
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        instruction: 从{{#1762312882973.text#}}中提取business_key和purchase_no的值
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        parameters:
+        - description: business_key
+          name: business_key
+          required: false
+          type: string
+        - description: purchase_order_no
+          name: purchase_order_no
+          required: false
+          type: string
+        query:
+        - '1762416119111'
+        - text
+        reasoning_mode: prompt
+        selected: false
+        title: 获取businesskey和PRno (1)
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '17624163896421'
+      position:
+        x: 13908.438828832253
+        y: 317.8081736908581
+      positionAbsolute:
+        x: 13908.438828832253
+        y: 317.8081736908581
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: 72edf78d-5e92-4d06-ad41-4cd16fd268e6
+            value: '0'
+            varType: string
+            variable_selector:
+            - '1762324346376'
+            - code
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 审批是否成功
+        type: if-else
+      height: 125
+      id: '17624163896422'
+      position:
+        x: 15546.847265350303
+        y: 186.29947302506596
+      positionAbsolute:
+        x: 15546.847265350303
+        y: 186.29947302506596
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        instruction: 从{{#1762323499306.body#}}中获取code的值
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        parameters:
+        - description: code
+          name: code
+          required: false
+          type: string
+        query:
+        - '17624163896420'
+        - body
+        reasoning_mode: prompt
+        selected: false
+        title: PO审批code获取
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '17624163896423'
+      position:
+        x: 15137.601570823597
+        y: 203.4530758651136
+      positionAbsolute:
+        x: 15137.601570823597
+        y: 203.4530758651136
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1762420041906'
+          - text
+          value_type: string
+          variable: data
+        selected: false
+        title: '结束 '
+        type: end
+      height: 89
+      id: '17624163896424'
+      position:
+        x: 17744.185978566376
+        y: 142.82071133344317
+      positionAbsolute:
+        x: 17744.185978566376
+        y: 142.82071133344317
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: not empty
+            id: 11c17e21-cbe5-47aa-b7e3-b22d830cf2f5
+            value: ''
+            varType: string
+            variable_selector:
+            - '17624163896421'
+            - purchase_order_no
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 是否成功创建了PO
+        type: if-else
+      height: 125
+      id: '17624163896425'
+      position:
+        x: 14254.746034512347
+        y: 317.8081736908581
+      positionAbsolute:
+        x: 14254.746034512347
+        y: 317.8081736908581
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - env
+          - poFial
+          value_type: string
+          variable: data
+        selected: false
+        title: '创建PO失败 '
+        type: end
+      height: 89
+      id: '17624163896426'
+      position:
+        x: 14697.712977464258
+        y: 581.2263711612918
+      positionAbsolute:
+        x: 14697.712977464258
+        y: 581.2263711612918
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: 45单号查询
+        is_team_authorization: true
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The SQL query string.
+            ja_JP: The SQL query string.
+            pt_BR: The SQL query string.
+            zh_Hans: SQL 查询语句。
+          label:
+            en_US: SQL Query
+            ja_JP: SQL Query
+            pt_BR: SQL Query
+            zh_Hans: SQL 查询语句
+          llm_description: The SQL query string.
+          max: null
+          min: null
+          name: query
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: database connection.
+            ja_JP: database connection.
+            pt_BR: database connection.
+            zh_Hans: 数据库连接。
+          label:
+            en_US: DB URI
+            ja_JP: DB URI
+            pt_BR: DB URI
+            zh_Hans: DB URI
+          llm_description: null
+          max: null
+          min: null
+          name: db_uri
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: secret-input
+        - auto_generate: null
+          default: json
+          form: form
+          human_description:
+            en_US: Choose the output format.
+            ja_JP: Choose the output format.
+            pt_BR: Choose the output format.
+            zh_Hans: 选择输出格式。
+          label:
+            en_US: Output format
+            ja_JP: Output format
+            pt_BR: Output format
+            zh_Hans: 输出格式
+          llm_description: null
+          max: null
+          min: null
+          name: format
+          options:
+          - icon: null
+            label:
+              en_US: JSON
+              ja_JP: JSON
+              pt_BR: JSON
+              zh_Hans: JSON
+            value: json
+          - icon: null
+            label:
+              en_US: CSV
+              ja_JP: CSV
+              pt_BR: CSV
+              zh_Hans: CSV
+            value: csv
+          - icon: null
+            label:
+              en_US: YAML
+              ja_JP: YAML
+              pt_BR: YAML
+              zh_Hans: YAML
+            value: yaml
+          - icon: null
+            label:
+              en_US: Markdown
+              ja_JP: Markdown
+              pt_BR: Markdown
+              zh_Hans: Markdown
+            value: md
+          - icon: null
+            label:
+              en_US: Excel
+              ja_JP: Excel
+              pt_BR: Excel
+              zh_Hans: Excel
+            value: xlsx
+          - icon: null
+            label:
+              en_US: HTML
+              ja_JP: HTML
+              pt_BR: HTML
+              zh_Hans: HTML
+            value: html
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            ja_JP: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            pt_BR: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            zh_Hans: '选填项。例如 {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              更多连接选项可参考 https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+          label:
+            en_US: DB Config Options
+            ja_JP: DB Config Options
+            pt_BR: DB Config Options
+            zh_Hans: 数据库连接配置选项
+          llm_description: null
+          max: null
+          min: null
+          name: config_options
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        params:
+          config_options: ''
+          db_uri: ''
+          format: ''
+          query: ''
+        provider_id: database
+        provider_name: database
+        provider_type: builtin
+        selected: false
+        title: 查询erp单号
+        tool_configurations:
+          config_options:
+            type: mixed
+            value: null
+          format:
+            type: constant
+            value: md
+        tool_description: 此工具用于在已存在的数据库中执行 SQL 查询。
+        tool_label: SQL Execute
+        tool_name: sql_execute
+        tool_node_version: '2'
+        tool_parameters:
+          db_uri:
+            type: mixed
+            value: mysql+pymysql://isc_scm_test_wn:vKoc3jfIM2v4z4pPwruR6YaUpCOaHZep@ksc.test.mysql01.b2c.srv:3304/isc_scm_test
+          query:
+            type: mixed
+            value: SELECT DISTINCT po.erp_purchase_order_no FROM m_purchase_order
+              po INNER JOIN m_purchase_order_item poi ON po.id = poi.purchase_order_id
+              WHERE poi.source_no = '{{#1762323675592.purchase_no#}}/';
+        type: tool
+      height: 143
+      id: '1762416838766'
+      position:
+        x: 16311.504890475924
+        y: 173.05613716084477
+      positionAbsolute:
+        x: 16311.504890475924
+        y: 173.05613716084477
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        code: "\nimport time\ndef main(arg1: str) -> dict:\n    # 休眠5秒\n    time.sleep(5)\n\
+          \    return {\n        \"result\": arg1 \n    }\n"
+        code_language: python3
+        desc: ''
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 休眠5s，之后获取erp单号
+        type: code
+        variables:
+        - value_selector:
+          - '17624163896423'
+          - code
+          value_type: string
+          variable: arg1
+      height: 53
+      id: '1762418407013'
+      position:
+        x: 15952.729045387607
+        y: 203.4530758651136
+      positionAbsolute:
+        x: 15952.729045387607
+        y: 203.4530758651136
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        parameters:
+        - description: erp_purchase_order_no
+          name: erp_purchase_order_no
+          required: false
+          type: string
+        query:
+        - '1762416838766'
+        - text
+        reasoning_mode: prompt
+        selected: false
+        title: 获取erp_purchase_order_no
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '1762418585936'
+      position:
+        x: 16659.875605072368
+        y: 179.84988537044674
+      positionAbsolute:
+        x: 16659.875605072368
+        y: 179.84988537044674
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: not empty
+            id: 18f0b74f-531d-4cf7-b82a-8642b55070af
+            value: ''
+            varType: string
+            variable_selector:
+            - '1762418585936'
+            - erp_purchase_order_no
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 判断erp_purchase_order_no是否生成
+        type: if-else
+      height: 125
+      id: '1762418630447'
+      position:
+        x: 16977.0706841801
+        y: 150.82071133344317
+      positionAbsolute:
+        x: 16977.0706841801
+        y: 150.82071133344317
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1762418585936'
+          - erp_purchase_order_no
+        desc: ''
+        model:
+          completion_params: {}
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        prompt_template:
+        - id: 054927b7-46a5-4836-83c1-9123fda193d9
+          role: system
+          text: "你是一个JSON构建器，请将以下占位符按照顺序整理成一个JSON对象：  \n- `stockOrg`：值来自 `{{#1762304563504.stockOrg#}}`\
+            \  \n- `purchaseOrg`：值来自 `{{#1762304563504.purchaseOrg#}}`  \n- `supplierCode`：值来自\
+            \ `{{#1762304563504.supplierCode#}}`  \n- `materials`：值来自 `{{#1762304563504.materials#}}`，但必须作为一个子节点。注意：示例中`materials`被表示为数组（如\
+            \ `[{\"materialCode1\":\"123456\"},{\"materialCode2\":\"222222\"}]`），这种结构可能有问题，因为每个元素的键名（如`materialCode1`）是动态的，可能导致访问不便。建议将`materials`直接表示为一个对象，其中键是物料标识符（如`materialCode1`、`materialCode2`等），值是对应的物料代码，例如\
+            \ `{\"materialCode1\": \"123456\", \"materialCode2\": \"222222\"}`。如果实际数据是列表形式，请确保键名一致。\
+            \  \n- `purchase_no`：值来自 `{{#1762323675592.purchase_no#}}`  \n- `purchase_order_no`：值来自\
+            \ `{{#17624163896421.purchase_order_no#}}`  \n- `erp_purchase_order_no`：值来自\
+            \ `{{#context#}}` **（必须始终包含此字段，即使{{#context#}}有值也要确保添加到最终JSON中）**\n\n\
+            **输出要求**：  \n- 以键值对的形式返回JSON内容，不需要外部的JSON格式标记（例如，不要输出额外的说明或注释，只返回紧凑的JSON字符串）。\
+            \  \n- 键顺序必须为：`stockOrg`、`purchaseOrg`、`supplierCode`、`materials`、`purchase_no`、`purchase_order_no`、`erp_purchase_order_no`。\
+            \  \n- **所有列出的字段必须始终包含在输出JSON中**，即使某些占位符无值，对应键的值也必须设为空字符串（`\"\"`）。  \n\
+            \n**注意**：最终输出应是一个有效的JSON对象，包含所有指定的字段。\n\n示例正确输出结构（仅供参考，实际值根据占位符替换）：  \n\
+            ```json\n{\"stockOrg\":\"MI_TV\",\"purchaseOrg\":\"1111\",\"supplierCode\"\
+            :\"129797\",\"materials\":{\"materialCode1\":\"123456\",\"materialCode2\"\
+            :\"222222\"},\"purchase_no\":\"\",\"purchase_order_no\":\"\",\"erp_purchase_order_no\"\
+            :\"PO123456789\"}\n```\n\n请根据占位符的实际值填充并返回JSON内容。\n"
+        selected: false
+        title: 合并数据
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '1762420041906'
+      position:
+        x: 17389.25295657685
+        y: 150.82071133344317
+      positionAbsolute:
+        x: 17389.25295657685
+        y: 150.82071133344317
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1762307947118'
+          - error_message
+          value_type: string
+          variable: data
+        selected: false
+        title: 结束 6
+        type: end
+      height: 89
+      id: '1762427039735'
+      position:
+        x: 5788.6100159655725
+        y: 457.9999999999999
+      positionAbsolute:
+        x: 5788.6100159655725
+        y: 457.9999999999999
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        parameters:
+        - description: code
+          name: code
+          required: false
+          type: string
+        - description: message
+          name: message
+          required: false
+          type: string
+        query:
+        - '1762307947118'
+        - body
+        reasoning_mode: prompt
+        selected: false
+        title: 获取创建PR的body的code
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '1762427419599'
+      position:
+        x: 5798.6100159655725
+        y: 286.0000000000007
+      positionAbsolute:
+        x: 5798.6100159655725
+        y: 286.0000000000007
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: 13cc9c3e-ce29-4c6c-88aa-287603240f3d
+            value: '0'
+            varType: string
+            variable_selector:
+            - '1762427419599'
+            - code
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: PR是否创建成功
+        type: if-else
+      height: 125
+      id: '1762427491734'
+      position:
+        x: 6102.6100159655725
+        y: 282
+      positionAbsolute:
+        x: 6102.6100159655725
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1762427419599'
+          - message
+          value_type: string
+          variable: data
+        selected: false
+        title: 结束 7
+        type: end
+      height: 89
+      id: '1762427513379'
+      position:
+        x: 6402.6100159655725
+        y: 410
+      positionAbsolute:
+        x: 6402.6100159655725
+        y: 410
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1762413343495'
+          - error_message
+          value_type: string
+          variable: data
+        selected: false
+        title: 结束 8
+        type: end
+      height: 89
+      id: '1762428171197'
+      position:
+        x: 12932.72915655714
+        y: 278.3810190641613
+      positionAbsolute:
+        x: 12932.72915655714
+        y: 278.3810190641613
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        parameters:
+        - description: code
+          name: code
+          required: false
+          type: string
+        - description: message
+          name: message
+          required: false
+          type: string
+        query:
+        - '1762413343495'
+        - body
+        reasoning_mode: prompt
+        selected: false
+        title: 参数提取器 7
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '1762429190325'
+      position:
+        x: 12932.72915655714
+        y: 124.38101906416131
+      positionAbsolute:
+        x: 12932.72915655714
+        y: 124.38101906416131
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: 036b92bb-8e8f-460c-b056-8c567ee4dc23
+            value: '0'
+            varType: string
+            variable_selector:
+            - '1762429190325'
+            - code
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 条件分支 7
+        type: if-else
+      height: 125
+      id: '1762429218766'
+      position:
+        x: 13232.72915655714
+        y: 124.38101906416131
+      positionAbsolute:
+        x: 13232.72915655714
+        y: 124.38101906416131
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1762429190325'
+          - message
+          value_type: string
+          variable: data
+        selected: false
+        title: 结束 9
+        type: end
+      height: 89
+      id: '1762429233908'
+      position:
+        x: 13534.056046511325
+        y: 34.13075496180667
+      positionAbsolute:
+        x: 13534.056046511325
+        y: 34.13075496180667
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        error_handle_mode: terminated
+        height: 243
+        is_parallel: false
+        iterator_input_type: array[string]
+        iterator_selector:
+        - '1762434225353'
+        - result
+        output_selector:
+        - '1762433571540'
+        - body
+        output_type: array[string]
+        parallel_nums: 10
+        selected: false
+        start_node_id: 1762433518268start
+        title: 查询物料与库组是否匹配
+        type: iteration
+        width: 692
+      height: 243
+      id: '1762433518268'
+      position:
+        x: 1444.6745936699015
+        y: 302.8102019882119
+      positionAbsolute:
+        x: 1444.6745936699015
+        y: 302.8102019882119
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 692
+      zIndex: 1
+    - data:
+        desc: ''
+        isInIteration: true
+        selected: false
+        title: ''
+        type: iteration-start
+      draggable: false
+      height: 48
+      id: 1762433518268start
+      parentId: '1762433518268'
+      position:
+        x: 24
+        y: 68
+      positionAbsolute:
+        x: 1468.6745936699015
+        y: 370.8102019882119
+      selectable: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-iteration-start
+      width: 44
+      zIndex: 1002
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-1302
+            key: ''
+            type: text
+            value: '{"moduleCode":"Purchase9","batch":[{"stockOrg":"{{#1762304563504.stockOrg#}}","xmCode":"{{#1762433518268.item#}}"}]}'
+          type: json
+        desc: ''
+        headers: Cookie:{{#1762307907778.text#}}
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762433518268'
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: HTTP 请求 6
+        type: http-request
+        url: https://scm.test.mioffice.cn/mrp/purchase/material-supplier-relations/batch
+        variables: []
+      height: 154
+      id: '1762433571540'
+      parentId: '1762433518268'
+      position:
+        x: 285.4051315273755
+        y: 65
+      positionAbsolute:
+        x: 1730.079725197277
+        y: 367.8102019882119
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+      zIndex: 1002
+    - data:
+        code: "\ndef main(arg1: str) -> dict:\n    parsed_data = json.loads(arg1)\n\
+          \    all_values = list(parsed_data.values())\n    return {\n        \"result\"\
+          : all_values\n    }\n"
+        code_language: python3
+        desc: ''
+        outputs:
+          result:
+            children: null
+            type: array[string]
+        selected: false
+        title: 获取materials
+        type: code
+        variables:
+        - value_selector:
+          - '1762304563504'
+          - materials
+          value_type: string
+          variable: arg1
+      height: 53
+      id: '1762434225353'
+      position:
+        x: 1045.9966801198404
+        y: 317.8081736908581
+      positionAbsolute:
+        x: 1045.9966801198404
+        y: 317.8081736908581
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1762433518268'
+          - output
+        desc: ''
+        model:
+          completion_params: {}
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        prompt_template:
+        - id: 3d544a23-0ebb-44a3-921c-36a184b3b3df
+          role: system
+          text: '{{#context#}}中包含一个或多个返回信息，如果code不为0，则输出message中的信息。
+
+            要求：仅返回message信息即可，如果多个message，则换行显示。'
+        selected: false
+        title: 处理匹配信息
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '1762435207335'
+      position:
+        x: 2210.0404422099973
+        y: 302.8102019882119
+      positionAbsolute:
+        x: 2210.0404422099973
+        y: 302.8102019882119
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: contains
+            id: 7f10a1f0-d63e-4bfb-a096-87750513eff4
+            value: 成功
+            varType: string
+            variable_selector:
+            - '1762435207335'
+            - text
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 材料和库组是否匹配
+        type: if-else
+      height: 125
+      id: '1762435566704'
+      position:
+        x: 2489.788977145832
+        y: 295.78438025996434
+      positionAbsolute:
+        x: 2489.788977145832
+        y: 295.78438025996434
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1762435207335'
+          - text
+          value_type: string
+          variable: data
+        selected: false
+        title: 结束 10
+        type: end
+      height: 89
+      id: '1762435673633'
+      position:
+        x: 2796.346825054125
+        y: 534.0594223396794
+      positionAbsolute:
+        x: 2796.346825054125
+        y: 534.0594223396794
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1762433518268'
+          - output
+        desc: ''
+        model:
+          completion_params: {}
+          mode: chat
+          name: gpt-4.1_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        prompt_template:
+        - id: e5bf329b-05d5-448a-a871-94922a5b0766
+          role: system
+          text: "请按以下规则处理{{#context#}}中的内容并返回结果：\n\n1. 解析{{#context#}}中的数据，其包含一个或多个返回对象（每个对象含code和data等字段）；\n\
+            2. 仅处理code为0的对象：对该对象下的每个data元素，以data中的xmCode为键，对应的supplierCode为值；\n3.\
+            \ 若单个data中存在多个supplierCode（如数组形式），值保留为包含所有supplierCode的数组；若为单个supplierCode，值直接为该值；\n\
+            4. 最终返回JSON格式的对象（字典），结构示例：\n   {\"xmCode1\": \"supplierCode1\", \"xmCode2\"\
+            : [\"supplierCode2-1\", \"supplierCode2-2\"]}\n5.返回结果中不包含任何文字说明和格式！！！\n\
+            \n注：若code不为0，或data中无xmCode/supplierCode字段，对应data不纳入返回结果。"
+        selected: false
+        title: 获取可选的供应商信息
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '1762497770195'
+      position:
+        x: 2781.4137464391633
+        y: 295.78438025996434
+      positionAbsolute:
+        x: 2781.4137464391633
+        y: 295.78438025996434
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        error_handle_mode: terminated
+        height: 214
+        is_parallel: false
+        iterator_input_type: array[string]
+        iterator_selector:
+        - '1762433518268'
+        - output
+        output_selector:
+        - '1762499538167'
+        - text
+        output_type: array[string]
+        parallel_nums: 10
+        selected: false
+        start_node_id: 1762499361375start
+        title: 输出物料与供应商匹配信息
+        type: iteration
+        width: 388
+      height: 214
+      id: '1762499361375'
+      position:
+        x: 3145.150560861666
+        y: 286.0000000000007
+      positionAbsolute:
+        x: 3145.150560861666
+        y: 286.0000000000007
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 388
+      zIndex: 1
+    - data:
+        desc: ''
+        isInIteration: true
+        selected: false
+        title: ''
+        type: iteration-start
+      draggable: false
+      height: 48
+      id: 1762499361375start
+      parentId: '1762499361375'
+      position:
+        x: 24
+        y: 68
+      positionAbsolute:
+        x: 3169.150560861666
+        y: 354.0000000000007
+      selectable: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-iteration-start
+      width: 44
+      zIndex: 1002
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1762499361375'
+          - item
+        desc: ''
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1762499361375'
+        model:
+          completion_params: {}
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        prompt_template:
+        - id: 493fb813-1dcc-4a9f-b4cd-24285dd3a445
+          role: system
+          text: '查询{{#context#}}中value是否包含{{#1762304563504.supplierCode#}}的值。
+
+            要求：
+
+            1. 如果未包含，则提取出该xmCode的具体值，返回：供应商{{#1762304563504.supplierCode#}}不包含xmCode为{{xmCode值}}的信息；
+
+            2. 如果包含，则返回：成功；
+
+            3. 仅返回上述指定文字，无需其他描述。'
+        selected: false
+        title: 物料和供应商的匹配信息
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '1762499538167'
+      parentId: '1762499361375'
+      position:
+        x: 128
+        y: 68
+      positionAbsolute:
+        x: 3273.150560861666
+        y: 354.0000000000007
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+      zIndex: 1002
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: not contains
+            id: 2e783a70-32d3-423c-bb1d-64583d2d12ee
+            value: '{{#1762304563504.supplierCode#}}'
+            varType: array[string]
+            variable_selector:
+            - '1762499361375'
+            - output
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 通过物料是否可以选择到供应商信息
+        type: if-else
+      height: 125
+      id: '1762504103126'
+      position:
+        x: 3649.5836985424453
+        y: 295.78438025996434
+      positionAbsolute:
+        x: 3649.5836985424453
+        y: 295.78438025996434
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1762504845492'
+          - result
+          value_type: string
+          variable: data
+        selected: false
+        title: 结束 13
+        type: end
+      height: 89
+      id: '1762504115720'
+      position:
+        x: 4558.389717917183
+        y: 785.2398239981524
+      positionAbsolute:
+        x: 4558.389717917183
+        y: 785.2398239981524
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        code: "\ndef main(arg1) -> dict:\n     # 筛选出所有不等于'成功'的元素\n    non_success_items\
+          \ = [item for item in arg1 if item != \"成功\"]\n    # 取第一条非成功数据（若存在），否则返回空字符串\n\
+          \    result_str = non_success_items[0] if non_success_items else \"\"\n\
+          \    return {\"result\": result_str}\n"
+        code_language: python3
+        desc: ''
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 代码执行 4
+        type: code
+        variables:
+        - value_selector:
+          - '1762499361375'
+          - output
+          value_type: array[string]
+          variable: arg1
+      height: 53
+      id: '1762504845492'
+      position:
+        x: 4002.6337783703093
+        y: 759.0243528398735
+      positionAbsolute:
+        x: 4002.6337783703093
+        y: 759.0243528398735
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        is_team_authorization: true
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The SQL query string.
+            ja_JP: The SQL query string.
+            pt_BR: The SQL query string.
+            zh_Hans: SQL 查询语句。
+          label:
+            en_US: SQL Query
+            ja_JP: SQL Query
+            pt_BR: SQL Query
+            zh_Hans: SQL 查询语句
+          llm_description: The SQL query string.
+          max: null
+          min: null
+          name: query
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: database connection.
+            ja_JP: database connection.
+            pt_BR: database connection.
+            zh_Hans: 数据库连接。
+          label:
+            en_US: DB URI
+            ja_JP: DB URI
+            pt_BR: DB URI
+            zh_Hans: DB URI
+          llm_description: null
+          max: null
+          min: null
+          name: db_uri
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: secret-input
+        - auto_generate: null
+          default: json
+          form: form
+          human_description:
+            en_US: Choose the output format.
+            ja_JP: Choose the output format.
+            pt_BR: Choose the output format.
+            zh_Hans: 选择输出格式。
+          label:
+            en_US: Output format
+            ja_JP: Output format
+            pt_BR: Output format
+            zh_Hans: 输出格式
+          llm_description: null
+          max: null
+          min: null
+          name: format
+          options:
+          - icon: null
+            label:
+              en_US: JSON
+              ja_JP: JSON
+              pt_BR: JSON
+              zh_Hans: JSON
+            value: json
+          - icon: null
+            label:
+              en_US: CSV
+              ja_JP: CSV
+              pt_BR: CSV
+              zh_Hans: CSV
+            value: csv
+          - icon: null
+            label:
+              en_US: YAML
+              ja_JP: YAML
+              pt_BR: YAML
+              zh_Hans: YAML
+            value: yaml
+          - icon: null
+            label:
+              en_US: Markdown
+              ja_JP: Markdown
+              pt_BR: Markdown
+              zh_Hans: Markdown
+            value: md
+          - icon: null
+            label:
+              en_US: Excel
+              ja_JP: Excel
+              pt_BR: Excel
+              zh_Hans: Excel
+            value: xlsx
+          - icon: null
+            label:
+              en_US: HTML
+              ja_JP: HTML
+              pt_BR: HTML
+              zh_Hans: HTML
+            value: html
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            ja_JP: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            pt_BR: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            zh_Hans: '选填项。例如 {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              更多连接选项可参考 https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+          label:
+            en_US: DB Config Options
+            ja_JP: DB Config Options
+            pt_BR: DB Config Options
+            zh_Hans: 数据库连接配置选项
+          llm_description: null
+          max: null
+          min: null
+          name: config_options
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        params:
+          config_options: ''
+          db_uri: ''
+          format: ''
+          query: ''
+        provider_id: database
+        provider_name: database
+        provider_type: builtin
+        selected: false
+        title: 查询代工厂信息
+        tool_configurations:
+          config_options:
+            type: mixed
+            value: null
+          format:
+            type: constant
+            value: md
+        tool_description: 此工具用于在已存在的数据库中执行 SQL 查询。
+        tool_label: SQL Execute
+        tool_name: sql_execute
+        tool_node_version: '2'
+        tool_parameters:
+          db_uri:
+            type: mixed
+            value: '{{#env.scmDatabase#}}'
+          query:
+            type: mixed
+            value: SELECT id,product_line from d_factory where factory_code = '{{#1762304563504.shipLocCode#}}'
+              AND product_line= '{{#1762304563504.stockOrg#}}'
+        type: tool
+      height: 115
+      id: '1762742136902'
+      position:
+        x: 4037.3047829461784
+        y: 286.0000000000007
+      positionAbsolute:
+        x: 4037.3047829461784
+        y: 286.0000000000007
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        parameters:
+        - description: 'id
+
+            '
+          name: id
+          required: false
+          type: string
+        query:
+        - '1762742136902'
+        - text
+        reasoning_mode: prompt
+        selected: false
+        title: 提取代工厂ID
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '1762742159387'
+      position:
+        x: 4404.599686395595
+        y: 286.0000000000007
+      positionAbsolute:
+        x: 4404.599686395595
+        y: 286.0000000000007
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: not empty
+            id: 7420040d-6c01-4892-89e0-26ba12d80cfc
+            value: ''
+            varType: string
+            variable_selector:
+            - '1762742159387'
+            - id
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 是否查询到了代工厂信息
+        type: if-else
+      height: 125
+      id: '1762742208401'
+      position:
+        x: 4774.533605666559
+        y: 295.78438025996434
+      positionAbsolute:
+        x: 4774.533605666559
+        y: 295.78438025996434
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - env
+          - shipLocCodeFail
+          value_type: string
+          variable: data
+        selected: false
+        title: 未查询到代工厂
+        type: end
+      height: 89
+      id: '1762742220429'
+      position:
+        x: 5191.969809725346
+        y: 534.0594223396794
+      positionAbsolute:
+        x: 5191.969809725346
+        y: 534.0594223396794
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1762757466499'
+          - erp_purchase_order_no
+        desc: ''
+        model:
+          completion_params: {}
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        prompt_template:
+        - id: 054927b7-46a5-4836-83c1-9123fda193d9
+          role: system
+          text: "以下是一段提示词，用于指导将指定占位符整理成一个JSON对象。提示词指出了示例JSON中可能存在的结构问题，并提供了更清晰的构建规则：\n\
+            \n---\n\n你是一个JSON构建器，请将以下占位符按照顺序整理成一个JSON对象：  \n- `stockOrg`：值来自 `{{#1762304563504.stockOrg#}}`\
+            \  \n- `purchaseOrg`：值来自 `{{#1762304563504.purchaseOrg#}}`  \n- `supplierCode`：值来自\
+            \ `{{#1762304563504.supplierCode#}}`  \n- `materials`：值来自 `{{#1762304563504.materials#}}`，但必须作为一个子节点。注意：示例中`materials`被表示为数组（如\
+            \ `[{\"materialCode1\":\"123456\"},{\"materialCode2\":\"222222\"}]`），这种结构可能有问题，因为每个元素的键名（如`materialCode1`）是动态的，可能导致访问不便。建议将`materials`直接表示为一个对象，其中键是物料标识符（如`materialCode1`、`materialCode2`等），值是对应的物料代码，例如\
+            \ `{\"materialCode1\": \"123456\", \"materialCode2\": \"222222\"}`。如果实际数据是列表形式，请确保键名一致。\
+            \  \n- `purchase_no`：值来自 `{{#1762323675592.purchase_no#}}`  \n- `purchase_order_no`：值来自\
+            \ `{{#17624163896421.purchase_order_no#}}`  \n- `erp_purchase_order_no`：值来自\
+            \ `{{#context#}}`（如果该占位符有值则包括，否则可省略）  \n\n**输出要求**：  \n- 以键值对的形式返回JSON内容，不需要外部的JSON格式标记（例如，不要输出额外的说明或注释，只返回紧凑的JSON字符串）。\
+            \  \n- 键顺序必须为：`stockOrg`、`purchaseOrg`、`supplierCode`、`materials`、`purchase_no`、`purchase_order_no`、`erp_purchase_order_no`。\
+            \  \n- 如果某些占位符无值，则对应键的值设为空字符串（`\"\"`）。  \n\n**注意**：示例JSON中可能包含了未在描述中提到的键（如`erp_purchase_order_no`），请忽略这些额外键，仅使用上述占位符。最终输出应是一个有效的JSON对象。\n\
+            \n示例正确输出结构（仅供参考，实际值根据占位符替换）：  \n```json\n{\"stockOrg\":\"MI_TV\",\"purchaseOrg\"\
+            :\"1111\",\"supplierCode\":\"129797\",\"materials\":{\"materialCode1\"\
+            :\"123456\",\"materialCode2\":\"222222\"},\"purchase_no\":\"\",\"purchase_order_no\"\
+            :\"\",\"erp_purchase_order_no\":\"\"}\n```\n\n请根据占位符的实际值填充并返回JSON内容。"
+        selected: false
+        title: 合并数据 (1)
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '17627567355890'
+      position:
+        x: 18156.172177619042
+        y: 518.2957160355157
+      positionAbsolute:
+        x: 18156.172177619042
+        y: 518.2957160355157
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '17627567355890'
+          - text
+          value_type: string
+          variable: data
+        selected: false
+        title: 结束 13
+        type: end
+      height: 89
+      id: '1762756746831'
+      position:
+        x: 18608.16577337938
+        y: 518.2957160355157
+      positionAbsolute:
+        x: 18608.16577337938
+        y: 518.2957160355157
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        is_team_authorization: true
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: ''
+            ja_JP: ''
+            pt_BR: ''
+            zh_Hans: ''
+          label:
+            en_US: purchaseOrderNo
+            ja_JP: purchaseOrderNo
+            pt_BR: purchaseOrderNo
+            zh_Hans: purchaseOrderNo
+          llm_description: ''
+          max: null
+          min: null
+          name: purchaseOrderNo
+          options: []
+          placeholder:
+            en_US: ''
+            ja_JP: ''
+            pt_BR: ''
+            zh_Hans: ''
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: ''
+            ja_JP: ''
+            pt_BR: ''
+            zh_Hans: ''
+          label:
+            en_US: cookie
+            ja_JP: cookie
+            pt_BR: cookie
+            zh_Hans: cookie
+          llm_description: ''
+          max: null
+          min: null
+          name: cookie
+          options: []
+          placeholder:
+            en_US: ''
+            ja_JP: ''
+            pt_BR: ''
+            zh_Hans: ''
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: ''
+            ja_JP: ''
+            pt_BR: ''
+            zh_Hans: ''
+          label:
+            en_US: purchaseNo
+            ja_JP: purchaseNo
+            pt_BR: purchaseNo
+            zh_Hans: purchaseNo
+          llm_description: ''
+          max: null
+          min: null
+          name: purchaseNo
+          options: []
+          placeholder:
+            en_US: ''
+            ja_JP: ''
+            pt_BR: ''
+            zh_Hans: ''
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        params:
+          cookie: ''
+          purchaseNo: ''
+          purchaseOrderNo: ''
+        provider_id: 20724881-6c62-4092-997e-d84d3104e0ec
+        provider_name: 重新推送获取ERP单号
+        provider_type: workflow
+        selected: false
+        title: 重新推送获取ERP单号
+        tool_configurations:
+          cookie:
+            type: mixed
+            value: '{{#1762307907778.text#}}'
+          purchaseNo:
+            type: mixed
+            value: '{{#1762323675592.purchase_no#}}'
+          purchaseOrderNo:
+            type: mixed
+            value: '{{#17624163896421.purchase_order_no#}}'
+        tool_description: ''
+        tool_label: 重新推送获取ERP单号
+        tool_name: repushPo
+        tool_node_version: '2'
+        tool_parameters: {}
+        type: tool
+      height: 141
+      id: '1762757421946'
+      position:
+        x: 17419.995631256017
+        y: 493.92030026322425
+      positionAbsolute:
+        x: 17419.995631256017
+        y: 493.92030026322425
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        parameters:
+        - description: erp_purchase_order_no
+          name: erp_purchase_order_no
+          required: false
+          type: string
+        query:
+        - '1762757421946'
+        - text
+        reasoning_mode: prompt
+        selected: false
+        title: 参数提取器 12
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '1762757466499'
+      position:
+        x: 17765.78205829423
+        y: 518.2957160355157
+      positionAbsolute:
+        x: 17765.78205829423
+        y: 518.2957160355157
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        error_handle_mode: terminated
+        height: 204
+        is_parallel: false
+        iterator_input_type: array[string]
+        iterator_selector:
+        - '1762398885872'
+        - result
+        output_selector:
+        - '1762862246091'
+        - text
+        output_type: array[string]
+        parallel_nums: 10
+        selected: false
+        start_node_id: 1762862227628start
+        title: 查询配额对应的工厂
+        type: iteration
+        width: 388
+      height: 204
+      id: '1762862227628'
+      position:
+        x: 10366.150331699351
+        y: 415.40551335038924
+      positionAbsolute:
+        x: 10366.150331699351
+        y: 415.40551335038924
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 388
+      zIndex: 1
+    - data:
+        desc: ''
+        isInIteration: true
+        selected: false
+        title: ''
+        type: iteration-start
+      draggable: false
+      height: 48
+      id: 1762862227628start
+      parentId: '1762862227628'
+      position:
+        x: 24
+        y: 68
+      positionAbsolute:
+        x: 10390.150331699351
+        y: 483.40551335038924
+      selectable: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-iteration-start
+      width: 44
+      zIndex: 1002
+    - data:
+        desc: ''
+        isInIteration: true
+        isInLoop: false
+        is_team_authorization: true
+        iteration_id: '1762862227628'
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The SQL query string.
+            ja_JP: The SQL query string.
+            pt_BR: The SQL query string.
+            zh_Hans: SQL 查询语句。
+          label:
+            en_US: SQL Query
+            ja_JP: SQL Query
+            pt_BR: SQL Query
+            zh_Hans: SQL 查询语句
+          llm_description: The SQL query string.
+          max: null
+          min: null
+          name: query
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: database connection.
+            ja_JP: database connection.
+            pt_BR: database connection.
+            zh_Hans: 数据库连接。
+          label:
+            en_US: DB URI
+            ja_JP: DB URI
+            pt_BR: DB URI
+            zh_Hans: DB URI
+          llm_description: null
+          max: null
+          min: null
+          name: db_uri
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: secret-input
+        - auto_generate: null
+          default: json
+          form: form
+          human_description:
+            en_US: Choose the output format.
+            ja_JP: Choose the output format.
+            pt_BR: Choose the output format.
+            zh_Hans: 选择输出格式。
+          label:
+            en_US: Output format
+            ja_JP: Output format
+            pt_BR: Output format
+            zh_Hans: 输出格式
+          llm_description: null
+          max: null
+          min: null
+          name: format
+          options:
+          - icon: null
+            label:
+              en_US: JSON
+              ja_JP: JSON
+              pt_BR: JSON
+              zh_Hans: JSON
+            value: json
+          - icon: null
+            label:
+              en_US: CSV
+              ja_JP: CSV
+              pt_BR: CSV
+              zh_Hans: CSV
+            value: csv
+          - icon: null
+            label:
+              en_US: YAML
+              ja_JP: YAML
+              pt_BR: YAML
+              zh_Hans: YAML
+            value: yaml
+          - icon: null
+            label:
+              en_US: Markdown
+              ja_JP: Markdown
+              pt_BR: Markdown
+              zh_Hans: Markdown
+            value: md
+          - icon: null
+            label:
+              en_US: Excel
+              ja_JP: Excel
+              pt_BR: Excel
+              zh_Hans: Excel
+            value: xlsx
+          - icon: null
+            label:
+              en_US: HTML
+              ja_JP: HTML
+              pt_BR: HTML
+              zh_Hans: HTML
+            value: html
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            ja_JP: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            pt_BR: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            zh_Hans: '选填项。例如 {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              更多连接选项可参考 https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+          label:
+            en_US: DB Config Options
+            ja_JP: DB Config Options
+            pt_BR: DB Config Options
+            zh_Hans: 数据库连接配置选项
+          llm_description: null
+          max: null
+          min: null
+          name: config_options
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        params:
+          config_options: ''
+          db_uri: ''
+          format: ''
+          query: ''
+        provider_id: database
+        provider_name: database
+        provider_type: builtin
+        selected: false
+        title: 查询配额是否有工厂code
+        tool_configurations:
+          config_options:
+            type: mixed
+            value: null
+          format:
+            type: constant
+            value: md
+        tool_description: 此工具用于在已存在的数据库中执行 SQL 查询。
+        tool_label: SQL Execute
+        tool_name: sql_execute
+        tool_node_version: '2'
+        tool_parameters:
+          db_uri:
+            type: mixed
+            value: mysql+pymysql://isc_scm_test_wn:vKoc3jfIM2v4z4pPwruR6YaUpCOaHZep@ksc.test.mysql01.b2c.srv:3304/isc_scm_test
+          query:
+            type: mixed
+            value: select quota_no,factory_code from m_purchase_srm_quota where material_code=
+              "{{#1762862227628.item#}}" and sp_code = "{{#1762304563504.supplierCode#}}"
+              and quota_status = 03
+        type: tool
+      height: 115
+      id: '1762862246091'
+      parentId: '1762862227628'
+      position:
+        x: 128
+        y: 68
+      positionAbsolute:
+        x: 10494.150331699351
+        y: 483.40551335038924
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+      zIndex: 1002
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1762862227628'
+          - output
+        desc: ''
+        model:
+          completion_params: {}
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        prompt_template:
+        - id: 15a93728-ea3a-4165-8c52-ecf2e17ecc62
+          role: system
+          text: '{{#context#}}中包含一个或多个返回信息，如果factory_code为空，则输出quota_no中的信息。
+
+            要求：仅返回quota_no信息即可，如果多个quota_no，则换行显示。'
+        selected: false
+        title: 获取配额号和工厂code
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 89
+      id: '1762862575465'
+      position:
+        x: 10859.97412979183
+        y: 393.5676557601022
+      positionAbsolute:
+        x: 10859.97412979183
+        y: 393.5676557601022
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        code: "def main(arg1: str) -> dict:\n     # 1. 去除字符串两端的空白字符（避免首尾空行影响）\n  \
+          \  trimmed_str = arg1.strip()\n    \n    # 2. 按换行符分割字符串\n    split_parts\
+          \ = trimmed_str.split('\\n')\n    \n    # 3. 遍历分割后的列表，去除每个元素两端的空格，并过滤掉可能产生的空字符串\n\
+          \    result_array = [part.strip() for part in split_parts if part.strip()]\n\
+          \    \n    # 4. 返回指定格式的字典\n    return {\n        \"result\": result_array\n\
+          \    }"
+        code_language: python3
+        desc: ''
+        outputs:
+          result:
+            children: null
+            type: array[string]
+        selected: false
+        title: 获取没有包含工厂code的配额号
+        type: code
+        variables:
+        - value_selector:
+          - '1762862575465'
+          - text
+          value_type: string
+          variable: arg1
+      height: 53
+      id: '1762863300092'
+      position:
+        x: 11233.94507913083
+        y: 393.5676557601022
+      positionAbsolute:
+        x: 11233.94507913083
+        y: 393.5676557601022
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    - data:
+        desc: ''
+        error_handle_mode: terminated
+        height: 204
+        is_parallel: false
+        iterator_input_type: array[string]
+        iterator_selector:
+        - '1762863300092'
+        - result
+        output_selector:
+        - '1762864033623'
+        - text
+        output_type: array[string]
+        parallel_nums: 10
+        selected: true
+        start_node_id: 1762864022005start
+        title: 更新配额对应的代工厂code
+        type: iteration
+        width: 388
+      height: 204
+      id: '1762864022005'
+      position:
+        x: 11621.91021833763
+        y: 404.7630076543426
+      positionAbsolute:
+        x: 11621.91021833763
+        y: 404.7630076543426
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 388
+      zIndex: 1
+    - data:
+        desc: ''
+        isInIteration: true
+        selected: false
+        title: ''
+        type: iteration-start
+      draggable: false
+      height: 48
+      id: 1762864022005start
+      parentId: '1762864022005'
+      position:
+        x: 24
+        y: 68
+      positionAbsolute:
+        x: 11645.91021833763
+        y: 472.7630076543426
+      selectable: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-iteration-start
+      width: 44
+      zIndex: 1002
+    - data:
+        desc: ''
+        isInIteration: true
+        isInLoop: false
+        is_team_authorization: true
+        iteration_id: '1762864022005'
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The SQL query string.
+            ja_JP: The SQL query string.
+            pt_BR: The SQL query string.
+            zh_Hans: SQL 查询语句。
+          label:
+            en_US: SQL Query
+            ja_JP: SQL Query
+            pt_BR: SQL Query
+            zh_Hans: SQL 查询语句
+          llm_description: The SQL query string.
+          max: null
+          min: null
+          name: query
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: database connection.
+            ja_JP: database connection.
+            pt_BR: database connection.
+            zh_Hans: 数据库连接。
+          label:
+            en_US: DB URI
+            ja_JP: DB URI
+            pt_BR: DB URI
+            zh_Hans: DB URI
+          llm_description: null
+          max: null
+          min: null
+          name: db_uri
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: secret-input
+        - auto_generate: null
+          default: json
+          form: form
+          human_description:
+            en_US: Choose the output format.
+            ja_JP: Choose the output format.
+            pt_BR: Choose the output format.
+            zh_Hans: 选择输出格式。
+          label:
+            en_US: Output format
+            ja_JP: Output format
+            pt_BR: Output format
+            zh_Hans: 输出格式
+          llm_description: null
+          max: null
+          min: null
+          name: format
+          options:
+          - icon: null
+            label:
+              en_US: JSON
+              ja_JP: JSON
+              pt_BR: JSON
+              zh_Hans: JSON
+            value: json
+          - icon: null
+            label:
+              en_US: CSV
+              ja_JP: CSV
+              pt_BR: CSV
+              zh_Hans: CSV
+            value: csv
+          - icon: null
+            label:
+              en_US: YAML
+              ja_JP: YAML
+              pt_BR: YAML
+              zh_Hans: YAML
+            value: yaml
+          - icon: null
+            label:
+              en_US: Markdown
+              ja_JP: Markdown
+              pt_BR: Markdown
+              zh_Hans: Markdown
+            value: md
+          - icon: null
+            label:
+              en_US: Excel
+              ja_JP: Excel
+              pt_BR: Excel
+              zh_Hans: Excel
+            value: xlsx
+          - icon: null
+            label:
+              en_US: HTML
+              ja_JP: HTML
+              pt_BR: HTML
+              zh_Hans: HTML
+            value: html
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: select
+        - auto_generate: null
+          default: null
+          form: form
+          human_description:
+            en_US: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            ja_JP: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            pt_BR: 'Optional. For example {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              More connection options can be found at https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+            zh_Hans: '选填项。例如 {"connect_args": {"ssl": {"ca": "/path/to/ca.pem"}}}
+
+              更多连接选项可参考 https://docs.sqlalchemy.org/en/20/core/engines.html#sqlalchemy.create_engine
+
+              '
+          label:
+            en_US: DB Config Options
+            ja_JP: DB Config Options
+            pt_BR: DB Config Options
+            zh_Hans: 数据库连接配置选项
+          llm_description: null
+          max: null
+          min: null
+          name: config_options
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        params:
+          config_options: ''
+          db_uri: ''
+          format: ''
+          query: ''
+        provider_id: database
+        provider_name: database
+        provider_type: builtin
+        selected: false
+        title: SQL Execute
+        tool_configurations:
+          config_options:
+            type: mixed
+            value: null
+          format:
+            type: constant
+            value: md
+        tool_description: 此工具用于在已存在的数据库中执行 SQL 查询。
+        tool_label: SQL Execute
+        tool_name: sql_execute
+        tool_node_version: '2'
+        tool_parameters:
+          db_uri:
+            type: mixed
+            value: mysql+pymysql://isc_scm_test_wn:vKoc3jfIM2v4z4pPwruR6YaUpCOaHZep@ksc.test.mysql01.b2c.srv:3304/isc_scm_test
+          query:
+            type: mixed
+            value: update m_purchase_srm_quota set factory_code = '{{#1762304563504.shipLocCode#}}'
+              where quota_no = '{{#1762864022005.item#}}'
+        type: tool
+      height: 115
+      id: '1762864033623'
+      parentId: '1762864022005'
+      position:
+        x: 128
+        y: 68
+      positionAbsolute:
+        x: 11749.91021833763
+        y: 472.7630076543426
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+      zIndex: 1002
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: 74f8b8d9-bcac-44e4-8b85-60656d5c8850
+            value: '1131'
+            varType: string
+            variable_selector:
+            - '1762304563504'
+            - purchaseOrg
+          id: 'true'
+          logical_operator: and
+        - case_id: 701d804e-0193-4b09-b10d-8fe15378cd90
+          conditions:
+          - comparison_operator: contains
+            id: 669dc550-5a42-4631-a334-470eb02e6fb4
+            value: '1132'
+            varType: string
+            variable_selector:
+            - '1762304563504'
+            - purchaseOrg
+          id: 701d804e-0193-4b09-b10d-8fe15378cd90
+          logical_operator: and
+        - case_id: 895426e0-a87c-4dc1-8e5a-2e3783a9e052
+          conditions:
+          - comparison_operator: contains
+            id: b42f87a8-3795-493f-b6ab-a8e63681d6ae
+            value: '1133'
+            varType: string
+            variable_selector:
+            - '1762304563504'
+            - purchaseOrg
+          id: 895426e0-a87c-4dc1-8e5a-2e3783a9e052
+          logical_operator: and
+        - case_id: 791a1872-56ac-44e3-921b-0aa89a06a33f
+          conditions:
+          - comparison_operator: contains
+            id: 10e64cc5-025b-4465-a0e7-13fc00a94230
+            value: '1134'
+            varType: string
+            variable_selector:
+            - '1762304563504'
+            - purchaseOrg
+          id: 791a1872-56ac-44e3-921b-0aa89a06a33f
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 条件分支 11
+        type: if-else
+      height: 269
+      id: '1762930252972'
+      position:
+        x: 10057.92112613648
+        y: 118.38101906416136
+      positionAbsolute:
+        x: 10057.92112613648
+        y: 118.38101906416136
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 243
+    viewport:
+      x: -2474.8749153026283
+      y: -89.07452637230074
+      zoom: 0.6597539553864475

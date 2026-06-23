@@ -1,0 +1,167 @@
+# Mify HTTP Call 工作流
+# 适配 mify 手动拖节点格式：开始 → HTTP请求 → 结束
+app:
+  description: 通用HTTP调用工具，由Skill编排调用
+  icon: 🌐
+  icon_background: '#E8F5E9'
+  mode: workflow
+  name: mify-http-call
+  use_icon_as_answer_icon: false
+version: 0.3.1
+kind: app
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      enabled: false
+    opening_statement: ''
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+  graph:
+    nodes:
+      # ── 开始节点：接收参数 ──
+      - data:
+          desc: ''
+          title: 开始
+          type: start
+          variables:
+            - label: url
+              max_length: 2048
+              required: true
+              type: text-input
+              variable: url
+            - label: method
+              max_length: 10
+              options: [GET, POST, PUT, DELETE]
+              required: true
+              type: select
+              variable: method
+              default: GET
+            - label: headers
+              max_length: 10000
+              required: false
+              type: paragraph
+              variable: headers
+              default: '{}'
+            - label: cookie
+              max_length: 10000
+              required: false
+              type: paragraph
+              variable: cookie
+              default: ''
+            - label: body
+              max_length: 50000
+              required: false
+              type: paragraph
+              variable: body
+              default: ''
+            - label: timeout
+              max_length: 5
+              required: false
+              type: text-input
+              variable: timeout
+              default: '30'
+          id: '1001'
+          type: custom
+          width: 244
+
+      # ── HTTP请求节点 ──
+      # mify HTTP 节点的 headers 是字符串格式：'Key:Value'
+      # 变量引用语法：{{#node_id.variable#}}
+      # Cookie 通过开始节点的 cookie 变量传入，静态拼接到 headers
+      - data:
+          authorization:
+            config: null
+            type: no-auth
+          body:
+            type: json
+            data:
+              - id: key-value-1
+                key: ''
+                type: text
+                value: '{{#1001.body#}}'
+          desc: 调用HTTP接口
+          error_strategy: fail-branch
+          headers: 'Cookie:{{#1001.cookie#}}'
+          method: '{{#1001.method#}}'
+          params: ''
+          retry_config:
+            max_retries: 3
+            retry_enabled: true
+            retry_interval: 100
+          ssl_verify: true
+          timeout:
+            max_connect_timeout: 0
+            max_read_timeout: 0
+            max_write_timeout: 0
+          title: HTTP请求
+          type: http-request
+          url: '{{#1001.url#}}'
+          id: '1002'
+          type: custom
+          width: 244
+
+      # ── 成功结束：返回响应 ──
+      - data:
+          desc: 返回HTTP响应
+          outputs:
+            - value_selector:
+                - '1002'
+                - status_code
+              value_type: number
+              variable: status_code
+            - value_selector:
+                - '1002'
+                - body
+              value_type: string
+              variable: body
+            - value_selector:
+                - '1002'
+                - headers
+              value_type: object
+              variable: resp_headers
+          title: 返回成功
+          type: end
+          id: '1003'
+          type: custom
+          width: 244
+
+      # ── 失败结束：返回错误 ──
+      - data:
+          desc: HTTP请求失败
+          outputs:
+            - value_selector:
+                - '1002'
+                - error_message
+              value_type: string
+              variable: error
+            - value_selector:
+                - '1002'
+                - status_code
+              value_type: number
+              variable: status_code
+          title: 返回失败
+          type: end
+          id: '1004'
+          type: custom
+          width: 244
+
+    edges:
+      - source: '1001'
+        target: '1002'
+      - source: '1002'
+        sourceHandle: source
+        target: '1003'
+      - source: '1002'
+        sourceHandle: fail-branch
+        target: '1004'
