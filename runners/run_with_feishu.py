@@ -27,22 +27,22 @@ from lib.flow import FlowEngine
 from lib.config import load_config, load_mify_config
 
 STEP_LABELS = {
-    "get_cookie": "获取Cookie",
-    "get_materials": "渲染物料模板",
-    "fetch_materials": "查询物料信息",
-    "filter_materials": "过滤物料",
-    "check_asl": "ASL校验",
-    "build_pr": "渲染PR模板",
-    "create_pr": "创建PR",
-    "query_pr_info": "查询PR号",
-    "approve_pr": "PR审批",
-    "query_items": "查询PR物料行",
-    "query_contract": "查询合同",
-    "pr_to_po": "PR转PO",
-    "approve_po": "PO审批",
-    "check_po": "PO检查",
-    "query_erp": "查询ERP单号",
-    "repush_erp": "重推ERP",
+    "get_cookie": "🍪 获取Cookie",
+    "get_materials": "📦 渲染物料模板",
+    "fetch_materials": "🔍 查询物料信息",
+    "filter_materials": "🔍 过滤物料",
+    "check_asl": "✅ ASL校验",
+    "build_pr": "📝 渲染PR模板",
+    "create_pr": "📤 创建PR",
+    "query_pr_info": "🗄️ 查询PR号",
+    "approve_pr": "✅ PR审批",
+    "query_items": "🗄️ 查询PR物料行",
+    "query_contract": "🗄️ 查询合同",
+    "pr_to_po": "📤 PR转PO",
+    "approve_po": "✅ PO审批",
+    "check_po": "🔀 PO检查",
+    "query_erp": "🗄️ 查询ERP单号",
+    "repush_erp": "📤 重推ERP",
 }
 
 PHASES = {
@@ -68,7 +68,7 @@ def _progress_callback(step_id, status, detail=""):
     global _current_phase
     label = STEP_LABELS.get(step_id, step_id)
     phase_info = PHASES.get(step_id, ("", ""))
-    icon = {"start": "...", "done": "OK", "error": "FAIL"}.get(status, "")
+    icon = {"start": "⏳", "done": "✅", "error": "❌"}.get(status, "ℹ️")
 
     if status == "start":
         _step_times[step_id] = time.time()
@@ -83,9 +83,9 @@ def _progress_callback(step_id, status, detail=""):
     if phase_label and phase_label != _current_phase:
         _current_phase = phase_label
         phase_name = phase_info[1]
-        print(f"__PROGRESS__:{phase_label} {phase_name}", flush=True)
+        print(f"__PROGRESS__:━━ {phase_label} {phase_name} ━━", flush=True)
 
-    msg = f"__PROGRESS__:[{icon}] {label}{elapsed_str}"
+    msg = f"__PROGRESS__:{icon} {label}{elapsed_str}"
     if detail and status != "start":
         msg += f" -> {detail}"
     print(msg, flush=True)

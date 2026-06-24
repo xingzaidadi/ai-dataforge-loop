@@ -195,28 +195,46 @@ class MifyClient:
         except Exception as e:
             return {"rows": [], "_error": f"SQL执行失败: {e}"}
 
-    def _sql_via_mify(self, db_uri: str, query: str, timeout: int = 60) -> dict:
-        """通过 mify SQL 工作流执行查询（备用方案）"""
+    def _sql_via_mify(self, db_uri: str, query: str, timeout: int = 30) -> dict:
+        """通过 mify SQL 工作流执行查询（blocking 模式，~15s vs streaming ~60s）
+
+        注意：blocking 模式的 input key 必须是 db_uri（下划线），不是 dbUri。
+        """
         payload = {
             "inputs": {
                 "db_uri": db_uri,
                 "query": query,
             },
             "user": self.user,
-            "response_mode": "streaming",
+            "response_mode": "blocking",
         }
 
         # SQL workflow 用独立的 token，传 sql_workflow_id 作为 workflow_id
         if self.sql_workflow_id:
             payload["workflow_id"] = self.sql_workflow_id
-        data = self._post(payload, timeout, token=self.sql_token)
-        print(f"  🔍 _post returned: {data}")
 
-        if data.get("status") == "failed":
+        cmd = [
+            "curl", "-s", "-X", "POST", self.endpoint,
+            "-H", f"Authorization: Bearer {self.sql_token}",
+            "-H", "Content-Type: application/json",
+            "-d", json.dumps(payload),
+            "--max-time", str(timeout),
+        ]
+        try:
+            result = subprocess.run(
+                cmd, capture_output=True, text=True, timeout=timeout + 30
+            )
+            output = result.stdout
+            data = json.loads(output)
+        except Exception as e:
+            return {"rows": [], "_error": f"mify SQL blocking 调用失败: {e}"}
+
+        if data.get("status") == "failed" or data.get("status") == 400:
             error = data.get("error", "未知错误")
             return {"rows": [], "_error": error}
 
-        outputs = data.get("outputs", {})
+        # blocking 模式返回结构为 data.outputs（比 streaming 多一层 data 包裹）
+        outputs = data.get("data", {}).get("outputs", {})
         rows_raw = outputs.get("rows", [])
 
         rows = []

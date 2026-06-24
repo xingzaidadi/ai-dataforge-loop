@@ -113,8 +113,8 @@ common_steps:
   query_pr_info:
     id: query_pr_info
     action: sql_query
-    wait: 8
-    retry: {max: 8, interval_ms: 7000}
+    wait: 2
+    retry: {max: 2, interval_ms: 3000}
     params:
       db_uri: "{{config.db_uri}}"
       query: "SELECT p.id, p.purchase_no, p.business_key FROM m_purchase p JOIN m_purchase_item i ON p.purchase_no=i.purchase_no WHERE i.xm_code IN({{materials_sql_in}}) AND i.supplier_code='{{inputs.supplierCode}}' AND p.stock_org='{{inputs.stockOrg}}' AND p.status >= 10 ORDER BY p.id DESC LIMIT 1"
@@ -128,7 +128,7 @@ common_steps:
   approve_pr:
     id: approve_pr
     action: http_call
-    wait: 8
+    wait: 2
     retry: {max: 12, interval_ms: 6000}
     params:
       url: "{{config.bpm_base}}?businessKey={{steps.query_pr_info.extracted.business_key}}"
@@ -267,7 +267,7 @@ common_steps:
   approve_po:
     id: approve_po
     action: http_call
-    wait: 8
+    wait: 2
     retry: {max: 12, interval_ms: 6000}
     params:
       url: "{{config.bpm_base}}?businessKey={{steps.query_po_info.extracted.po_business_key}}"

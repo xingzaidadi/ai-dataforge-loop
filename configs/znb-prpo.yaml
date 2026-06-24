@@ -30,8 +30,8 @@ steps:
   - use: common-steps.fetch_materials
   - use: common-steps.filter_materials
 
-  # ③ ASL校验
-  - use: common-steps.check_asl
+  # ③ ASL 校验已移除：仅检查物料-供应商关系，不影响 PR 创建，
+  #    SCM 后端自身也会校验。移除可省 30s+（见 docs/踩坑指南与优化手册.md 坑7）
 
   # ④ 拼PR请求体（ZNB 特有：用 znb-pr-body-v3 模板）
   - id: build_pr

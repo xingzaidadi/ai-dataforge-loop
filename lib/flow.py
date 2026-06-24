@@ -15,11 +15,12 @@ from .renderer import render_template
 class FlowEngine:
     """通用编排引擎：读 YAML → 调 mify → 解析返回 → 条件分支/循环"""
 
-    def __init__(self, config: dict, inputs: dict, mify):
+    def __init__(self, config: dict, inputs: dict, mify, progress_callback=None):
         self.config = config
         self.inputs = inputs
         self.mify = mify
         self.cookie = ""
+        self.progress_callback = progress_callback  # 进度回调函数
         self.goto_count = {}  # 记录每个步骤的 goto 次数，防止无限循环
         self.max_goto = 10   # 单步最大循环次数
         self.baseline_pr_no = None  # 兼容旧引用
@@ -88,6 +89,18 @@ class FlowEngine:
         return result
 
     # ──────────────────────────────────────────────
+    #  进度通知
+    # ──────────────────────────────────────────────
+
+    def _notify_progress(self, step_id: str, status: str, detail: str = ""):
+        """发送进度通知（通过回调函数）"""
+        if self.progress_callback:
+            try:
+                self.progress_callback(step_id, status, detail)
+            except Exception:
+                pass  # 通知失败不影响流程
+
+    # ──────────────────────────────────────────────
     #  执行入口
     # ──────────────────────────────────────────────
 
@@ -111,10 +124,16 @@ class FlowEngine:
             print(f"\n{'='*50}")
             print(f"▶ {step_id} ({action})")
             print(f"{'='*50}")
+            self._notify_progress(step_id, "start")
+            t_start = time.time()
 
             try:
                 next_target = self.execute_step(step)
+                elapsed = time.time() - t_start
+                self._notify_progress(step_id, "done", f"{elapsed:.1f}s")
             except Exception as e:
+                elapsed = time.time() - t_start
+                self._notify_progress(step_id, "error", f"{elapsed:.1f}s {str(e)[:80]}")
                 self._print_error_context(step_id, e)
                 raise
 
@@ -654,13 +673,14 @@ class FlowEngine:
     # ──────────────────────────────────────────────
 
     def _do_loop(self, step: dict) -> str:
-        """循环执行"""
+        """循环执行（支持 parallel: true 并行加速）"""
         items_raw = step.get("items", [])
         items = resolve_ref(items_raw, self.context)
         loop_var = step.get("loop_var", "item")
         sub_steps = step.get("steps", [])
         collect_key = step.get("collect", "results")
         loop_condition = step.get("condition")  # loop 级别的条件过滤
+        parallel = step.get("parallel", False)  # 并行执行
 
         _dict_mode = False
         _dict_items = {}
@@ -669,6 +689,74 @@ class FlowEngine:
             _dict_items = items
             items = list(items.keys())
 
+        # ── 并行模式 ──
+        # 注意：并行模式不支持 loop 级别 condition 过滤，每项独立线程执行子步骤
+        if parallel and len(items) > 1:
+            from concurrent.futures import ThreadPoolExecutor, as_completed
+            import copy
+
+            print(f"  🔄 并行循环开始，共 {len(items)} 项")
+
+            def _run_one(idx, item):
+                thread_ctx = copy.deepcopy(self.context)
+                thread_ctx["context"][loop_var] = item
+                if _dict_mode:
+                    thread_ctx["context"][loop_var + "_value"] = _dict_items[item]
+
+                thread_mify = copy.copy(self.mify)
+                thread_mify.cookie = self.cookie
+
+                tmp_engine = FlowEngine.__new__(FlowEngine)
+                tmp_engine.config = self.config
+                tmp_engine.inputs = self.inputs
+                tmp_engine.mify = thread_mify
+                tmp_engine.cookie = self.cookie
+                tmp_engine.goto_count = {}
+                tmp_engine.max_goto = 10
+                tmp_engine.baseline_pr_no = None
+                tmp_engine.baseline_pr_id = None
+                tmp_engine.context = thread_ctx
+                tmp_engine.steps_map = self.steps_map
+                tmp_engine.terminals = self.terminals
+                tmp_engine.state_file = None
+                tmp_engine.progress_callback = None
+
+                for sub_step in sub_steps:
+                    tmp_engine.execute_step(sub_step)
+
+                last_sub = sub_steps[-1]["id"]
+                step_data = thread_ctx["steps"].get(last_sub, {})
+                return step_data.get("extracted", step_data.get("result"))
+
+            collected = [None] * len(items)
+            with ThreadPoolExecutor(max_workers=min(len(items), 4)) as pool:
+                future_map = {pool.submit(_run_one, i, item): i for i, item in enumerate(items)}
+                for future in as_completed(future_map):
+                    idx = future_map[future]
+                    try:
+                        collected[idx] = future.result()
+                    except Exception as e:
+                        print(f"  ❌ 并行项 {idx} 失败: {e}")
+                        collected[idx] = {"_error": str(e)}
+
+            # 合并结果到主 context
+            if sub_steps:
+                last_sub = sub_steps[-1]["id"]
+                if not self.context["steps"].get(last_sub):
+                    self.context["steps"][last_sub] = {"extracted": {}, "result": {}}
+                merged_extracted = self.context["steps"][last_sub].get("extracted", {})
+                for c in collected:
+                    if isinstance(c, dict):
+                        for k, v in c.items():
+                            if k not in merged_extracted or not merged_extracted[k]:
+                                merged_extracted[k] = v
+                self.context["steps"][last_sub]["extracted"] = merged_extracted
+
+            self.context["collected"][collect_key] = collected
+            print(f"  ✅ 并行循环完成，收集 {len(collected)} 条结果")
+            return step.get("goto")
+
+        # ── 串行模式 ──
         collected = []
         print(f"  🔄 循环开始，共 {len(items)} 项")
 
