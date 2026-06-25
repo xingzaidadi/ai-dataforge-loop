@@ -13,6 +13,8 @@ spec: MIT AI Skill 撰写规范 V1.1-beta
 tags: [造数, 测试数据, 供应链, 流程编排, Agent, 跨系统, PRPO]
 ---
 
+> ⚠️ **执行前置依赖**：agent 收到本技能触发后，**必须先读取 `prompt.md`**（对话流程定义），再开始与用户交互。SKILL.md 仅用于路由识别和能力声明，不含对话逻辑。
+
 # 数枢(DataPivot) · AI 数据智造引擎
 
 > 从一句业务诉求，到一条可验证的供应链数据链路。
@@ -217,6 +219,11 @@ terminals:
 | SCM 基址 | `SCM_BASE_URL` | 采购系统接口 |
 | BPM 审批地址 | `BPM_APPROVE_URL` | 审批系统接口 |
 | Cookie 获取地址 | `SCM_COOKIE_URL` | 认证 Cookie |
+| MySQL 主机 | `MIFY_DB_HOST` | 数据库地址（向导模式SQL查询用） |
+| MySQL 端口 | `MIFY_DB_PORT` | 默认 3304 |
+| MySQL 用户 | `MIFY_DB_USER` | 数据库用户名 |
+| MySQL 密码 | `MIFY_DB_PASS` | 数据库密码（不可入库） |
+| MySQL 数据库 | `MIFY_DB_NAME` | 数据库名 |
 
 调用方式：streaming SSE（`workflow_started` → `node_finished` → `workflow_finished`）。
 

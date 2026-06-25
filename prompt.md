@@ -29,6 +29,8 @@
 
 根据用户的选择,确定要调用的方法:
 
+> **半成品说明**:半成品的PRPO流程与原材料完全一致(共用 `getPRPOPULLByUser` / `getPRPOPULLNoUser`)。业务上,半成品与原材料的区别仅在于物料属性(半成品有BOM结构),但在PRPO造单链路中处理方式相同,因此复用同一套方法。
+
 | 材料类型 | 物料信息准备情况 | 调用方法 | 方法说明 |
 |---------|----------------|---------|---------|
 | 原材料 | ✅ 已准备好 | `getPRPOPULLByUser` | 原材料-PRPO拉料-手工输入物料信息 |
@@ -47,9 +49,10 @@
 
 **步骤1:读取飞书表格**
 
-使用 `feishu_sheet read` 工具读取预置的造单测试数据表格:
-- 表格地址:`${TEST_DATA_SHEET_URL}`
-- Sheet:`原材料`(sheet_id: `0uUKMT`)
+使用 `feishu_lark_cli` 读取预置的造单测试数据表格:
+- 表格地址: `https://mi.feishu.cn/sheets/H3DAshzTBhBRP9tF6VGcp1F7nyT`
+- 原材料/半成品 Sheet: sheet_id `0uUKMT`（用于 ZNB/ZSC/ZYZ/ZDO 场景）
+- 成品 Sheet: sheet_id `成品`（用于 ZWW 场景，如表格中存在成品独立 sheet）
 
 **步骤2:收集筛选条件**
 
@@ -84,18 +87,22 @@
 
 表格列 → 方法参数的映射关系:
 
-| 表格列 | 方法1参数 | 方法3参数 |
-|--------|----------|----------|
-| orderType | orderType | orderType |
-| stockOrg | stockOrg | stockOrg |
-| purchaseOrg | purchaseOrg | purchaseOrg |
-| supplierCode1 | supplierCode | supplierCode |
-| materialCode1 | materials (转JSON) | - |
-| materialCode2 | 追加到materials | - |
-| SKU | - | SKU (转JSON) |
-| projectCode | projectCode | projectCode |
-| shipLocCode | shipLocCode (如有) | - |
-| businessModel | businessModel (如有) | - |
+| 表格列 | 方法1参数 | 方法2参数 | 方法3参数 | 方法4参数 |
+|--------|----------|----------|----------|----------|
+| orderType | orderType | orderType | orderType | orderType |
+| stockOrg | stockOrg | - | stockOrg | - |
+| purchaseOrg | purchaseOrg | - | purchaseOrg | - |
+| purchaseOrgCN | - | purchaseOrg (转中文) | - | purchaseOrgCN (直接用) |
+| supplierCode1 | supplierCode | - | supplierCode | - |
+| materialCode1 | materials (转JSON) | - | materials (1111时必填) | - |
+| materialCode2 | 追加到materials | - | 追加到materials | - |
+| SKU | - | - | SKU (转JSON) | - |
+| projectCode | projectCode | - | projectCode | - |
+| shipLocCode | shipLocCode (如有) | - | - | - |
+| businessModel | businessModel (如有) | - | - | - |
+
+**方法2特殊规则**:从表格获取后,将 purchaseOrg(代码) 反查为中文名(如2120→生态链),按方法2的2个必填参数提交。
+**方法4特殊规则**:从表格获取后,直接使用 orderType + purchaseOrgCN(中文) + materialTypeCN(固定为"成品"),按方法4的3个必填参数提交。
 
 **物料组装规则**:
 - 如果有 materialCode1 和 materialCode2,组装为:`{"materialCode1":"xxx","materialCode2":"yyy"}`
@@ -286,6 +293,8 @@
 
 **执行方式**:不调用 engine.py,而是通过 exec 工具逐步执行 SQL/HTTP 调用。
 
+> **与静默模式的关系**:向导模式的步骤逻辑与 engine.py 完全一致(都读同一套 YAML/模板),区别在于向导模式由 agent 逐步执行并展示中间结果、等待用户确认,适合汇报/排障/新人学习;静默模式由 engine.py 一键跑完,适合日常高频造数。两种模式最终执行的接口调用和业务逻辑完全相同。
+
 ##### 输出格式
 
 **每步执行时,实时输出一行日志(不等待确认):**
@@ -366,8 +375,8 @@ curl -s -X POST '{scm_base}{pr_endpoint}' -H 'Cookie: {cookie}' -H 'Content-Type
 ```bash
 sleep 5
 python3 -c "
-import pymysql
-conn = pymysql.connect(host='db-host.example.internal', port=3304, user='db_user', password='db_password', db='test_db')
+import pymysql, os
+conn = pymysql.connect(host=os.environ['MIFY_DB_HOST'], port=int(os.environ.get('MIFY_DB_PORT','3304')), user=os.environ['MIFY_DB_USER'], password=os.environ['MIFY_DB_PASS'], database=os.environ['MIFY_DB_NAME'])
 cur = conn.cursor()
 cur.execute(\"SELECT p.purchase_no, p.business_key FROM m_purchase p JOIN m_purchase_item i ON p.purchase_no=i.purchase_no WHERE i.xm_code IN('{materialCode}') AND i.supplier_code='{supplierCode}' AND p.stock_org='{stockOrg}' AND p.status >= 10 ORDER BY p.id DESC LIMIT 1\")
 row = cur.fetchone()
@@ -402,8 +411,8 @@ curl -s '{bpm_base}?businessKey={business_key}'
 **步骤7: 查询合同**
 ```bash
 python3 -c "
-import pymysql
-conn = pymysql.connect(host='db-host.example.internal', port=3304, user='db_user', password='db_password', db='test_db')
+import pymysql, os
+conn = pymysql.connect(host=os.environ['MIFY_DB_HOST'], port=int(os.environ.get('MIFY_DB_PORT','3304')), user=os.environ['MIFY_DB_USER'], password=os.environ['MIFY_DB_PASS'], database=os.environ['MIFY_DB_NAME'])
 cur = conn.cursor()
 cur.execute(\"SELECT gfa_no, gfa_row_no, material_code FROM m_purchase_srm_gfa WHERE gfa_enable=1 AND sp_code='{supplierCode}' AND material_code='{materialCode}' AND purchase_org='{purchaseOrg}' AND unix_timestamp()*1000<price_end_date ORDER BY contract_date DESC LIMIT 1\")
 row = cur.fetchone()
@@ -429,8 +438,8 @@ curl -s -X POST '{scm_base}/mrp/purchase/prpo/generatePo' -H 'Cookie: {cookie}' 
 **步骤9: 查询 PO 号**
 ```bash
 python3 -c "
-import pymysql
-conn = pymysql.connect(host='db-host.example.internal', port=3304, user='db_user', password='db_password', db='test_db')
+import pymysql, os
+conn = pymysql.connect(host=os.environ['MIFY_DB_HOST'], port=int(os.environ.get('MIFY_DB_PORT','3304')), user=os.environ['MIFY_DB_USER'], password=os.environ['MIFY_DB_PASS'], database=os.environ['MIFY_DB_NAME'])
 cur = conn.cursor()
 cur.execute(\"SELECT DISTINCT po.business_key, po.purchase_order_no FROM m_purchase_order po INNER JOIN m_purchase_order_item poi ON po.id=poi.purchase_order_id WHERE poi.source_no='{purchase_no}' ORDER BY po.id DESC LIMIT 1\")
 row = cur.fetchone()
@@ -466,8 +475,8 @@ curl -s '{bpm_base}?businessKey={po_business_key}'
 ```bash
 sleep 5
 python3 -c "
-import pymysql
-conn = pymysql.connect(host='db-host.example.internal', port=3304, user='db_user', password='db_password', db='test_db')
+import pymysql, os
+conn = pymysql.connect(host=os.environ['MIFY_DB_HOST'], port=int(os.environ.get('MIFY_DB_PORT','3304')), user=os.environ['MIFY_DB_USER'], password=os.environ['MIFY_DB_PASS'], database=os.environ['MIFY_DB_NAME'])
 cur = conn.cursor()
 cur.execute(\"SELECT DISTINCT po.erp_purchase_order_no FROM m_purchase_order po INNER JOIN m_purchase_order_item poi ON po.id=poi.purchase_order_id WHERE poi.source_no='{purchase_no}' AND po.erp_purchase_order_no IS NOT NULL AND po.erp_purchase_order_no != '' ORDER BY po.id DESC LIMIT 1\")
 row = cur.fetchone()
@@ -475,19 +484,6 @@ if row: print(f'erp_no={row[0]}')
 else: print('ERP单号暂未推送')
 conn.close()
 "
-```bash
-sleep 5
-python3 -c "
-import pymysql
-conn = pymysql.connect(host='db-host.example.internal', port=3304, user='db_user', password='db_password', db='test_db')
-cur = conn.cursor()
-cur.execute(\"SELECT DISTINCT po.erp_purchase_order_no FROM m_purchase_order po INNER JOIN m_purchase_order_item poi ON po.id=poi.purchase_order_id WHERE poi.source_no='{purchase_no}' AND po.erp_purchase_order_no IS NOT NULL AND po.erp_purchase_order_no != '' ORDER BY po.id DESC LIMIT 1\")
-row = cur.fetchone()
-if row: print(f'erp_no={row[0]}')
-else: print('ERP单号暂未推送')
-conn.close()
-"
-```
 
 ##### 最终结果卡片(阶段3完成后自动展示)
 
