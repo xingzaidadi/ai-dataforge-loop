@@ -1,8 +1,8 @@
-# Mify 造数工厂 - 安装部署指南
+# AI 数据智造引擎 - 安装部署指南
 
 ## 概述
 
-Mify 造数工厂是一个 OpenClaw Skill，通过飞书对话式交互，自动生成 SAP 测试数据（PR/PO/ERP 单号）。
+AI 数据智造引擎是一个 OpenClaw Skill，通过飞书对话式交互，自动生成 SAP 测试数据（PR/PO/ERP 单号）。
 
 当前配置化支持场景：
 - ✅ ZNB 普通物料 PRPO 造单
