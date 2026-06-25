@@ -1,8 +1,8 @@
-# AI 数据智造引擎 - 安装部署指南
+# Mify 造数工厂 - 安装部署指南
 
 ## 概述
 
-AI 数据智造引擎是一个 OpenClaw Skill，通过飞书对话式交互，自动生成 SAP 测试数据（PR/PO/ERP 单号）。
+Mify 造数工厂是一个 OpenClaw Skill，通过飞书对话式交互，自动生成 SAP 测试数据（PR/PO/ERP 单号）。
 
 当前配置化支持场景：
 - ✅ ZNB 普通物料 PRPO 造单
@@ -82,6 +82,13 @@ user: "${MIFY_USER:-skill-runner}"
 pip install pyyaml requests jinja2 --break-system-packages
 ```
 
+如需使用多模态闭环里的 UI 截图验收能力，继续安装 Python Playwright：
+
+```bash
+pip install playwright --break-system-packages
+python -m playwright install chromium
+```
+
 ### Step 5：验证安装
 
 先执行静态校验，确认配置、模板、路由和敏感信息检查通过：
@@ -98,6 +105,20 @@ python3 engine.py configs/znb-prpo.yaml --stockOrg MI_IOT --purchaseOrg 2120 --s
 ```
 
 看到 `🎉 造单成功！` 及 PR/PO/ERP 单号即安装成功。
+
+验证多模态闭环外层编排（不真实造数、不打开浏览器）：
+
+```bash
+python3 tools/closed_loop_runner.py \
+  --dry-run \
+  --text "帮我造一条生态链 ZNB PRPO，造完做页面验收" \
+  --config configs/znb-prpo.yaml \
+  --ui-config configs/ui-verify-prpo.yaml \
+  orderType=ZNB stockOrg=MI_IOT purchaseOrg=2120 supplierCode=SUPPLIER_DEMO \
+  materials='{"materialCode1":"MAT_DEMO"}' projectCode=PROJECT_DEMO shipLocCode=LOC_DEMO
+```
+
+执行后会生成 `evidence/runs/{run_id}/report.html`、`summary.json`、`intent.json`、`datamake-result.json`、`ui-verify-result.json`。
 
 ## 使用方式
 
@@ -127,6 +148,23 @@ python3 engine.py configs/znb-prpo.yaml \
   --projectCode "EcoOdmJdm20240708220947-EU" \
   --shipLocCode CN01
 ```
+
+### 方式3：多模态闭环执行
+
+适合参赛演示、验收留痕和失败诊断：
+
+```bash
+cd ~/.openclaw/workspace/skills/mify-data-factory
+python3 tools/closed_loop_runner.py \
+  --text "按这张页面截图帮我造一条生态链 ZNB PRPO，造完页面验收" \
+  --image /path/to/page.png \
+  --config configs/znb-prpo.yaml \
+  --ui-config configs/ui-verify-prpo.yaml \
+  orderType=ZNB stockOrg=MI_IOT purchaseOrg=2120 supplierCode=SUPPLIER_DEMO \
+  materials='{"materialCode1":"MAT_DEMO"}' projectCode=PROJECT_DEMO shipLocCode=LOC_DEMO
+```
+
+如果 UI 验收失败，系统会保留造数结果，生成 `diagnosis.json` 和失败截图，整体状态标记为 `PARTIAL`。
 
 ## 采购组织映射表
 

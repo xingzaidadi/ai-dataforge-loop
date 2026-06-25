@@ -1,0 +1,17 @@
+name: prpo-ui-verification
+description: PRPO 造数后的页面验收配置。真实环境使用时请补充 SCM_BASE_URL 或 base_url。
+enabled: true
+headless: true
+timeout_ms: 30000
+wait_until: networkidle
+base_url: "${SCM_BASE_URL}"
+url: "/"
+steps:
+  - type: wait
+    desc: 等待页面稳定
+    seconds: 1
+  - type: assert_text
+    desc: 验证页面可访问
+    selector: "body"
+    text: "${orderType}"
+    timeout_ms: 5000

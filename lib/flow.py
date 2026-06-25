@@ -258,6 +258,7 @@ class FlowEngine:
             "route": self._do_route,
             "sql_execute": self._do_sql_execute,
             "filter_collection": self._do_filter_collection,
+            "noop": self._do_noop,
         }
 
         handler = action_map.get(action)
@@ -568,6 +569,16 @@ class FlowEngine:
             "extracted": {output_key: filtered}
         }
         return None
+
+    # ──────────────────────────────────────────────
+    #  空操作
+    # ──────────────────────────────────────────────
+
+    def _do_noop(self, step: dict) -> str:
+        """空操作（占位符，用于 condition 分支）"""
+        print(f"  ⏭️ noop: {step.get('id', '<no id>')}")
+        self.context["steps"][step["id"]] = {"output": None, "extracted": {}}
+        return step.get("goto")
 
     # ──────────────────────────────────────────────
     #  模板渲染

@@ -41,6 +41,7 @@ ALLOWED_ACTIONS = {
     "route",
     "sql_execute",
     "filter_collection",
+    "noop",
 }
 
 SECRET_PATTERNS = {

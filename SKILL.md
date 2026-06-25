@@ -1,23 +1,21 @@
 ---
 name: mify-data-factory
-display_name: AI 数据智造引擎
-version: 3.2.0
+display_name: AI 数据智造多模态闭环引擎(DataPivot)
+version: 4.0.0
 description: |
-  AI 数据智造引擎：面向供应链测试场景的智能数据构造与流程编排 Skill。
-  触发场景：用户说"帮我造单""造一条采购订单""PRPO拉料""帮我造数""造一条测试数据""ZNB造单""ZWW造单"等造数相关请求。
-  不触发场景：查询已有订单状态、报销、审批、查物料信息、问接口文档。
+  AI 数据智造多模态闭环引擎：面向供应链测试场景，支持从文本、SOP、页面截图中识别造数需求，自动收口参数、执行 PRPO 造数、发起 UI 截图验收，并生成 HTML 证据包与失败诊断。
+  触发场景：用户说"帮我造单""造一条采购订单""PRPO拉料""帮我造数""看这个截图帮我造测试数据""按这个SOP造数""造完帮我页面验收""分析这张失败截图"等造数闭环相关请求。
+  不触发场景：查询已有订单状态、报销、审批、查物料信息、问接口文档、编写通用 UI 自动化测试用例。
 author: MI
 track: C-跨部门协同
 platform: 工作虾(Open Claw)
 spec: MIT AI Skill 撰写规范 V1.1-beta
-tags: [造数, 测试数据, 供应链, 流程编排, Agent, 跨系统, PRPO]
+tags: [造数, 测试数据, 供应链, 流程编排, Agent, 多模态, UI验收, PRPO]
 ---
 
-> ⚠️ **执行前置依赖**：agent 收到本技能触发后，**必须先读取 `prompt.md`**（对话流程定义），再开始与用户交互。SKILL.md 仅用于路由识别和能力声明，不含对话逻辑。
+# 数枢(DataPivot) · AI 数据智造多模态闭环引擎
 
-# AI 数据智造引擎
-
-> 从一句业务诉求，到一条可验证的供应链数据链路。
+> 从一句业务诉求或一张页面截图，到一条可验证、可追溯、可诊断的供应链数据链路。
 
 ## 1. 问题描述
 
@@ -28,7 +26,7 @@ tags: [造数, 测试数据, 供应链, 流程编排, Agent, 跨系统, PRPO]
 - **脚本自动化**：每个场景独立一套脚本，复制粘贴改参数，维护成本随场景数指数增长
 - **低代码平台**：节点越加越多，分支越连越乱，变成谁也不敢动的"节点巨图"
 
-AI 数据智造引擎把这条"长在人脑里"的协同链路，沉淀为**机器可执行、团队可复用、新人可接手**的能力。
+数枢把这条"长在人脑里"的协同链路，沉淀为**机器可执行、团队可复用、新人可接手**的能力。
 
 ## 2. 触发场景
 
@@ -37,6 +35,10 @@ AI 数据智造引擎把这条"长在人脑里"的协同链路，沉淀为**机�
 - "ZNB 造单""ZWW 造单""PRPO 拉料"
 - "造一批测试数据""准备一条全链路测试数据"
 - "生态链的标准采购订单造一条"
+- "看这张页面截图，帮我判断要造什么数据"
+- "按这个 SOP 截图/文档生成测试数据"
+- "造完后帮我打开页面验收并留截图"
+- "分析这张失败截图，告诉我卡在哪一步"
 - 任何"构造一条需要跨多个系统、带状态流转的业务测试数据"的诉求
 
 **不触发**——以下场景明确不归本 Skill 管：
@@ -44,6 +46,7 @@ AI 数据智造引擎把这条"长在人脑里"的协同链路，沉淀为**机�
 - 纯接口调试（"帮我调下这个接口"）
 - 报销、审批等与造数无关的对话
 - 查物料信息、问接口文档
+- 只要求生成通用 Playwright 自动化用例、但不涉及造数闭环
 
 ## 3. 交互契约（三道闸）
 
@@ -70,7 +73,9 @@ AI 数据智造引擎把这条"长在人脑里"的协同链路，沉淀为**机�
 
 ```
 ┌─────────────────────────────────────────────────┐
-│  AI Agent 对话层 — 参数收集 / 确认 / 业务映射      │  ← 降低使用门槛
+│  AI Agent 多模态入口 — 文本 / SOP / 截图 / 失败图   │  ← 降低使用门槛
+├─────────────────────────────────────────────────┤
+│  闭环编排层 — 识别 / 造数 / UI验收 / 诊断 / 证据包  │  ← 过程可追溯
 ├─────────────────────────────────────────────────┤
 │  Python 编排引擎 — 条件 / 循环 / 路由 / 重试 / 状态 │  ← 流程可测试、可版本化
 ├─────────────────────────────────────────────────┤
@@ -85,10 +90,25 @@ AI 数据智造引擎把这条"长在人脑里"的协同链路，沉淀为**机�
 | 层 | 文件 | 职责 |
 |---|------|------|
 | **对话层** | `prompt.md` | 收集参数、确认、映射转换、格式化输出 |
+| **闭环编排层** | `tools/closed_loop_runner.py` | 统一 run_id，串联意图识别、造数、UI 验收、失败诊断、证据包 |
 | **编排引擎** | `engine.py` | 读 YAML、执行 9 种 Action、管理状态/重试/分支 |
 | **YAML 配置层** | `configs/*.yaml` | 声明式描述每种订单的完整流程步骤 |
 | **模板层** | `templates/*.j2` | Jinja2 渲染复杂请求体 |
 | **执行层** | mify 平台 | 只提供 `http_call` 和 `sql_query` 两个通用工具 |
+
+### 多模态闭环
+
+```text
+文本/截图/SOP
+  → tools/vision_extract.py 提取造数意图
+  → 参数缺失时继续追问，参数齐备后执行确认闸
+  → tools/datamake_runner.py 调用现有 engine.py
+  → tools/ui_verify.py 使用 Python Playwright 页面验收并截图
+  → 失败时 tools/failure_diagnose.py 生成诊断建议
+  → tools/evidence_pack.py 输出 report.html 和结构化 JSON
+```
+
+关键原则：多模态能力只做外层增强，不改 `engine.py` 主干；识别失败时回退为文本追问，UI 验收失败时保留造数结果并标记 `PARTIAL`。
 
 ## 5. 流程 DSL：9 种 Action
 
@@ -111,11 +131,12 @@ mify-data-factory/
 ├── SKILL.md            # 本文件（技能声明）
 ├── prompt.md           # 对话层提示词
 ├── engine.py           # 通用编排引擎
+├── tools/              # 多模态闭环工具（识别/验收/诊断/证据包）
 ├── lib/                # 引擎核心模块（client/config/flow/renderer/resolver）
 ├── configs/            # YAML 流程定义（znb-prpo.yaml, zww-prpo.yaml, ...）
 ├── templates/          # Jinja2 请求体模板
 ├── shared/             # 可复用共享步骤（审批/查询/Cookie）
-├── references/         # 原始 Dify 工作流导出（演进前对照）
+├── references/         # 多模态契约、UI 验收契约、证据包结构
 ├── mify-apps/          # mify 平台工具定义（http-call/sql-query）
 └── runners/            # 执行器（飞书推送/批量测试脚本）
 ```
@@ -160,8 +181,22 @@ terminals:
 |------|---------|------|
 | **向导执行** | 汇报 / 排障 / 新人学习 | 逐步展示每阶段结果，等用户确认再继续 |
 | **静默执行** | 日常高频造数 | 一键跑完，只展示最终结果卡 |
+| **闭环执行** | 参赛演示 / 验收留痕 / 失败诊断 | 从文本、SOP 或截图识别需求，执行造数，打开页面截图验收，生成证据包 |
 
 切换方式：用户说"一步步来"或"逐步执行"进入向导模式；说"直接跑"或"静默"进入静默模式。默认向导模式。
+
+闭环执行命令示例：
+
+```bash
+python tools/closed_loop_runner.py \
+  --text "帮我造一条生态链 ZNB PRPO，造完做页面验收" \
+  --config configs/znb-prpo.yaml \
+  --ui-config configs/ui-verify-prpo.yaml \
+  orderType=ZNB purchaseOrg=2120 stockOrg=MI_IOT supplierCode=SUPPLIER_DEMO \
+  materials='{"materialCode1":"MAT_DEMO"}' projectCode=PROJECT_DEMO shipLocCode=LOC_DEMO
+```
+
+演示或无真实环境时可加 `--dry-run`，仍会生成 `evidence/runs/{run_id}/report.html` 证据包。
 
 ## 9. 健壮性能力（失败路径）
 
@@ -219,11 +254,6 @@ terminals:
 | SCM 基址 | `SCM_BASE_URL` | 采购系统接口 |
 | BPM 审批地址 | `BPM_APPROVE_URL` | 审批系统接口 |
 | Cookie 获取地址 | `SCM_COOKIE_URL` | 认证 Cookie |
-| MySQL 主机 | `MIFY_DB_HOST` | 数据库地址（向导模式SQL查询用） |
-| MySQL 端口 | `MIFY_DB_PORT` | 默认 3304 |
-| MySQL 用户 | `MIFY_DB_USER` | 数据库用户名 |
-| MySQL 密码 | `MIFY_DB_PASS` | 数据库密码（不可入库） |
-| MySQL 数据库 | `MIFY_DB_NAME` | 数据库名 |
 
 调用方式：streaming SSE（`workflow_started` → `node_finished` → `workflow_finished`）。
 

@@ -1,0 +1,155 @@
+# SRM 寻源价格造数 — PRPO 前置数据清洗配置
+# 独立运行：python engine.py configs/srm-price-clean.yaml --参数
+# 闭环运行：python tools/closed_loop_runner.py --pre-clean-config configs/srm-price-clean.yaml
+#
+# 流程：获取价格类型 → 获取费用PN → 价格检测 → 条件修复 → 定价单重推
+
+name: SRM寻源价格造数
+description: PRPO前置数据清洗：ASL/费用PN/费用项/定价单检查与修复
+
+use:
+  - get_price_types
+  - get_cost_pn
+
+inputs:
+  materialCode:    { label: 物料MPN, required: true }
+  purchaseOrg:     { label: 采购组织, required: true }
+  supplierCode:    { label: 供应商, required: true }
+  materialType:    { label: 物料类型, required: false, default: "material" }
+  sourceType:      { label: 需求来源, required: false, default: "ZWW" }
+  purchaseMode:    { label: 采购模式, required: false, default: "NORMAL" }
+  costPn:          { label: 费用PN, required: false }
+  gross:           { label: 含税单价, required: false, default: "10000" }
+  kpein:           { label: 价格单位, required: false, default: "WPCS" }
+  taxCode:         { label: 税码, required: false, default: "J2" }
+  taxrt:           { label: 税率, required: false, default: "0.13" }
+  datab:           { label: 生效开始日期, required: false }
+  datbi:           { label: 生效结束日期, required: false }
+  priceType:       { label: 价格类型, required: false, default: "mav_fee,odm_owned_fee" }
+
+config:
+  srm_toolkit_base: "${SRM_TOOLKIT_BASE_URL}"
+
+steps:
+  # ① 获取全量价格类型
+  - use: srm-price-steps.get_price_types
+
+  # ② 获取费用PN
+  - use: srm-price-steps.get_cost_pn
+
+  # ③ 聚合费用PN（用户输入优先）
+  - id: resolve_cost_pn
+    action: condition
+    if: "{{inputs.costPn}} != '' && {{inputs.costPn}} != null"
+    then: pn_resolved
+    else: detect_issues
+
+  - id: pn_resolved
+    action: noop
+
+  # ④ 价格检测（诊断前置数据问题）
+  - id: detect_issues
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-data-produce/data/improvement"
+      method: POST
+      body:
+        matnr: "{{inputs.materialCode}}"
+        procurementOrg: "{{inputs.purchaseOrg}}"
+        supplierCode: "{{inputs.supplierCode}}"
+        materialType: "{{inputs.materialType}}"
+        costPn: "{{inputs.costPn}}"
+        projectId: ""
+        costProjectPhase: "{{inputs.sourceType}}"
+    extract:
+      detection_result: "$.body.data"
+
+  # ⑤ 分支：根据 priceType 判断是否含 machine_fee
+  - id: check_price_type
+    action: condition
+    if: "{{inputs.priceType}} contains 'machine_fee'"
+    then: create_machine_fee
+    else: check_asl
+
+  # ── machine_fee 分支 ──
+  - id: create_machine_fee
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-data-produce/material"
+      method: POST
+      body:
+        matnr: "{{inputs.materialCode}}"
+        procurementOrg: "{{inputs.purchaseOrg}}"
+        supplierCode: "{{inputs.supplierCode}}"
+        isForceNewPrice: "1"
+        strategyType: "semiOtherGroup"
+    extract:
+      price_id: "$.body.data"
+    goto: check_machine_fee_push
+
+  - id: check_machine_fee_push
+    action: http_call
+    retry: { max: 3, interval_ms: 2000 }
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-tools/price/status"
+      method: POST
+      body:
+        prices: "{{steps.create_machine_fee.extracted.price_id}}"
+    extract:
+      push_result: "$.body.data"
+    goto: SUCCESS
+
+  # ── 非 machine_fee 分支：诊断+修复 ──
+  - id: check_asl
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-tools/create/asl"
+      method: POST
+      body:
+        matnr: "{{inputs.materialCode}}"
+        procurementOrg: "{{inputs.purchaseOrg}}"
+        supplierCode: "{{inputs.supplierCode}}"
+        purchaseMode: "{{inputs.purchaseMode}}"
+    extract:
+      fix_result: "$.body"
+    goto: create_price_list
+
+  - id: create_price_list
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-data-produce/material"
+      method: POST
+      body:
+        matnr: "{{inputs.materialCode}}"
+        newMpnId: "{{inputs.materialCode}}"
+        procurementOrg: "{{inputs.purchaseOrg}}"
+        supplierCode: "{{inputs.supplierCode}}"
+        materialCategory: "{{inputs.materialType}}"
+        sourceType: "{{inputs.sourceType}}"
+        purchaseMode: "{{inputs.purchaseMode}}"
+        costPn: "{{inputs.costPn}}"
+        gross: "{{inputs.gross}}"
+        kpein: "{{inputs.kpein}}"
+        taxCode: "{{inputs.taxCode}}"
+        taxrt: "{{inputs.taxrt}}"
+        datab: "{{inputs.datab}}"
+        datbi: "{{inputs.datbi}}"
+        priceType: "{{inputs.priceType}}"
+    extract:
+      price_id: "$.body.data"
+    goto: check_price_push
+
+  - id: check_price_push
+    action: http_call
+    retry: { max: 3, interval_ms: 2000 }
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-tools/price/status"
+      method: POST
+      body:
+        prices: "{{steps.create_price_list.extracted.price_id}}"
+    extract:
+      push_result: "$.body.data"
+    goto: SUCCESS
+
+terminals:
+  SUCCESS: { type: success, message: "SRM 寻源价格造数完成" }
