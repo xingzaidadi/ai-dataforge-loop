@@ -97,6 +97,24 @@ steps:
         prices: "{{steps.create_machine_fee.extracted.price_id}}"
     extract:
       push_result: "$.body.data"
+    goto: verify_machine_fee
+
+  # ⑥ 回查：验证 machine_fee 是否生效
+  - id: verify_machine_fee
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-data-produce/data/improvement"
+      method: POST
+      body:
+        matnr: "{{inputs.materialCode}}"
+        procurementOrg: "{{inputs.purchaseOrg}}"
+        supplierCode: "{{inputs.supplierCode}}"
+        materialType: "{{inputs.materialType}}"
+        costPn: ""
+        projectId: ""
+        costProjectPhase: "{{inputs.sourceType}}"
+    extract:
+      verify_result: "$.body.data"
     goto: SUCCESS
 
   # ── 非 machine_fee 分支：诊断+修复 ──
@@ -112,6 +130,24 @@ steps:
         purchaseMode: "{{inputs.purchaseMode}}"
     extract:
       fix_result: "$.body"
+    goto: verify_asl
+
+  # ⑦ 回查：验证 ASL 是否创建成功
+  - id: verify_asl
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-data-produce/data/improvement"
+      method: POST
+      body:
+        matnr: "{{inputs.materialCode}}"
+        procurementOrg: "{{inputs.purchaseOrg}}"
+        supplierCode: "{{inputs.supplierCode}}"
+        materialType: "{{inputs.materialType}}"
+        costPn: ""
+        projectId: ""
+        costProjectPhase: "{{inputs.sourceType}}"
+    extract:
+      asl_verify: "$.body.data"
     goto: create_price_list
 
   - id: create_price_list
@@ -149,6 +185,24 @@ steps:
         prices: "{{steps.create_price_list.extracted.price_id}}"
     extract:
       push_result: "$.body.data"
+    goto: verify_price_list
+
+  # ⑧ 回查：验证定价单是否推送成功
+  - id: verify_price_list
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-data-produce/data/improvement"
+      method: POST
+      body:
+        matnr: "{{inputs.materialCode}}"
+        procurementOrg: "{{inputs.purchaseOrg}}"
+        supplierCode: "{{inputs.supplierCode}}"
+        materialType: "{{inputs.materialType}}"
+        costPn: "{{inputs.costPn}}"
+        projectId: ""
+        costProjectPhase: "{{inputs.sourceType}}"
+    extract:
+      final_verify: "$.body.data"
     goto: SUCCESS
 
 terminals:

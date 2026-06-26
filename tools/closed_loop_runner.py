@@ -55,10 +55,18 @@ def run_closed_loop(
             run_dir=run_dir,
             dry_run=dry_run,
         )
-        write_json(run_dir / "pre-clean-result.json", pre_clean_result.to_dict())
+        # srm_price_clean.py 已写入 srm-price-clean-result.json，此处不再重复写
         if pre_clean_result.status == "FAILED":
-            # 清洗失败不阻断造数，降级继续
-            pass
+            # 清洗失败：记录警告，降级继续造数
+            clean_errors = pre_clean_result.data.get("errors", [])
+            assert_detail = pre_clean_result.data.get("assert_detail", "")
+            warning_parts = []
+            if clean_errors:
+                warning_parts.append(f"输入校验: {'; '.join(clean_errors)}")
+            if assert_detail:
+                warning_parts.append(f"断言: {assert_detail}")
+            warning_msg = "; ".join(warning_parts) if warning_parts else pre_clean_result.detail
+            print(f"  ⚠️ 前置清洗失败，降级继续造数: {warning_msg}")
 
     # ── 阶段 1：PRPO 造数 ──
     datamake_result = run_datamake(config=config, params=final_params, run_dir=run_dir, dry_run=dry_run)
@@ -74,13 +82,22 @@ def run_closed_loop(
         diagnosis_result = diagnose_failure(run_dir)
 
     overall_status = "SUCCESS"
+    clean_warnings = []
     if pre_clean_result and pre_clean_result.status == "FAILED":
-        overall_status = "PARTIAL"  # 清洗失败但造数可能成功
+        overall_status = "PARTIAL"
+        clean_warnings.append(
+            f"前置清洗失败: {pre_clean_result.detail}"
+        )
     if datamake_result.status == "FAILED":
         overall_status = "FAILED"
+        clean_warnings.append(
+            f"造数失败: {datamake_result.detail}"
+        )
     elif ui_verify_result.status == "FAILED":
         overall_status = "PARTIAL"
-
+        clean_warnings.append(
+            f"UI验收失败: {ui_verify_result.detail}"
+        )
     summary = {
         "runId": run_id,
         "status": overall_status,
@@ -91,6 +108,7 @@ def run_closed_loop(
         "datamake": datamake_result.to_dict(),
         "uiVerify": ui_verify_result.to_dict(),
         "diagnosis": diagnosis_result.to_dict() if diagnosis_result else None,
+        "warnings": clean_warnings if clean_warnings else None,
     }
     write_json(run_dir / "summary.json", summary)
     evidence_result = build_evidence_pack(run_dir)

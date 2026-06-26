@@ -18,6 +18,9 @@ RULES = [
     ("not found", "页面元素或业务数据未找到", "核对单号是否生成成功，确认 UI 查询条件和状态流转是否一致。"),
     ("Cookie 获取失败", "登录态失效", "刷新 Cookie 获取接口或重新配置登录态。"),
     ("造数引擎执行失败", "造数主流程失败", "查看 datamake-result.json 的 stderr/stdout，优先处理首个失败 Action。"),
+    ("前置清洗失败", "数据清洗未通过", "查看 srm-price-clean-result.json 的 assert_detail 和 errors，修复前置数据问题后重试。"),
+    ("输入校验失败", "清洗参数缺失", "检查 materialCode/purchaseOrg/supplierCode 是否完整，查看 srm-price-clean-result.json。"),
+    ("清洗执行出错", "SRM 清洗接口异常", "检查 SRM_TOOLKIT_BASE_URL 配置、网络连通性，查看清洗 stdout 中的错误详情。"),
 ]
 
 
@@ -38,7 +41,8 @@ def _find_failed_screenshots(run_dir: Path) -> list[str]:
 def diagnose_failure(run_dir: Path, screenshot: str | None = None) -> StepResult:
     datamake = _collect_json(run_dir, "datamake-result.json")
     ui_verify = _collect_json(run_dir, "ui-verify-result.json")
-    haystack = json.dumps({"datamake": datamake, "uiVerify": ui_verify}, ensure_ascii=False)
+    pre_clean = _collect_json(run_dir, "srm-price-clean-result.json")
+    haystack = json.dumps({"datamake": datamake, "uiVerify": ui_verify, "preClean": pre_clean}, ensure_ascii=False)
 
     suggestions = []
     for keyword, category, action in RULES:

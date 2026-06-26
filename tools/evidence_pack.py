@@ -23,6 +23,7 @@ def _safe_json(run_dir: Path, file_name: str) -> dict:
 def build_evidence_pack(run_dir: Path, title: str = "AI 数据智造多模态闭环证据包") -> StepResult:
     summary = _safe_json(run_dir, "summary.json")
     intent = _safe_json(run_dir, "intent.json")
+    pre_clean = _safe_json(run_dir, "srm-price-clean-result.json")
     datamake = _safe_json(run_dir, "datamake-result.json")
     ui_verify = _safe_json(run_dir, "ui-verify-result.json")
     diagnosis = _safe_json(run_dir, "diagnosis.json")
@@ -33,6 +34,7 @@ def build_evidence_pack(run_dir: Path, title: str = "AI 数据智造多模态闭
         for path in screenshots
     )
 
+    import json as _json
     page = f"""<!doctype html>
 <html lang="zh-CN">
 <head>
@@ -49,11 +51,12 @@ def build_evidence_pack(run_dir: Path, title: str = "AI 数据智造多模态闭
 </head>
 <body>
   <h1>{html.escape(title)}</h1>
-  <section><h2>执行摘要</h2><pre>{html.escape(__import__("json").dumps(summary, ensure_ascii=False, indent=2))}</pre></section>
-  <section><h2>意图识别</h2><pre>{html.escape(__import__("json").dumps(intent, ensure_ascii=False, indent=2))}</pre></section>
-  <section><h2>造数结果</h2><pre>{html.escape(__import__("json").dumps(datamake, ensure_ascii=False, indent=2))}</pre></section>
-  <section><h2>UI 验收</h2><pre>{html.escape(__import__("json").dumps(ui_verify, ensure_ascii=False, indent=2))}</pre></section>
-  <section><h2>失败诊断</h2><pre>{html.escape(__import__("json").dumps(diagnosis, ensure_ascii=False, indent=2))}</pre></section>
+  <section><h2>执行摘要</h2><pre>{html.escape(_json.dumps(summary, ensure_ascii=False, indent=2))}</pre></section>
+  <section><h2>意图识别</h2><pre>{html.escape(_json.dumps(intent, ensure_ascii=False, indent=2))}</pre></section>
+  <section><h2>数据清洗</h2><pre>{html.escape(_json.dumps(pre_clean, ensure_ascii=False, indent=2))}</pre></section>
+  <section><h2>造数结果</h2><pre>{html.escape(_json.dumps(datamake, ensure_ascii=False, indent=2))}</pre></section>
+  <section><h2>UI 验收</h2><pre>{html.escape(_json.dumps(ui_verify, ensure_ascii=False, indent=2))}</pre></section>
+  <section><h2>失败诊断</h2><pre>{html.escape(_json.dumps(diagnosis, ensure_ascii=False, indent=2))}</pre></section>
   <section><h2>截图证据</h2>{screenshot_html or "<p>暂无截图。</p>"}</section>
 </body>
 </html>
