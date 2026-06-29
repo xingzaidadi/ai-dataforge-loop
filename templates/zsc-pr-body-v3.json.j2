@@ -1,0 +1,62 @@
+{
+  "stockOrg": "{{ stockOrg }}",
+  "receiveFactoryId": {{ receiveFactoryId if receiveFactoryId else 0 }},
+  "specialApprove": 0,
+  "materials": [
+    {% for mat in materials %}
+    {
+      "description": "{{ mat.materialDesc }}",
+      "pnCode": "{{ mat.pnCode }}",
+      "purchaseOrg": "{{ purchaseOrg }}",
+      "applicationNum": {{ mat.mpq | default(10000) | int }},
+      "baseUom": "{{ mat.baseUom | default('PC') }}",
+      "key": {{ loop.index }},
+      "materialCode": "{{ mat.materialCode }}",
+      "materialDesc": "{{ mat.materialDesc }}",
+      "manufacturer": "{{ mat.manufacturer | default('未知') }}",
+      "spCode": "{{ mat.spCode | default('') }}",
+      "brand": "{{ mat.brand | default('未知') }}",
+      "label": "{{ mat.label | default(mat.materialCode + '(' + mat.materialDesc + ')') }}",
+      "value": "{{ mat.value | default(mat.materialCode) }}",
+      "catePathCode": "{{ mat.catePathCode | default('000.00.00') }}",
+      "codeDescEn": "{{ mat.codeDescEn | default('Material') }}",
+      "catePathName": "{{ mat.catePathName | default('物料') }}",
+      "materialGroupCode": "{{ mat.materialGroupCode | default('R0000000') }}",
+      "materialGroup": "{{ mat.materialGroup | default('物料') }}",
+      "projects": "{{ mat.projects | default('') }}",
+      "mgroup": {{ mat.mgroup | default({"code": "R0000000", "name": "物料"}) | tojson }},
+      "mpq": "{{ mat.mpq | default('10') }}",
+      "mpnSupplier": [
+        {% for s in mat.mpnSupplier | default([]) %}
+        {
+          "supplierCode": "{{ s.supplierCode }}",
+          "lt": "{{ s.lt | default('7') }}",
+          "mpq": "{{ s.mpq | default('10') }}",
+          "moq": "{{ s.moq | default('10') }}",
+          "xmCode": "{{ s.xmCode | default(mat.materialCode) }}"
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+      ],
+      "cvpnCode": "{{ mat.cvpnCode | default(mat.pnCode | default(mat.materialCode)) }}",
+      "inStatus": "-",
+      "outStatus": "-",
+      "stockStatus": "良品",
+      "xmCode": "{{ mat.materialCode }}",
+      "unit": "{{ mat.baseUom | default('PC') }}",
+      "number": {{ mat.mpq | default(10000) | int }},
+      "supplierCode": "{{ supplierCode }}",
+      "receiveDate": 1884182400000,
+      "isNew": 1,
+      "supplierCodeOption": {"label": "{{ supplierCode }}-{{ supplierName | default('') }}", "value": "{{ supplierCode }}", "key": "{{ supplierCode }}"},
+      "receiveDateTimeStamp": 1775000000000,
+      "remarks": ""
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ],
+  "projectCode": "{{ projectCode }}",
+  "projectDesc": "",
+  "trialStage": "{{ trialStage | default('P0') }}",
+  "isSubmit": true,
+  "purchaseType": {{ purchaseType | default(4) }},
+  "stageRemark": ""
+}

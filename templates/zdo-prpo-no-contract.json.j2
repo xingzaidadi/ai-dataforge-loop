@@ -1,0 +1,22 @@
+[
+  {% for item in items %}
+  {
+    "number": 1000,
+    "rowNo": {{ loop.index }},
+    "priceUnit": "10000",
+    "gfaNo": "",
+    "purchaseNo": "{{ purchaseNo }}",
+    "receiveDate": 1917516799999,
+    "id": {{ item.id }},
+    "purchaseNum": 1,
+    "supplierCode": "{{ supplierCode }}",
+    "gfaRowNo": 1,
+    "purchaseOrg": "{{ purchaseOrg }}",
+    "canGeneratePo": 1,
+    "quotaNo": "",
+    "quotaRowNo": 1,
+    "purchaseMpq": 10,
+    "receiveOrg": "{{ stockOrg }}"
+  }{% if not loop.last %},{% endif %}
+  {% endfor %}
+]

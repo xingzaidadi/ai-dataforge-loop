@@ -1,0 +1,260 @@
+# ZDO普通物料PRPO造单流程配置 v7
+# 共享步骤通过 use 引用，只保留 ZDO 特有的步骤
+# 原始 300 行 → v7 约 220 行
+name: ZDO普通物料PRPO造单
+description: 输入物料 → ASL校验 → 查代工厂 → 模板生成PR请求体 → 创建PR → PR审批 → 查物料行 → PR转PO → PO审批 → 查ERP单号 → 重新推送
+
+# 引入共享步骤
+use:
+  - common-steps.get_cookie          # ①
+  - common-steps.approve_pr          # ⑨
+  - common-steps.approve_po          # ⑮
+  - common-steps.repush_erp          # ⑱
+
+inputs:
+  stockOrg:       { label: 库存组织, required: true, example: "MI_WEAR" }
+  purchaseOrg:    { label: 采购组织, required: true, example: "111J" }
+  supplierCode:   { label: 供应商编码, required: true, example: "100283" }
+  materials:      { label: 物料列表, required: true, type: object, example: '{"materialCode1": "1240104000041B"}' }
+  projectCode:    { label: 项目编码, required: false, example: "P01-AL" }
+  shipLocCode:    { label: 发货地点, required: true, example: "CN01" }
+
+config:
+  db_uri: "${SCM_DB_URI}"
+  cookie_url: "${SCM_COOKIE_URL}"
+  scm_base: "${SCM_BASE_URL}"
+  bpm_base: "${BPM_APPROVE_URL}"
+
+steps:
+  # ① get_cookie → 引用共享步骤
+
+  # ② ASL 校验（ZDO 特有：与共享略有不同，保留内联）
+  - id: check_asl
+    action: loop
+    items: "{{inputs.materials}}"
+    loop_var: mat_key
+    steps:
+      - id: check_one_asl
+        action: http_call
+        params:
+          url: "{{config.scm_base}}/mrp/purchase/material-supplier-relations/batch"
+          method: POST
+          headers:
+            Cookie: "{{steps.get_cookie.extracted.cookie}}"
+          body:
+            moduleCode: "Purchase9"
+            batch:
+              - stockOrg: "{{inputs.stockOrg}}"
+                xmCode: "{{inputs.materials[context.mat_key]}}"
+        extract:
+          code: "$.body.code"
+          message: "$.body.message"
+    collect: asl_results
+
+  # ③ 查询代工厂ID（ZDO 特有：查 product_line，与 ZSC 共享 query_factory 逻辑但 SQL 有细微差异）
+  - id: query_factory
+    action: sql_query
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: >
+        SELECT id, product_line FROM d_factory
+        WHERE factory_code = '{{inputs.shipLocCode}}'
+        AND product_line = '{{inputs.stockOrg}}'
+        LIMIT 1
+    extract:
+      factory_id: "$.rows[0].id"
+
+  # ④ 检查代工厂是否存在
+  - id: check_factory
+    action: condition
+    if: "{{steps.query_factory.extracted.factory_id}} != ''"
+    then: build_pr
+    else: END_NO_FACTORY
+
+  # ⑤ 用模板生成 PR 请求体（ZDO 特有）
+  - id: build_pr
+    action: template
+    template: "templates/zdo-pr-body-v2.json.j2"
+    context:
+      factory_id: "{{steps.query_factory.extracted.factory_id}}"
+      stockOrg: "{{inputs.stockOrg}}"
+      purchaseOrg: "{{inputs.purchaseOrg}}"
+      supplierCode: "{{inputs.supplierCode}}"
+      projectCode: "{{inputs.projectCode}}"
+      materials: "{{inputs.materials}}"
+
+  # ⑥ 创建PR（ZDO 特有：/mrp/purchase/free 自由采购接口）
+  - id: create_pr
+    action: http_call
+    params:
+      url: "{{config.scm_base}}/mrp/purchase/free"
+      method: POST
+      headers:
+        Cookie: "{{steps.get_cookie.extracted.cookie}}"
+      body: "{{steps.build_pr.output}}"
+    extract:
+      code: "$.body.code"
+      message: "$.body.message"
+    on_error:
+      message: "{{steps.create_pr.extracted.message}}"
+
+  # ⑦ 检查PR创建结果
+  - id: check_pr
+    action: condition
+    if: "{{steps.create_pr.extracted.code}} == '0'"
+    then: query_pr_info
+    else: END_PR_FAIL
+
+  # ⑧ 查business_key和purchase_no（ZDO 特有：无 status 筛选）
+  - id: query_pr_info
+    action: sql_query
+    wait: 5
+    retry: {max: 8, interval_ms: 7000}
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: "SELECT p.purchase_no,p.business_key FROM m_purchase p JOIN m_purchase_item i ON p.purchase_no=i.purchase_no WHERE i.xm_code IN({{materials_sql_in}}) AND i.supplier_code='{{inputs.supplierCode}}' AND p.stock_org='{{inputs.stockOrg}}' AND p.status >= 10 ORDER BY p.id DESC LIMIT 1"
+    extract:
+      purchase_no: "$.rows[0].purchase_no"
+      business_key: "$.rows[0].business_key"
+
+  # ⑨ approve_pr → 引用共享步骤
+
+  # ⑩ 查PR物料行（ZDO 特有：含 filter）
+  - id: query_items
+    action: sql_query
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: >
+        SELECT id, xm_code FROM m_purchase_item
+        WHERE purchase_no = '{{steps.query_pr_info.extracted.purchase_no}}'
+    filter:
+      field: xm_code
+      source: inputs.materials
+    extract:
+      items: "$.rows"
+
+  # ⑪ 自由采购：按物料行查询合同（有就用，没有就直接用物料行ID）
+  - id: build_contracts
+    action: loop
+    items: "{{steps.query_items.extracted.items}}"
+    loop_var: pr_item
+    steps:
+      - id: build_one_contract
+        action: sql_query
+        params:
+          db_uri: "{{config.db_uri}}"
+          query: >
+            SELECT gfa_no, gfa_row_no, material_code
+            FROM m_purchase_srm_gfa
+            WHERE gfa_enable = 1
+            AND sp_code = '{{inputs.supplierCode}}'
+            AND material_code = '{{context.pr_item.xm_code}}'
+            AND purchase_org = '{{inputs.purchaseOrg}}'
+            AND unix_timestamp() * 1000 < price_end_date
+            ORDER BY contract_date DESC
+            LIMIT 1
+        extract:
+          gfa_no: "$.rows[0].gfa_no"
+          gfa_row_no: "$.rows[0].gfa_row_no"
+          material_code: "$.rows[0].material_code"
+          pr_item_id: "{{context.pr_item.id}}"
+    collect: zdo_contracts
+    goto: build_prpo
+
+  # ⑫ 拼PR转PO入参（ZDO 特有：collect 名为 zdo_contracts）
+  - id: build_prpo
+    action: template
+    template: "templates/prpo-params.json.j2"
+    context:
+      contracts: "{{collected.zdo_contracts}}"
+      purchaseNo: "{{steps.query_pr_info.extracted.purchase_no}}"
+      stockOrg: "{{inputs.stockOrg}}"
+      supplierCode: "{{inputs.supplierCode}}"
+      purchaseOrg: "{{inputs.purchaseOrg}}"
+
+  # ⑬ PR转PO
+  - id: pr_to_po
+    action: http_call
+    params:
+      url: "{{config.scm_base}}/mrp/purchase/prpo/generatePo"
+      method: POST
+      headers:
+        Cookie: "{{steps.get_cookie.extracted.cookie}}"
+      body: "{{steps.build_prpo.output}}"
+    extract:
+      code: "$.body.code"
+      message: "$.body.message"
+    on_error:
+      message: "{{steps.pr_to_po.extracted.message}}"
+
+  # ⑭ 检查PO
+  - id: check_po
+    action: condition
+    if: "{{steps.pr_to_po.extracted.code}} == '0'"
+    then: query_po_info
+    else: END_PO_FAIL
+
+  # ⑮ 查PO信息（ZDO 特有：SQL 与共享略有不同）
+  - id: query_po_info
+    action: sql_query
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: >
+        SELECT DISTINCT po.business_key, po.purchase_order_no
+        FROM m_purchase_order po
+        INNER JOIN m_purchase_order_item poi ON po.id = poi.purchase_order_id
+        WHERE poi.source_no = '{{steps.query_pr_info.extracted.purchase_no}}'
+        ORDER BY po.id DESC
+        LIMIT 1
+    extract:
+      po_business_key: "$.rows[0].business_key"
+      purchase_order_no: "$.rows[0].purchase_order_no"
+
+  # ⑯ approve_po → 引用共享步骤
+
+  # ⑰ 查ERP单号（ZDO 特有：DISTINCT + extra IS NOT NULL）
+  - id: query_erp
+    action: sql_query
+    wait: 10
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: >
+        SELECT DISTINCT po.erp_purchase_order_no
+        FROM m_purchase_order po
+        INNER JOIN m_purchase_order_item poi ON po.id = poi.purchase_order_id
+        WHERE poi.source_no = '{{steps.query_pr_info.extracted.purchase_no}}'
+        AND po.erp_purchase_order_no IS NOT NULL
+        AND po.erp_purchase_order_no != ''
+        LIMIT 1
+    extract:
+      erp_no: "$.rows[0].erp_purchase_order_no"
+
+  # ⑱ 判断ERP单号是否生成
+  - id: check_erp
+    action: condition
+    if: "{{steps.query_erp.extracted.erp_no}} != ''"
+    then: SUCCESS
+    else: repush_erp
+
+  # ⑲ repush_erp → 引用共享步骤
+
+terminals:
+  SUCCESS:
+    type: success
+    message: |
+      🎉 造单成功！
+      PR号: {{steps.query_pr_info.extracted.purchase_no}}
+      PO号: {{steps.query_po_info.extracted.purchase_order_no}}
+      ERP单号: {{steps.query_erp.extracted.erp_no}}
+
+  END_PR_FAIL:
+    type: error
+    message: "PR创建失败: {{steps.create_pr.extracted.message}}"
+
+  END_PO_FAIL:
+    type: error
+    message: "PO创建失败: {{steps.pr_to_po.extracted.message}}"
+
+  END_NO_FACTORY:
+    type: error
+    message: "代工厂数据不存在，请在SCM配置"

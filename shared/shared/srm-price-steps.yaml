@@ -1,0 +1,201 @@
+# shared/srm-price-steps.yaml
+# SRM 寻源价格造数 — PRPO 前置数据清洗共享步骤
+#
+# 用法：configs/xxx.yaml
+#   use:
+#     - srm-price-steps.get_price_types
+#   steps:
+#     - use: srm-price-steps.detect_price_issues
+
+common_steps:
+
+  # ═══════════════════════════════════════════════
+  #  1. 获取全量价格类型
+  # ═══════════════════════════════════════════════
+  get_price_types:
+    id: get_price_types
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/data-pool/get/priceType"
+      method: GET
+      params:
+        materialCategory: "{{inputs.materialType}}"
+        procurementOrg: "{{inputs.purchaseOrg}}"
+    extract:
+      price_type_data: "$.body.data"
+
+  # ═══════════════════════════════════════════════
+  #  2. 根据物料获取费用PN
+  # ═══════════════════════════════════════════════
+  get_cost_pn:
+    id: get_cost_pn
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-data-produce/get/pnCost"
+      method: POST
+      body:
+        matnr: "{{inputs.materialCode}}"
+        procurementOrg: "{{inputs.purchaseOrg}}"
+        costProjectPhase: "{{inputs.sourceType}}"
+    extract:
+      cost_pn_raw: "$.body.data"
+
+  # ═══════════════════════════════════════════════
+  #  3. 聚合费用PN（用户输入 > 接口返回）
+  # ═══════════════════════════════════════════════
+  merge_cost_pn:
+    id: merge_cost_pn
+    action: condition
+    if: "{{inputs.costPn}} != '' && {{inputs.costPn}} != null"
+    then: use_input_pn
+    else: use_api_pn
+
+  use_input_pn:
+    id: use_input_pn
+    action: noop
+
+  use_api_pn:
+    id: use_api_pn
+    action: noop
+
+  # ═══════════════════════════════════════════════
+  #  4. 价格检测（诊断前置数据问题）
+  # ═══════════════════════════════════════════════
+  detect_price_issues:
+    id: detect_price_issues
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-data-produce/data/improvement"
+      method: POST
+      body:
+        matnr: "{{inputs.materialCode}}"
+        procurementOrg: "{{inputs.purchaseOrg}}"
+        supplierCode: "{{inputs.supplierCode}}"
+        materialType: "{{inputs.materialType}}"
+        costPn: "{{steps.get_cost_pn.extracted.cost_pn_raw}}"
+        projectId: ""
+        costProjectPhase: "{{inputs.sourceType}}"
+    extract:
+      detection_result: "$.body.data"
+
+  # ═══════════════════════════════════════════════
+  #  5. 修复：维护ASL并推送公服
+  # ═══════════════════════════════════════════════
+  fix_asl:
+    id: fix_asl
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-tools/create/asl"
+      method: POST
+      body:
+        matnr: "{{inputs.materialCode}}"
+        procurementOrg: "{{inputs.purchaseOrg}}"
+        supplierCode: "{{inputs.supplierCode}}"
+        purchaseMode: "{{inputs.purchaseMode}}"
+    extract:
+      fix_result: "$.body"
+
+  # ═══════════════════════════════════════════════
+  #  6. 修复：强制绑定费用PN
+  # ═══════════════════════════════════════════════
+  fix_bind_cost_pn:
+    id: fix_bind_cost_pn
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-tools/bind/pn"
+      method: POST
+      body:
+        matnr: "{{inputs.materialCode}}"
+        costPn: "{{steps.merge_cost_pn.resolved_cost_pn}}"
+        costProjectPhase: "{{inputs.sourceType}}"
+    extract:
+      fix_result: "$.body"
+
+  # ═══════════════════════════════════════════════
+  #  7. 修复：费用项配置
+  # ═══════════════════════════════════════════════
+  fix_cost_item:
+    id: fix_cost_item
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-tools/create/cost"
+      method: POST
+      body:
+        matnr: "{{inputs.materialCode}}"
+        procurementOrg: "{{inputs.purchaseOrg}}"
+        supplierCode: "{{inputs.supplierCode}}"
+    extract:
+      fix_result: "$.body"
+
+  # ═══════════════════════════════════════════════
+  #  8. 修复：造新定价单
+  # ═══════════════════════════════════════════════
+  create_price_list:
+    id: create_price_list
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-data-produce/material"
+      method: POST
+      body:
+        matnr: "{{inputs.materialCode}}"
+        newMpnId: "{{inputs.materialCode}}"
+        procurementOrg: "{{inputs.purchaseOrg}}"
+        supplierCode: "{{inputs.supplierCode}}"
+        materialCategory: "{{inputs.materialType}}"
+        sourceType: "{{inputs.sourceType}}"
+        purchaseMode: "{{inputs.purchaseMode}}"
+        costPn: "{{steps.merge_cost_pn.resolved_cost_pn}}"
+        gross: "{{inputs.gross}}"
+        kpein: "{{inputs.kpein}}"
+        taxCode: "{{inputs.taxCode}}"
+        taxrt: "{{inputs.taxrt}}"
+        datab: "{{inputs.datab}}"
+        datbi: "{{inputs.datbi}}"
+        priceType: "{{inputs.priceType}}"
+    extract:
+      price_id: "$.body.data"
+
+  # ═══════════════════════════════════════════════
+  #  9. 查询定价单状态并重推
+  # ═══════════════════════════════════════════════
+  check_price_status:
+    id: check_price_status
+    action: http_call
+    retry: { max: 3, interval_ms: 2000 }
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-tools/price/status"
+      method: POST
+      body:
+        prices: "{{steps.create_price_list.extracted.price_id}}"
+    extract:
+      push_result: "$.body.data"
+
+  # ═══════════════════════════════════════════════
+  #  10. 造成品整机费
+  # ═══════════════════════════════════════════════
+  create_machine_fee:
+    id: create_machine_fee
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-data-produce/material"
+      method: POST
+      body:
+        matnr: "{{inputs.materialCode}}"
+        procurementOrg: "{{inputs.purchaseOrg}}"
+        supplierCode: "{{inputs.supplierCode}}"
+        isForceNewPrice: "1"
+        strategyType: "semiOtherGroup"
+    extract:
+      price_id: "$.body.data"
+
+  check_machine_fee_status:
+    id: check_machine_fee_status
+    action: http_call
+    retry: { max: 3, interval_ms: 2000 }
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-tools/price/status"
+      method: POST
+      body:
+        prices: "{{steps.create_machine_fee.extracted.price_id}}"
+    extract:
+      push_result: "$.body.data"

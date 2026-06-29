@@ -1,0 +1,8 @@
+# Mify API 端点配置
+endpoint: "${MIFY_ENDPOINT}"
+token: "${MIFY_HTTP_TOKEN}"              # HTTP workflow token
+sql_token: "${MIFY_SQL_TOKEN}"           # SQL workflow token（不同 app）
+app_id: "${MIFY_HTTP_WORKFLOW_ID}"
+workflow_id: "${MIFY_HTTP_WORKFLOW_ID}"  # workflow_id = app_id
+sql_workflow_id: "${MIFY_SQL_WORKFLOW_ID}"
+user: "${MIFY_USER:-skill-runner}"

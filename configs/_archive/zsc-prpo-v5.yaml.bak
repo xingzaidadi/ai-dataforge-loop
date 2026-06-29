@@ -1,0 +1,360 @@
+# ZSC普通物料PRPO造单流程配置 v5
+# 核心变化：新增物料元数据查询步骤（/mrp/material/ptc/exact），动态获取完整物料信息
+name: ZSC普通物料PRPO造单
+description: 查询物料元数据 → ASL校验 → 查询代工厂 → 创建PR → PR审批 → 配额处理 → 查合同 → PR转PO → PO审批 → 查ERP单号
+
+inputs:
+  stockOrg:       { label: 库存组织, required: true, example: "MI_PHONE" }
+  purchaseOrg:    { label: 采购组织, required: true, example: "1110" }
+  supplierCode:   { label: 供应商编码, required: true, example: "101131" }
+  materials:      { label: 物料列表, required: true, type: object, example: '{"materialCode1": "22BM1CC226AD"}' }
+  projectCode:    { label: 项目编码, required: false, example: "L18-CN" }
+  shipLocCode:    { label: 发货地点, required: true, example: "P3882" }
+
+config:
+  db_uri: "mysql+pymysql://isc_scm_test_wn:vKoc3jfIM2v4z4pPwruR6YaUpCOaHZep@ksc.test.mysql01.b2c.srv:3304/isc_scm_test"
+  cookie_url: "https://toolskit.test.mi.com/datacube/getSCMCookie"
+  scm_base: "https://scm.test.mioffice.cn"
+  bpm_base: "https://bpm-infra.test.mioffice.cn/bpmtool/api/bpmThree/approve"
+
+steps:
+  # ① 获取Cookie
+  - id: get_cookie
+    action: http_call
+    params:
+      url: "{{config.cookie_url}}"
+      method: GET
+    extract:
+      cookie: "$.body.data.result.cookie"
+    on_error:
+      message: "cookie获取失败，尝试联系管理员-刘四星"
+
+  # ② 查询物料元数据（从SCM获取完整物料信息）
+  - id: get_materials
+    action: template
+    template: "templates/get-materials-body.json.j2"
+    context:
+      stockOrg: "{{inputs.stockOrg}}"
+      materials: "{{inputs.materials}}"
+
+  # ②b 调物料元数据接口
+  - id: fetch_materials
+    action: http_call
+    params:
+      url: "{{config.scm_base}}/mrp/material/ptc/exact"
+      method: POST
+      headers:
+        Cookie: "{{steps.get_cookie.extracted.cookie}}"
+      body: "{{steps.get_materials.output}}"
+    extract:
+      materials_data: "$.body.data.results"
+
+  # ②c 过滤物料元数据，只保留用户指定的物料
+  - id: filter_materials
+    action: filter_collection
+    source: "steps.fetch_materials.extracted.materials_data"
+    match_field: "materialCode"
+    input_ref: "inputs.materials"
+
+  # ③ 前置校验：ASL匹配（遍历每个物料）
+  - id: check_asl
+    action: loop
+    items: "{{inputs.materials}}"
+    loop_var: mat_key
+    steps:
+      - id: check_one
+        action: http_call
+        params:
+          url: "{{config.scm_base}}/mrp/purchase/material-supplier-relations/batch"
+          method: POST
+          headers:
+            Cookie: "{{steps.get_cookie.extracted.cookie}}"
+          body:
+            moduleCode: "Purchase9"
+            batch:
+              - stockOrg: "{{inputs.stockOrg}}"
+                xmCode: "{{inputs.materials[context.mat_key]}}"
+        extract:
+          code: "$.body.code"
+          message: "$.body.message"
+
+  # ④ 查询代工厂ID
+  - id: query_factory
+    action: sql_query
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: >
+        SELECT id from d_factory where factory_code='{{inputs.shipLocCode}}' AND product_line='{{inputs.stockOrg}}' ORDER BY id DESC LIMIT 1
+    extract:
+      factory_id: "$.rows[0].id"
+
+  # ⑤ 查询供应商名称
+  - id: query_supplier
+    action: sql_query
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: >
+        SELECT manufacture FROM m_purchase_srm_gfa WHERE sp_code='{{inputs.supplierCode}}' LIMIT 1
+    extract:
+      supplier_name: "$.rows[0].manufacture"
+
+  # ⑥ 拼PR请求体（用物料元数据+模板）
+  - id: build_pr
+    action: template
+    template: "templates/zsc-pr-body-v3.json.j2"
+    context:
+      stockOrg: "{{inputs.stockOrg}}"
+      purchaseOrg: "{{inputs.purchaseOrg}}"
+      supplierCode: "{{inputs.supplierCode}}"
+      supplierName: "{{steps.query_supplier.extracted.supplier_name}}"
+      projectCode: "{{inputs.projectCode}}"
+      materials: "{{steps.filter_materials.output}}"
+      receiveFactoryId: "{{steps.query_factory.extracted.factory_id}}"
+      purchaseType: "4"
+      trialStage: "P0"
+
+  # ⑦ 创建PR
+  - id: create_pr
+    action: http_call
+    params:
+      url: "{{config.scm_base}}/mrp/purchase/trail"
+      method: POST
+      headers:
+        Cookie: "{{steps.get_cookie.extracted.cookie}}"
+      body: "{{steps.build_pr.output}}"
+    extract:
+      code: "$.body.code"
+      message: "$.body.message"
+    on_error:
+      message: "{{steps.create_pr.extracted.message}}"
+
+  # ⑧ 检查PR
+  - id: check_pr
+    action: condition
+    if: "{{steps.create_pr.extracted.code}} == '0'"
+    then: query_pr_info
+    else: END_PR_FAIL
+
+  # ⑨ 查business_key和purchase_no
+  - id: query_pr_info
+    action: sql_query
+    wait: 8
+    retry: {max: 8, interval_ms: 7000}
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: "SELECT p.id,p.purchase_no,p.business_key FROM m_purchase p JOIN m_purchase_item i ON p.purchase_no=i.purchase_no WHERE i.xm_code IN({{materials_sql_in}}) AND i.supplier_code='{{inputs.supplierCode}}' AND p.stock_org='{{inputs.stockOrg}}' AND p.status >= 10 ORDER BY p.id DESC LIMIT 1"
+    extract:
+      purchase_no: "$.rows[0].purchase_no"
+      business_key: "$.rows[0].business_key"
+
+  # ⑩ PR审批
+  - id: approve_pr
+    action: http_call
+    wait: 8
+    params:
+      url: "{{config.bpm_base}}?businessKey={{steps.query_pr_info.extracted.business_key}}"
+      method: GET
+    retry: {max: 12, interval_ms: 6000}
+    extract:
+      code: "$.body.code"
+    on_error:
+      message: "PR审批报错，尝试联系管理员-刘四星"
+
+  # ⑪ 查PR物料行
+  - id: query_items
+    action: sql_query
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: >
+        SELECT id,xm_code FROM m_purchase_item WHERE purchase_no='{{steps.query_pr_info.extracted.purchase_no}}'
+    filter:
+      field: xm_code
+      source: inputs.materials
+    extract:
+      items: "$.rows"
+
+  # ⑫ 配额处理：查询配额
+  - id: query_quota
+    action: loop
+    items: "{{steps.query_items.extracted.items}}"
+    loop_var: pr_item
+    steps:
+      - id: query_one_quota
+        action: sql_query
+        params:
+          db_uri: "{{config.db_uri}}"
+          query: >
+            SELECT quota_no,factory_code FROM m_purchase_srm_quota WHERE material_code='{{context.pr_item.xm_code}}' AND sp_code='{{inputs.supplierCode}}' AND quota_status='03' ORDER BY id DESC LIMIT 1
+        extract:
+          quota_no: "$.rows[0].quota_no"
+          factory_code: "$.rows[0].factory_code"
+    collect: quotas
+
+  # ⑬ 配额处理：更新代工厂
+  - id: update_quota
+    action: loop
+    items: "{{collected.quotas}}"
+    loop_var: quota
+    condition: "{{context.quota.factory_code}} == '' || {{context.quota.factory_code}} == null"
+    steps:
+      - id: update_one_quota
+        action: sql_execute
+        params:
+          db_uri: "{{config.db_uri}}"
+          query: >
+            UPDATE m_purchase_srm_quota SET factory_code='{{inputs.shipLocCode}}' WHERE quota_no='{{context.quota.quota_no}}'
+
+  # ⑭ 按采购组织分派合同查询
+  - id: route_contract
+    action: switch
+    switch_on: "{{inputs.purchaseOrg}}"
+    cases:
+      - match: "1110"
+        goto: query_contract_phone
+    default: query_contract_nm
+
+  # ⑭a 查合同号（手机，price_type=ZSC）
+  - id: query_contract_phone
+    action: loop
+    items: "{{steps.query_items.extracted.items}}"
+    loop_var: pr_item
+    steps:
+      - id: query_one_gfa_phone
+        action: sql_query
+        params:
+          db_uri: "{{config.db_uri}}"
+          query: >
+            SELECT gfa_no,gfa_row_no,material_code FROM m_purchase_srm_gfa WHERE gfa_enable=1 AND sp_code='{{inputs.supplierCode}}' AND material_code='{{context.pr_item.xm_code}}' AND purchase_org='{{inputs.purchaseOrg}}' AND unix_timestamp()*1000<price_end_date ORDER BY contract_date DESC LIMIT 1
+        extract:
+          gfa_no: "$.rows[0].gfa_no"
+          gfa_row_no: "$.rows[0].gfa_row_no"
+          material_code: "$.rows[0].material_code"
+          pr_item_id: "{{context.pr_item.id}}"
+    collect: contracts
+    goto: build_prpo
+
+  # ⑭b 查合同号（非手机）
+  - id: query_contract_nm
+    action: loop
+    items: "{{steps.query_items.extracted.items}}"
+    loop_var: pr_item
+    steps:
+      - id: query_one_gfa_nm
+        action: sql_query
+        params:
+          db_uri: "{{config.db_uri}}"
+          query: >
+            SELECT gfa_no,gfa_row_no,material_code FROM m_purchase_srm_gfa WHERE gfa_enable=1 AND sp_code='{{inputs.supplierCode}}' AND material_code='{{context.pr_item.xm_code}}' AND purchase_org='{{inputs.purchaseOrg}}' AND unix_timestamp()*1000<price_end_date ORDER BY contract_date DESC LIMIT 1
+        extract:
+          gfa_no: "$.rows[0].gfa_no"
+          gfa_row_no: "$.rows[0].gfa_row_no"
+          material_code: "$.rows[0].material_code"
+          pr_item_id: "{{context.pr_item.id}}"
+    collect: contracts
+    goto: build_prpo
+
+  # ⑮ 拼PR转PO入参
+  - id: build_prpo
+    action: template
+    template: "templates/prpo-params.json.j2"
+    context:
+      contracts: "{{collected.contracts}}"
+      purchaseNo: "{{steps.query_pr_info.extracted.purchase_no}}"
+      stockOrg: "{{inputs.stockOrg}}"
+      supplierCode: "{{inputs.supplierCode}}"
+      purchaseOrg: "{{inputs.purchaseOrg}}"
+
+  # ⑯ PR转PO
+  - id: pr_to_po
+    action: http_call
+    params:
+      url: "{{config.scm_base}}/mrp/purchase/prpo/generatePo"
+      method: POST
+      headers:
+        Cookie: "{{steps.get_cookie.extracted.cookie}}"
+      body: "{{steps.build_prpo.output}}"
+    extract:
+      code: "$.body.code"
+      message: "$.body.message"
+    on_error:
+      message: "{{steps.pr_to_po.extracted.message}}"
+
+  # ⑰ 检查PO
+  - id: check_po
+    action: condition
+    if: "{{steps.pr_to_po.extracted.code}} == '0'"
+    then: query_po_info
+    else: END_PO_FAIL
+
+  # ⑱ 查PO信息
+  - id: query_po_info
+    action: sql_query
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: >
+        SELECT DISTINCT po.business_key,po.purchase_order_no FROM m_purchase_order po INNER JOIN m_purchase_order_item poi ON po.id=poi.purchase_order_id WHERE poi.source_no='{{steps.query_pr_info.extracted.purchase_no}}' ORDER BY po.id DESC LIMIT 1
+    extract:
+      po_business_key: "$.rows[0].business_key"
+      purchase_order_no: "$.rows[0].purchase_order_no"
+
+  # ⑲ PO审批
+  - id: approve_po
+    action: http_call
+    wait: 8
+    params:
+      url: "{{config.bpm_base}}?businessKey={{steps.query_po_info.extracted.po_business_key}}"
+      method: GET
+    retry: {max: 12, interval_ms: 6000}
+    extract:
+      code: "$.body.code"
+    on_error:
+      message: "PO审批报错，尝试联系管理员-刘四星"
+
+  # ⑳ 等5秒查ERP单号
+  - id: query_erp
+    action: sql_query
+    wait: 5
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: "SELECT a.erp_purchase_order_no FROM m_purchase_order a JOIN m_purchase_order_item b ON a.id=b.purchase_order_id WHERE b.source_no='{{steps.query_pr_info.extracted.purchase_no}}' AND a.erp_purchase_order_no!='' ORDER BY a.id DESC LIMIT 1"
+    extract:
+      erp_no: "$.rows[0].erp_purchase_order_no"
+
+  # ㉑ 判断ERP单号
+  - id: check_erp
+    action: condition
+    if: "{{steps.query_erp.extracted.erp_no}} != ''"
+    then: SUCCESS
+    else: repush_erp
+
+  # ㉒ 重新推送
+  - id: repush_erp
+    action: http_call
+    params:
+      url: "{{config.scm_base}}/mrp/purchase/prpo/repushPo"
+      method: POST
+      headers:
+        Cookie: "{{steps.get_cookie.extracted.cookie}}"
+      body:
+        purchaseOrderNo: "{{steps.query_po_info.extracted.purchase_order_no}}"
+        purchaseNo: "{{steps.query_pr_info.extracted.purchase_no}}"
+    extract:
+      erp_no: "$.body.erp_purchase_order_no"
+    goto: check_erp
+
+terminals:
+  SUCCESS:
+    type: success
+    message: |
+      🎉 造单成功！
+      PR号: {{steps.query_pr_info.extracted.purchase_no}}
+      PO号: {{steps.query_po_info.extracted.purchase_order_no}}
+      ERP单号: {{steps.query_erp.extracted.erp_no}}
+
+  END_PR_FAIL:
+    type: error
+    message: "PR创建失败: {{steps.create_pr.extracted.message}}"
+
+  END_PO_FAIL:
+    type: error
+    message: "PO创建失败: {{steps.pr_to_po.extracted.message}}"

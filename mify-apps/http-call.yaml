@@ -1,0 +1,191 @@
+# Mify HTTP Call 工作流（与实际平台配置同步）
+# 结构：开始 → 条件分支(GET/POST) → 各自 HTTP 请求 → 结束
+app:
+  description: 通用HTTP调用工具，由Skill编排调用
+  icon: 🌐
+  icon_background: '#E8F5E9'
+  mode: workflow
+  name: mify-http-call
+  use_icon_as_answer_icon: false
+version: 0.3.2
+kind: app
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      enabled: false
+    opening_statement: ''
+    retriever_resource:
+      enabled: false
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+  graph:
+    nodes:
+      # ── 开始节点：接收参数 ──
+      - data:
+          desc: ''
+          title: 开始
+          type: start
+          variables:
+            - label: url
+              max_length: 2048
+              required: true
+              type: text-input
+              variable: url
+            - label: method
+              max_length: 10
+              options: [GET, POST, PUT, DELETE]
+              required: true
+              type: select
+              variable: method
+              default: GET
+            - label: body
+              max_length: 50000
+              required: false
+              type: paragraph
+              variable: body
+              default: ''
+            - label: cookie
+              max_length: 10000
+              required: false
+              type: paragraph
+              variable: cookie
+              default: ''
+          id: '1001'
+          type: custom
+          width: 244
+
+      # ── 条件分支：GET / 非GET ──
+      - data:
+          desc: ''
+          title: 条件分支
+          type: if-else
+          conditions:
+            - id: condition-get
+              comparison_operator: is
+              value: 'get'
+              variable_selector:
+                - '1001'
+                - method
+          id: '1002'
+          type: custom
+          width: 244
+
+      # ── GET HTTP 请求 ──
+      - data:
+          authorization:
+            config: null
+            type: no-auth
+          desc: GET请求
+          headers: 'Cookie:{{#1001.cookie#}}'
+          method: get
+          params: ''
+          retry_config:
+            max_retries: 3
+            retry_enabled: true
+            retry_interval: 100
+          ssl_verify: true
+          timeout:
+            max_connect_timeout: 0
+            max_read_timeout: 0
+            max_write_timeout: 0
+          title: HTTP 请求
+          type: http-request
+          url: '{{#1001.url#}}'
+          id: '1003'
+          type: custom
+          width: 244
+
+      # ── POST HTTP 请求 ──
+      - data:
+          authorization:
+            config: null
+            type: no-auth
+          body:
+            type: json
+            data:
+              - id: key-value-1
+                key: ''
+                type: text
+                value: '{{#1001.body#}}'
+          desc: POST请求
+          headers: 'Cookie:{{#1001.cookie#}}'
+          method: post
+          params: ''
+          retry_config:
+            max_retries: 3
+            retry_enabled: true
+            retry_interval: 100
+          ssl_verify: true
+          timeout:
+            max_connect_timeout: 0
+            max_read_timeout: 0
+            max_write_timeout: 0
+          title: HTTP 请求 (1)
+          type: http-request
+          url: '{{#1001.url#}}'
+          id: '1004'
+          type: custom
+          width: 244
+
+      # ── GET 结束 ──
+      - data:
+          desc: 返回GET响应
+          outputs:
+            - value_selector:
+                - '1003'
+                - body
+              value_type: string
+              variable: body
+            - value_selector:
+                - '1003'
+                - status_code
+              value_type: number
+              variable: status_code
+          title: 结束
+          type: end
+          id: '1005'
+          type: custom
+          width: 244
+
+      # ── POST 结束 ──
+      - data:
+          desc: 返回POST响应
+          outputs:
+            - value_selector:
+                - '1004'
+                - body
+              value_type: string
+              variable: body
+            - value_selector:
+                - '1004'
+                - status_code
+              value_type: number
+              variable: status_code
+          title: 结束 (1)
+          type: end
+          id: '1006'
+          type: custom
+          width: 244
+
+    edges:
+      - source: '1001'
+        target: '1002'
+      - source: '1002'
+        sourceHandle: source
+        target: '1003'
+      - source: '1002'
+        sourceHandle: fail-branch
+        target: '1004'
+      - source: '1003'
+        target: '1005'
+      - source: '1004'
+        target: '1006'

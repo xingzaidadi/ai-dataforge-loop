@@ -1,0 +1,163 @@
+# ZYZ普通物料PRPO造单流程配置 v4
+# 使用 use 指令引用共享步骤，减少重复代码
+# 原始 ~310 行 → v4 ~120 行，复用率 ~61%
+name: ZYZ普通物料PRPO造单
+description: 查询物料元数据 → ASL校验 → 查询代工厂 → 创建PR → PR审批 → 配额处理 → 查合同 → PR转PO → PO审批 → 查ERP单号
+
+# 引入共享步骤（全局）
+use:
+  - common-steps.get_cookie
+  - common-steps.query_factory
+  - common-steps.approve_pr
+  - common-steps.query_items
+  - common-steps.query_quota
+  - common-steps.update_quota
+  - common-steps.approve_po
+  - common-steps.query_erp
+  - common-steps.repush_erp
+
+inputs:
+  stockOrg:       { label: 库存组织, required: true, example: "MI_NOTEBOOK" }
+  purchaseOrg:    { label: 采购组织, required: true, example: "111K" }
+  supplierCode:   { label: 供应商编码, required: true, example: "100339" }
+  materials:      { label: 物料列表, required: true, type: object, example: '{"materialCode1": "1320601000014A"}' }
+  projectCode:    { label: 项目编码, required: false, example: "M59-CN" }
+  shipLocCode:    { label: 发货地点, required: true, example: "127862" }
+
+config:
+  db_uri: "${SCM_DB_URI}"
+  cookie_url: "${SCM_COOKIE_URL}"
+  scm_base: "${SCM_BASE_URL}"
+  bpm_base: "${BPM_APPROVE_URL}"
+
+steps:
+  # ① get_cookie → 引用共享步骤（use 自动注入）
+
+  # ② 物料元数据
+  - use: common-steps.get_materials_template
+  - use: common-steps.fetch_materials
+  - use: common-steps.filter_materials
+
+  # ③ ASL校验
+  - use: common-steps.check_asl
+
+  # ④ query_factory → 引用共享步骤（use 自动注入）
+
+  # ⑤ 拼PR请求体（ZYZ 特有：用 zyz-pr-body-v3 模板）
+  - id: build_pr
+    action: template
+    template: "templates/zyz-pr-body-v3.json.j2"
+    context:
+      stockOrg: "{{inputs.stockOrg}}"
+      purchaseOrg: "{{inputs.purchaseOrg}}"
+      supplierCode: "{{inputs.supplierCode}}"
+      projectCode: "{{inputs.projectCode}}"
+      materials: "{{steps.filter_materials.output}}"
+      receiveFactoryId: "{{steps.query_factory.extracted.factory_id}}"
+
+  # ⑥ 创建PR（ZYZ 特有：用 /mrp/purchaseVeriMaterial）
+  - id: create_pr
+    action: http_call
+    params:
+      url: "{{config.scm_base}}/mrp/purchaseVeriMaterial"
+      method: POST
+      headers:
+        Cookie: "{{steps.get_cookie.extracted.cookie}}"
+      body: "{{steps.build_pr.output}}"
+    extract:
+      code: "$.body.code"
+      message: "$.body.message"
+    on_error:
+      message: "{{steps.create_pr.extracted.message}}"
+
+  # ⑦ 检查PR
+  - id: check_pr
+    action: condition
+    if: "{{steps.create_pr.extracted.code}} == '0'"
+    then: query_pr_info
+    else: END_PR_FAIL
+
+  # ⑧ 查PR号（ZYZ 特有：wait=5，不含 p.id）
+  - id: query_pr_info
+    action: sql_query
+    wait: 5
+    retry: {max: 8, interval_ms: 7000}
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: "SELECT p.purchase_no,p.business_key FROM m_purchase p JOIN m_purchase_item i ON p.purchase_no=i.purchase_no WHERE i.xm_code IN({{materials_sql_in}}) AND i.supplier_code='{{inputs.supplierCode}}' AND p.stock_org='{{inputs.stockOrg}}' AND p.status >= 10 ORDER BY p.id DESC LIMIT 1"
+    extract:
+      purchase_no: "$.rows[0].purchase_no"
+      business_key: "$.rows[0].business_key"
+
+  # ⑨ approve_pr → 引用共享步骤
+  # ⑩ query_items → 引用共享步骤
+  # ⑪ query_quota → 引用共享步骤
+  # ⑪b update_quota → 引用共享步骤
+
+  # ⑫ 查合同
+  - use: common-steps.query_contract
+
+  # ⑬ PR转PO入参
+  - use: common-steps.build_prpo
+
+  # ⑭ PR转PO
+  - id: pr_to_po
+    action: http_call
+    params:
+      url: "{{config.scm_base}}/mrp/purchase/prpo/generatePo"
+      method: POST
+      headers:
+        Cookie: "{{steps.get_cookie.extracted.cookie}}"
+      body: "{{steps.build_prpo.output}}"
+    extract:
+      code: "$.body.code"
+      message: "$.body.message"
+    on_error:
+      message: "{{steps.pr_to_po.extracted.message}}"
+
+  # ⑭b 检查PO
+  - id: check_po
+    action: condition
+    if: "{{steps.pr_to_po.extracted.code}} == '0'"
+    then: query_po_info
+    else: END_PO_FAIL
+
+  # ⑮ 查PO信息
+  - id: query_po_info
+    action: sql_query
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: >
+        SELECT DISTINCT po.business_key,po.purchase_order_no FROM m_purchase_order po INNER JOIN m_purchase_order_item poi ON po.id=poi.purchase_order_id WHERE poi.source_no='{{steps.query_pr_info.extracted.purchase_no}}' ORDER BY po.id DESC LIMIT 1
+    extract:
+      po_business_key: "$.rows[0].business_key"
+      purchase_order_no: "$.rows[0].purchase_order_no"
+
+  # ⑯ approve_po → 引用共享步骤
+  # ⑰ query_erp → 引用共享步骤
+
+  # ⑱ 判断ERP单号
+  - id: check_erp
+    action: condition
+    if: "{{steps.query_erp.extracted.erp_no}} != ''"
+    then: SUCCESS
+    else: repush_erp
+
+  # ⑲ repush_erp → 引用共享步骤
+
+terminals:
+  SUCCESS:
+    type: success
+    message: |
+      🎉 造单成功！
+      PR号: {{steps.query_pr_info.extracted.purchase_no}}
+      PO号: {{steps.query_po_info.extracted.purchase_order_no}}
+      ERP单号: {{steps.query_erp.extracted.erp_no}}
+
+  END_PR_FAIL:
+    type: error
+    message: "PR创建失败: {{steps.create_pr.extracted.message}}"
+
+  END_PO_FAIL:
+    type: error
+    message: "PO创建失败: {{steps.pr_to_po.extracted.message}}"

@@ -1,0 +1,48 @@
+{
+  "stockOrg": "{{ stockOrg }}",
+  "materials": [
+    {% for key, code in materials.items() %}
+    {
+      "key": {{ loop.index }},
+      "description": "电视结构件_LCM组件_结构组件_背板组件_TVODMHJ01_ADFE20240422_ZNGC",
+      "pnCode": "1690201000003",
+      "purchaseOrg": "{{ purchaseOrg }}",
+      "applicationNum": 100000,
+      "catePathName": "电视结构件.LCM组件.结构组件",
+      "baseUom": "PC",
+      "minPackingQuantity": "10",
+      "minOrderQuantity": "10",
+      "xmCode": "{{ code }}",
+      "number": 10000,
+      "supplierCode": "{{ supplierCode }}",
+      "receiveDate": 1798736461000,
+      "isNew": 1,
+      "materialCode": "{{ code }}",
+      "materialDesc": "电视结构件_LCM组件_结构组件_背板组件_TVODMHJ01_ADFE20240422_ZNGC",
+      "manufacturer": "ZNGC",
+      "spCode": "",
+      "brand": "TEST_Ⅱ",
+      "label": "1690201000003A(电视结构件_LCM组件_结构组件_背板组件_TVODMHJ01_ADFE20240422_ZNGC)",
+      "value": "{{ code }}",
+      "catePathCode": "169.02.01",
+      "codeDescEn": "TV-ME_LCM-Assy_ME-Assy_背板组件_TVODMHJ01_ADFE20240422_ZNGC",
+      "materialGroupCode": "R4016902",
+      "materialGroup": "电视结构件-LCM组件",
+      "mgroup": {"code": "R4016902", "name": "电视结构件-LCM组件"},
+      "cvpnCode": "1690201000003",
+      "supplierCodeOption": {"label": "100774-纬创资通（中山）有限公司", "value": "100774", "key": "100774"},
+      "isStructure": true,
+      "receiveDateTimeStamp": 1717430400000,
+      "rowNo": "",
+      "remarks": ""
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ],
+  "purchaseReason": "14",
+  "receiveFactoryId": "{{ receiveFactoryId }}",
+  "projectCode": "{{ projectCode }}",
+  "productType": 2,
+  "materialCheckerList": ["kangtao"],
+  "isSubmit": true,
+  "purchaseType": 5
+}

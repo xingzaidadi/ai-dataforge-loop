@@ -1,0 +1,43 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# State files
+.state.json
+
+# Evidence runs
+evidence/runs/
+
+# Temporary files
+/tmp/
+*.tmp
+
+# Environment files (包含敏感信息)
+.env
+.env.local
+.env.*.local
+
+# Python virtual environments
+venv/
+v
+env/
+.env

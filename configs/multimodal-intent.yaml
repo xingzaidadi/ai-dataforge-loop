@@ -1,0 +1,21 @@
+name: multimodal-intent-contract
+description: 多模态输入可提取的造数字段契约。
+required_fields:
+  - orderType
+  - stockOrg
+  - purchaseOrg
+  - supplierCode
+  - materials
+  - projectCode
+optional_fields:
+  - shipLocCode
+  - businessModel
+  - contractorFactory
+input_types:
+  - text
+  - sop
+  - image
+  - failure_screenshot
+fallback:
+  screenshot_extract_failed: 回退为文本追问，禁止盲目执行。
+ui_verify_failed: 保留造数结果，标记 PARTIAL 并生成失败诊断。

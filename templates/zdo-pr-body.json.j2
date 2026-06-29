@@ -1,0 +1,66 @@
+{
+  "stockOrg": "{{ stockOrg }}",
+  "receiveFactoryId": "",
+  "materials": [
+    {% for key, code in materials.items() %}
+    {
+      "description": "电感_功率电感_2016_2016_1.0 mm_±20%_2.2_2.7 A_3.0 A_2.8 A_3.3 A_58 mΩ_底面电极_75 mΩ_HTTH20161T-2R2MSR_Cyntec",
+      "purchaseOrg": "{{ purchaseOrg }}",
+      "manufacturer": "Cyntec",
+      "spCode": "HTTH20161T-2R2MSR",
+      "pnCode": "{{ code[:11] }}",
+      "baseUom": "PC",
+      "key": {{ loop.index }},
+      "materialCode": "{{ code }}",
+      "materialDesc": "电感_功率电感_2016_2016_1.0 mm_±20%_2.2_2.7 A_3.0 A_2.8 A_3.3 A_58 mΩ_底面电极_75 mΩ_HTTH20161T-2R2MSR_Cyntec",
+      "brand": "CANAANTEK",
+      "label": "{{ code }}(电感_功率电感_2016_2016_1.0 mm_±20%_2.2_2.7 A_3.0 A_2.8 A_3.3 A_58 mΩ_底面电极_75 mΩ_HTTH20161T-2R2MSR_Cyntec)",
+      "value": "{{ code }}",
+      "catePathCode": "124.01.04",
+      "codeDescEn": "Inductor_Power-Inductor_2016_2016_1.0 mm_±20%_2.2_2.7 A_3.0 A_2.8 A_3.3 A_58 mΩ_Bottom Type Terminal_75 mΩ_HTTH20161T-2R2MSR_Cyntec",
+      "catePathName": "电感.功率电感.2016",
+      "materialGroupCode": "R1012401",
+      "materialGroup": "电感-功率电感",
+      "projects": "M11",
+      "mgroup": {
+        "code": "R1012401",
+        "name": "电感-功率电感"
+      },
+      "mpq": "10",
+      "mpnSupplier": [
+        {
+          "supplierCode": "{{ supplierCode }}",
+          "lt": "7",
+          "mpq": "10",
+          "moq": "10",
+          "xmCode": "{{ code }}"
+        }
+      ],
+      "cvpnCode": "{{ code[:11] }}",
+      "inStatus": "-",
+      "outStatus": "-",
+      "stockStatus": "良品",
+      "xmCode": "{{ code }}",
+      "unit": "PC",
+      "number": 11111,
+      "supplierCode": "{{ supplierCode }}",
+      "receiveDate": 1884182400000,
+      "isNew": 1,
+      "supplierCodeOption": {
+        "label": "{{ supplierCode }}",
+        "value": "{{ supplierCode }}",
+        "key": "{{ supplierCode }}"
+      },
+      "receiveDateTimeStamp": 1762764630304,
+      "remarks": ""
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ],
+  "projectCode": "{{ projectCode }}",
+  "projectDesc": "",
+  "productionType": 1,
+  "trialStage": "P0",
+  "isSubmit": true,
+  "purchaseType": 3,
+  "stageRemark": ""
+}

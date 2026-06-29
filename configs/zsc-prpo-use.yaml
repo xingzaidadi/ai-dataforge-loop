@@ -1,0 +1,190 @@
+# ZSC普通物料PRPO造单流程配置 — use 指令版本
+# 使用共享步骤系统，减少重复配置
+name: ZSC普通物料PRPO造单
+description: 查询物料元数据 → ASL校验 → 查询代工厂 → 创建PR → PR审批 → 配额处理 → 查合同 → PR转PO → PO审批 → 查ERP单号
+
+inputs:
+  stockOrg:       { label: 库存组织, required: true, example: "MI_PHONE" }
+  purchaseOrg:    { label: 采购组织, required: true, example: "1110" }
+  supplierCode:   { label: 供应商编码, required: true, example: "101131" }
+  materials:      { label: 物料列表, required: true, type: object, example: '{"materialCode1": "22BM1CC226AD"}' }
+  projectCode:    { label: 项目编码, required: false, example: "L18-CN" }
+  shipLocCode:    { label: 发货地点, required: true, example: "P3882" }
+
+config:
+  db_uri: "${SCM_DB_URI}"
+  cookie_url: "${SCM_COOKIE_URL}"
+  scm_base: "${SCM_BASE_URL}"
+  bpm_base: "${BPM_APPROVE_URL}"
+
+# 顶层 use：自动展开到 steps 开头
+use:
+  - common-steps.get_cookie
+  - common-steps.get_materials_template
+  - common-steps.fetch_materials
+  - common-steps.filter_materials
+  - common-steps.check_asl
+
+steps:
+  # ④ 查询代工厂ID（ZSC 特有：需要 supplier_name）
+  - id: query_factory
+    action: sql_query
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: >
+        SELECT id from d_factory where factory_code='{{inputs.shipLocCode}}' AND product_line='{{inputs.stockOrg}}' ORDER BY id DESC LIMIT 1
+    extract:
+      factory_id: "$.rows[0].id"
+
+  # ⑤ 查询供应商名称（ZSC 特有：拼 PR 请求体需要）
+  - use: common-steps.query_supplier
+
+  # ⑥ 拼PR请求体（用物料元数据+模板，ZSC 特有模板）
+  - id: build_pr
+    action: template
+    template: "templates/zsc-pr-body-v3.json.j2"
+    context:
+      stockOrg: "{{inputs.stockOrg}}"
+      purchaseOrg: "{{inputs.purchaseOrg}}"
+      supplierCode: "{{inputs.supplierCode}}"
+      supplierName: "{{steps.query_supplier.extracted.supplier_name}}"
+      projectCode: "{{inputs.projectCode}}"
+      materials: "{{steps.filter_materials.output}}"
+      receiveFactoryId: "{{steps.query_factory.extracted.factory_id}}"
+      purchaseType: "4"
+      trialStage: "P0"
+
+  # ⑦ 创建PR（ZSC 特有 URL）
+  - id: create_pr
+    action: http_call
+    params:
+      url: "{{config.scm_base}}/mrp/purchase/trail"
+      method: POST
+      headers:
+        Cookie: "{{steps.get_cookie.extracted.cookie}}"
+      body: "{{steps.build_pr.output}}"
+    extract:
+      code: "$.body.code"
+      message: "$.body.message"
+    on_error:
+      message: "{{steps.create_pr.extracted.message}}"
+
+  # ⑧ 检查PR
+  - id: check_pr
+    action: condition
+    if: "{{steps.create_pr.extracted.code}} == '0'"
+    then: query_pr_info
+    else: END_PR_FAIL
+
+  # ⑨ 查business_key和purchase_no（共享步骤）
+  - use: common-steps.query_pr_info
+
+  # ⑩ PR审批（共享步骤）
+  - use: common-steps.approve_pr
+
+  # ⑪ 查PR物料行（共享步骤）
+  - use: common-steps.query_items
+
+  # ⑫ 配额处理：查询配额（共享步骤）
+  - use: common-steps.query_quota
+
+  # ⑬ 配额处理：更新代工厂（共享步骤）
+  - use: common-steps.update_quota
+
+  # ⑭ 按采购组织分派合同查询
+  - id: route_contract
+    action: switch
+    switch_on: "{{inputs.purchaseOrg}}"
+    cases:
+      - match: "1110"
+        goto: query_contract_phone
+    default: query_contract_nm
+
+  # ⑭a 查合同号（手机，price_type=ZSC）
+  - id: query_contract_phone
+    action: loop
+    items: "{{steps.query_items.extracted.items}}"
+    loop_var: pr_item
+    steps:
+      - id: query_one_gfa_phone
+        action: sql_query
+        params:
+          db_uri: "{{config.db_uri}}"
+          query: >
+            SELECT gfa_no,gfa_row_no,material_code FROM m_purchase_srm_gfa WHERE gfa_enable=1 AND sp_code='{{inputs.supplierCode}}' AND material_code='{{context.pr_item.xm_code}}' AND purchase_org='{{inputs.purchaseOrg}}' AND unix_timestamp()*1000<price_end_date ORDER BY contract_date DESC LIMIT 1
+        extract:
+          gfa_no: "$.rows[0].gfa_no"
+          gfa_row_no: "$.rows[0].gfa_row_no"
+          material_code: "$.rows[0].material_code"
+          pr_item_id: "{{context.pr_item.id}}"
+    collect: contracts
+    goto: build_prpo
+
+  # ⑭b 查合同号（非手机）
+  - id: query_contract_nm
+    action: loop
+    items: "{{steps.query_items.extracted.items}}"
+    loop_var: pr_item
+    steps:
+      - id: query_one_gfa_nm
+        action: sql_query
+        params:
+          db_uri: "{{config.db_uri}}"
+          query: >
+            SELECT gfa_no,gfa_row_no,material_code FROM m_purchase_srm_gfa WHERE gfa_enable=1 AND sp_code='{{inputs.supplierCode}}' AND material_code='{{context.pr_item.xm_code}}' AND purchase_org='{{inputs.purchaseOrg}}' AND unix_timestamp()*1000<price_end_date ORDER BY contract_date DESC LIMIT 1
+        extract:
+          gfa_no: "$.rows[0].gfa_no"
+          gfa_row_no: "$.rows[0].gfa_row_no"
+          material_code: "$.rows[0].material_code"
+          pr_item_id: "{{context.pr_item.id}}"
+    collect: contracts
+    goto: build_prpo
+
+  # ⑮ 拼PR转PO入参（共享步骤）
+  - use: common-steps.build_prpo
+
+  # ⑯ PR转PO（共享步骤）
+  - use: common-steps.pr_to_po
+
+  # ⑰ 检查PO
+  - id: check_po
+    action: condition
+    if: "{{steps.pr_to_po.extracted.code}} == '0'"
+    then: query_po_info
+    else: END_PO_FAIL
+
+  # ⑱ 查PO信息（共享步骤）
+  - use: common-steps.query_po_info
+
+  # ⑲ PO审批（共享步骤）
+  - use: common-steps.approve_po
+
+  # ⑳ 查ERP单号（共享步骤）
+  - use: common-steps.query_erp
+
+  # ㉑ 判断ERP单号
+  - id: check_erp
+    action: condition
+    if: "{{steps.query_erp.extracted.erp_no}} != ''"
+    then: SUCCESS
+    else: repush_erp
+
+  # ㉒ 重新推送（共享步骤）
+  - use: common-steps.repush_erp
+
+terminals:
+  SUCCESS:
+    type: success
+    message: |
+      🎉 造单成功！
+      PR号: {{steps.query_pr_info.extracted.purchase_no}}
+      PO号: {{steps.query_po_info.extracted.purchase_order_no}}
+      ERP单号: {{steps.query_erp.extracted.erp_no}}
+
+  END_PR_FAIL:
+    type: error
+    message: "PR创建失败: {{steps.create_pr.extracted.message}}"
+
+  END_PO_FAIL:
+    type: error
+    message: "PO创建失败: {{steps.pr_to_po.extracted.message}}"

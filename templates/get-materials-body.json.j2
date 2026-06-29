@@ -1,0 +1,8 @@
+{
+  "purchaseType": 4,
+  "stockOrg": "{{ stockOrg }}",
+  "needPurchaseOrg": true,
+  "moduleCode": "Purchase4",
+  "materialCodes": [{% for key, val in materials.items() %}"{{ val }}"{% if not loop.last %}, {% endif %}{% endfor %}],
+  "pageSize": 2000
+}

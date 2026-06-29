@@ -1,0 +1,215 @@
+# ZWW成品PRPO造单流程配置（电视场景最小可用版本）
+name: ZWW成品PRPO造单
+description: 成品场景 → 创建PR → 查purchase_no → 查加工费/ODM费 → 选税码 → PR转PO → PO审批 → 查ERP
+
+inputs:
+  stockOrg:       { label: 库存组织, required: true, example: "MI_TV" }
+  purchaseOrg:    { label: 采购组织, required: true, example: "1111" }
+  supplierCode:   { label: 供应商编码, required: true, example: "109773" }
+  sku:            { label: SKU, required: true, example: "ELA4130CN" }
+  prodMaterialCode: { label: 成品物料编码, required: true, example: "D65055000009P" }
+  projectCode:    { label: 项目编码, required: true, example: "TV1111-EU" }
+  goodsId:        { label: 商品ID, required: false, example: "15563" }
+
+config:
+  db_uri: "mysql+pymysql://isc_scm_test_wn:vKoc3jfIM2v4z4pPwruR6YaUpCOaHZep@ksc.test.mysql01.b2c.srv:3304/isc_scm_test"
+  cookie_url: "https://toolskit.test.mi.com/datacube/getSCMCookie"
+  scm_base: "https://scm.test.mioffice.cn"
+  bpm_base: "https://bpm-infra.test.mioffice.cn/bpmtool/api/bpmThree/approve"
+
+steps:
+  # ① 获取Cookie
+  - id: get_cookie
+    action: http_call
+    params:
+      url: "{{config.cookie_url}}"
+      method: GET
+    extract:
+      cookie: "$.body.data.result.cookie"
+    on_error:
+      message: "cookie获取失败，尝试联系管理员-刘四星"
+
+  # ② 拼PR请求体
+  - id: build_pr
+    action: template
+    template: "templates/zww-tv-pr-body.json.j2"
+    context:
+      stockOrg: "{{inputs.stockOrg}}"
+      purchaseOrg: "{{inputs.purchaseOrg}}"
+      sku: "{{inputs.sku}}"
+      prod_material_code: "{{inputs.prodMaterialCode}}"
+      goodsId: "{{inputs.goodsId}}"
+
+  # ③ 创建PR
+  - id: create_pr
+    action: http_call
+    params:
+      url: "{{config.scm_base}}/mrp/purchase/entrust"
+      method: POST
+      headers:
+        Cookie: "{{steps.get_cookie.extracted.cookie}}"
+      body: "{{steps.build_pr.output}}"
+    extract:
+      code: "$.body.code"
+      message: "$.body.message"
+    on_error:
+      message: "{{steps.create_pr.extracted.message}}"
+
+  # ④ 检查PR
+  - id: check_pr
+    action: condition
+    if: "{{steps.create_pr.extracted.code}} == '0'"
+    then: query_pr_no
+    else: END_PR_FAIL
+
+  # ⑤ 查询purchase_no
+  - id: query_pr_no
+    action: sql_query
+    wait: 5
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: >
+        SELECT mp.purchase_no, mp.business_key FROM m_purchase mp
+        INNER JOIN m_purchase_item mpi ON mp.purchase_no = mpi.purchase_no
+        WHERE mp.stock_org = '{{inputs.stockOrg}}' AND mpi.xm_code = '{{inputs.sku}}'
+        ORDER BY mp.id DESC LIMIT 1
+    extract:
+      purchase_no: "$.rows[0].purchase_no"
+      business_key: "$.rows[0].business_key"
+
+  # ⑥ 查询item id
+  - id: query_item_id
+    action: sql_query
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: >
+        SELECT id FROM m_purchase_item WHERE purchase_no = '{{steps.query_pr_no.extracted.purchase_no}}' LIMIT 1
+    extract:
+      item_id: "$.rows[0].id"
+
+  # ⑦ 查询加工费(MVAFee)
+  - id: query_mva_fee
+    action: sql_query
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: >
+        SELECT tax_price FROM d_sku_price_basic_line WHERE material_code='{{inputs.sku}}' AND expense_type='MVAFee' AND order_type=7 AND supplier_code='0000{{inputs.supplierCode}}' ORDER BY created_at DESC LIMIT 1
+    extract:
+      mva_fee: "$.rows[0].tax_price"
+
+  # ⑧ 查询ODM费(ODMOwnedFee)
+  - id: query_odm_fee
+    action: sql_query
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: >
+        SELECT tax_price FROM d_sku_price_basic_line WHERE material_code='{{inputs.sku}}' AND expense_type='ODMOwnedFee' AND price_unit=10000 AND supplier_code='0000{{inputs.supplierCode}}' LIMIT 1
+    extract:
+      odm_fee: "$.rows[0].tax_price"
+
+  # ⑨ 拼PO入参（priceList 直接在模板里拼，不需要 chooseFactory）
+  - id: build_po
+    action: template
+    template: "templates/zww-tv-po-body.json.j2"
+    context:
+      company_code: "1180"
+      item_id: "{{steps.query_item_id.extracted.item_id}}"
+      sku: "{{inputs.sku}}"
+      supplier_code: "{{inputs.supplierCode}}"
+      supplier_short_name: "安徽康佳电子有限公司"
+      project_code: "{{inputs.projectCode}}"
+      prod_material_code: "{{inputs.prodMaterialCode}}"
+      mva_fee: "{{steps.query_mva_fee.extracted.mva_fee}}"
+      odm_fee: "{{steps.query_odm_fee.extracted.odm_fee}}"
+
+  # ⑩ 创建PO
+  - id: create_po
+    action: http_call
+    params:
+      url: "{{config.scm_base}}/mrp/purchase/entrust/prpo/generatePo"
+      method: POST
+      headers:
+        Cookie: "{{steps.get_cookie.extracted.cookie}}"
+      body: "{{steps.build_po.output}}"
+    extract:
+      code: "$.body.code"
+      purchase_order_no: "$.body.data[0].purchaseOrderNo"
+    on_error:
+      message: "PO创建失败"
+
+  # ⑬ 检查PO
+  - id: check_po
+    action: condition
+    if: "{{steps.create_po.extracted.code}} == '0'"
+    then: query_po_business_key
+    else: END_PO_FAIL
+
+  # ⑭ 查PO business_key
+  - id: query_po_business_key
+    action: sql_query
+    wait: 5
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: >
+        SELECT DISTINCT po.business_key FROM m_purchase_order po
+        INNER JOIN m_purchase_order_item poi ON po.id = poi.purchase_order_id
+        WHERE poi.source_no = '{{steps.query_pr_no.extracted.purchase_no}}'
+    extract:
+      po_business_key: "$.rows[0].business_key"
+
+  # ⑮ PO审批
+  - id: approve_po
+    action: http_call
+    params:
+      url: "{{config.bpm_base}}?businessKey={{steps.query_po_business_key.extracted.po_business_key}}"
+      method: GET
+    retry: {max: 3, interval_ms: 100}
+    extract:
+      code: "$.body.code"
+
+  # ⑯ 等5秒查ERP单号
+  - id: query_erp
+    action: sql_query
+    wait: 5
+    params:
+      db_uri: "{{config.db_uri}}"
+      query: >
+        SELECT DISTINCT po.erp_purchase_order_no FROM m_purchase_order po
+        INNER JOIN m_purchase_order_item poi ON po.id = poi.purchase_order_id
+        WHERE poi.source_no = '{{steps.query_pr_no.extracted.purchase_no}}'
+        AND po.erp_purchase_order_no IS NOT NULL
+        AND po.erp_purchase_order_no != ''
+        LIMIT 1
+    extract:
+      erp_no: "$.rows[0].erp_purchase_order_no"
+
+  # ⑰ 判断ERP单号
+  - id: check_erp
+    action: condition
+    if: "{{steps.query_erp.extracted.erp_no}} != ''"
+    then: SUCCESS
+    else: END_NO_ERP
+
+terminals:
+  SUCCESS:
+    type: success
+    message: |
+      🎉 ZWW造单成功！
+      PR号: {{steps.query_pr_no.extracted.purchase_no}}
+      PO号: {{steps.create_po.extracted.purchase_order_no}}
+      ERP单号: {{steps.query_erp.extracted.erp_no}}
+
+  END_PR_FAIL:
+    type: error
+    message: "PR创建失败: {{steps.create_pr.extracted.message}}"
+
+  END_PO_FAIL:
+    type: error
+    message: "PO创建失败: {{steps.create_po.extracted.message}}"
+
+  END_NO_ERP:
+    type: success
+    message: |
+      ⚠️ PR和PO已创建，但ERP单号未生成
+      PR号: {{steps.query_pr_no.extracted.purchase_no}}
+      PO号: {{steps.create_po.extracted.purchase_order_no}}

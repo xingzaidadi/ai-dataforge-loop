@@ -1,0 +1,21 @@
+{
+  "taskType": "intent_extract",
+  "sceneType": "ZNB",
+  "stockOrg": "MI_IOT",
+  "stockOrgCN": "生态链",
+  "purchaseOrg": "2120",
+  "purchaseOrgCN": "生态链采购组织",
+  "supplierCode": "108062",
+  "supplierName": "威海市泓淋电力技术股份有限公司",
+  "projectCode": "EcoOdmJdm20240708220947-EU",
+  "demandOrg": "生态链",
+  "applicationId": "8440027539",
+  "status": "已通过",
+  "materials": [
+    {"materialCode": "1710301000006A", "materialName": "生态链结构件_注塑件", "quantity": "111111"}
+  ],
+  "missingFields": [],
+  "nextAction": "AUTO_FILL_FROM_POOL",
+  "canProceedToDatamake": true,
+  "confidence": 0.9
+}
