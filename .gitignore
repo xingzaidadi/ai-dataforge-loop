@@ -24,8 +24,14 @@ Thumbs.db
 # State files
 .state.json
 
-# Evidence runs
+# Evidence runs（含每次运行重新生成的索引页，属构建产物不入库）
 evidence/runs/
+evidence/index.html
+
+# 独立运行工具时落到项目根目录的结果产物（正常应写进 evidence/runs/{run_id}/）
+/asn-result.json
+/srm-price-clean-result.json
+/datamake-result.json
 
 # Temporary files
 /tmp/

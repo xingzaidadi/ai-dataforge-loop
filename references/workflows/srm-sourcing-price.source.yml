@@ -1,0 +1,1775 @@
+app:
+  description: ''
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: workflow
+  name: SRM寻源价格造数
+  use_icon_as_answer_icon: false
+dependencies: []
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 100
+        batch_count_limit: 5
+        feishu_file_count_limit: 20
+        feishu_url_count_limit: 20
+        file_size_limit: 100
+        image_file_size_limit: 30
+        video_file_size_limit: 800
+        workflow_file_upload_limit: 50
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1757421763810-true-1757419920897-target
+      selected: false
+      source: '1757421763810'
+      sourceHandle: 'true'
+      target: '1757419920897'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: http-request
+        targetType: llm
+      id: 17574686095840-source-1757469041788-target
+      selected: false
+      source: '17574686095840'
+      sourceHandle: source
+      target: '1757469041788'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: question-classifier
+        targetType: http-request
+      id: 1757470102848-1-1757470203438-target
+      selected: false
+      source: '1757470102848'
+      sourceHandle: '1'
+      target: '1757470203438'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: question-classifier
+        targetType: http-request
+      id: 1757470102848-1757470161304-1757470206176-target
+      selected: false
+      source: '1757470102848'
+      sourceHandle: '1757470161304'
+      target: '1757470206176'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: question-classifier
+        targetType: http-request
+      id: 1757470102848-2-1757470208927-target
+      selected: false
+      source: '1757470102848'
+      sourceHandle: '2'
+      target: '1757470208927'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: start
+        targetType: code
+      id: 1757417750154-source-1757495462064-target
+      selected: false
+      source: '1757417750154'
+      sourceHandle: source
+      target: '1757495462064'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: http-request
+        targetType: parameter-extractor
+      id: 1757419920897-source-1757503739629-target
+      selected: false
+      source: '1757419920897'
+      sourceHandle: source
+      target: '1757503739629'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: parameter-extractor
+        targetType: if-else
+      id: 1757503739629-source-1757468154490-target
+      selected: false
+      source: '1757503739629'
+      sourceHandle: source
+      target: '1757468154490'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: code
+      id: 1757468154490-false-1757503861661-target
+      selected: false
+      source: '1757468154490'
+      sourceHandle: 'false'
+      target: '1757503861661'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: code
+        targetType: http-request
+      id: 1757503861661-source-17574681707080-target
+      source: '1757503861661'
+      sourceHandle: source
+      target: '17574681707080'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: question-classifier
+        targetType: http-request
+      id: 1757470102848-1757504772415-1757504824389-target
+      source: '1757470102848'
+      sourceHandle: '1757504772415'
+      target: '1757504824389'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: parameter-extractor
+      id: 1757469041788-source-1757506001342-target
+      source: '1757469041788'
+      sourceHandle: source
+      target: '1757506001342'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: parameter-extractor
+        targetType: question-classifier
+      id: 1757506001342-source-1757470102848-target
+      source: '1757506001342'
+      sourceHandle: source
+      target: '1757470102848'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: if-else
+      id: 1757421763810-false-1757507195729-target
+      source: '1757421763810'
+      sourceHandle: 'false'
+      target: '1757507195729'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: code
+      id: 1757507195729-false-1757503861661-target
+      source: '1757507195729'
+      sourceHandle: 'false'
+      target: '1757503861661'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1757507195729-true-1757507260416-target
+      source: '1757507195729'
+      sourceHandle: 'true'
+      target: '1757507260416'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: http-request
+        targetType: parameter-extractor
+      id: 1757504824389-source-1757555095110-target
+      source: '1757504824389'
+      sourceHandle: source
+      target: '1757555095110'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: parameter-extractor
+        targetType: http-request
+      id: 1757555095110-source-1757555208218-target
+      source: '1757555095110'
+      sourceHandle: source
+      target: '1757555208218'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: if-else
+        targetType: parameter-extractor
+      id: 1757468154490-true-1757555756397-target
+      source: '1757468154490'
+      sourceHandle: 'true'
+      target: '1757555756397'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: parameter-extractor
+        targetType: end
+      id: 1757555756397-source-1757468257643-target
+      source: '1757555756397'
+      sourceHandle: source
+      target: '1757468257643'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: http-request
+        targetType: parameter-extractor
+      id: 1757470203438-source-1757555872856-target
+      source: '1757470203438'
+      sourceHandle: source
+      target: '1757555872856'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: http-request
+        targetType: parameter-extractor
+      id: 1757470208927-source-1757555872856-target
+      source: '1757470208927'
+      sourceHandle: source
+      target: '1757555872856'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: question-classifier
+        targetType: parameter-extractor
+      id: 1757470102848-1757504789437-1757555872856-target
+      source: '1757470102848'
+      sourceHandle: '1757504789437'
+      target: '1757555872856'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: http-request
+        targetType: parameter-extractor
+      id: 1757470206176-source-1757555872856-target
+      source: '1757470206176'
+      sourceHandle: source
+      target: '1757555872856'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: http-request
+        targetType: parameter-extractor
+      id: 1757555208218-source-1757555872856-target
+      source: '1757555208218'
+      sourceHandle: source
+      target: '1757555872856'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: parameter-extractor
+        targetType: end
+      id: 1757555872856-source-1757556063723-target
+      source: '1757555872856'
+      sourceHandle: source
+      target: '1757556063723'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: http-request
+        targetType: parameter-extractor
+      id: 1757507260416-source-1757561136732-target
+      source: '1757507260416'
+      sourceHandle: source
+      target: '1757561136732'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: parameter-extractor
+        targetType: http-request
+      id: 1757561136732-source-17575612367690-target
+      source: '1757561136732'
+      sourceHandle: source
+      target: '17575612367690'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: http-request
+        targetType: parameter-extractor
+      id: 17575612367690-source-1757561275304-target
+      source: '17575612367690'
+      sourceHandle: source
+      target: '1757561275304'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: parameter-extractor
+        targetType: end
+      id: 1757561275304-source-1757561375960-target
+      source: '1757561275304'
+      sourceHandle: source
+      target: '1757561375960'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: code
+        targetType: http-request
+      id: 1757495462064-source-1757561517278-target
+      source: '1757495462064'
+      sourceHandle: source
+      target: '1757561517278'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: http-request
+        targetType: parameter-extractor
+      id: 1757561517278-source-1757561598925-target
+      source: '1757561517278'
+      sourceHandle: source
+      target: '1757561598925'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: parameter-extractor
+        targetType: if-else
+      id: 1757561598925-source-1757421763810-target
+      source: '1757561598925'
+      sourceHandle: source
+      target: '1757421763810'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17574681707080-source-17574686095840-target
+      source: '17574681707080'
+      sourceHandle: source
+      target: '17574686095840'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: 开始
+        type: start
+        variables:
+        - label: 物料MPN
+          max_length: 48
+          options: []
+          required: true
+          type: text-input
+          variable: mpn_id
+        - label: 采购组织
+          max_length: 48
+          options: []
+          required: true
+          type: text-input
+          variable: procurement_org
+        - label: 供应商
+          max_length: 48
+          options: []
+          required: true
+          type: text-input
+          variable: supplier_code
+        - label: 物料类型
+          max_length: 48
+          options:
+          - material
+          - semi
+          - finished
+          required: false
+          type: select
+          variable: material_type
+        - label: 需求来源
+          max_length: 48
+          options:
+          - ZWW
+          - ZWY
+          - ZWB
+          required: false
+          type: select
+          variable: source_type
+        - label: 采购模式
+          max_length: 48
+          options:
+          - NORMAL
+          - POC
+          - JIT
+          - VMI
+          required: false
+          type: select
+          variable: purchase_mode
+        - label: 费用PN
+          max_length: 48
+          options: []
+          required: false
+          type: text-input
+          variable: cost_pn
+        - label: 含税单价
+          max_length: 48
+          options: []
+          required: false
+          type: text-input
+          variable: gross
+        - label: 价格单位
+          max_length: 48
+          options:
+          - WPCS
+          - KPCS
+          - PC
+          required: false
+          type: select
+          variable: kpein
+        - label: 税码
+          max_length: 48
+          options:
+          - J2
+          - J0
+          - J1
+          - J9
+          - V0
+          required: false
+          type: select
+          variable: tax_code
+        - label: 税率
+          max_length: 48
+          options:
+          - '0.13'
+          - '0.00'
+          - '0.16'
+          - '0.17'
+          required: false
+          type: select
+          variable: taxrt
+        - label: 生效开始日期
+          max_length: 48
+          options: []
+          required: false
+          type: text-input
+          variable: datab
+        - label: 生效结束日期
+          max_length: 48
+          options: []
+          required: false
+          type: text-input
+          variable: datbi
+        - label: 价格类型
+          max_length: 48
+          options:
+          - mav_fee,odm_owned_fee
+          - mav_fee
+          - sample_fee
+          - machine_fee
+          required: false
+          type: select
+          variable: price_type
+      height: 428
+      id: '1757417750154'
+      position:
+        x: 79.88497146242963
+        y: 283.43453644834324
+      positionAbsolute:
+        x: 79.88497146242963
+        y: 283.43453644834324
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-1
+            key: ''
+            type: text
+            value: "{\n\t\"matnr\": \"{{#1757417750154.mpn_id#}}\",\n\t\"procurementOrg\"\
+              : \"{{#1757417750154.procurement_org#}}\",\n    \"costProjectPhase\"\
+              : \"{{#1757495462064.sourceType#}}\"\n}"
+          type: json
+        desc: ''
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 根据物料获取费用PN
+        type: http-request
+        url: https://toolskit.test.mi.com/isc/srm-data-produce/get/pnCost
+        variables: []
+      height: 155
+      id: '1757419920897'
+      position:
+        x: 1647.7724507138885
+        y: 161.8787342763369
+      positionAbsolute:
+        x: 1647.7724507138885
+        y: 161.8787342763369
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: empty
+            id: e26193c5-3326-4840-a565-6d850b19e9f6
+            value: ''
+            varType: string
+            variable_selector:
+            - '1757417750154'
+            - cost_pn
+          - comparison_operator: contains
+            id: 863fb88a-ba9c-4e77-9b67-4aaf2c93adc2
+            value: mav_fee
+            varType: string
+            variable_selector:
+            - '1757561517278'
+            - body
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 条件分支
+        type: if-else
+      height: 152
+      id: '1757421763810'
+      position:
+        x: 1318.3486819477766
+        y: 175.75430547329313
+      positionAbsolute:
+        x: 1318.3486819477766
+        y: 175.75430547329313
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: empty
+            id: 539e338f-d76d-426a-ac9e-5ca692839b8a
+            value: ''
+            varType: string
+            variable_selector:
+            - '1757503739629'
+            - costPn
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 条件分支 2
+        type: if-else
+      height: 126
+      id: '1757468154490'
+      position:
+        x: 2305.913751323258
+        y: 175.75430547329313
+      positionAbsolute:
+        x: 2305.913751323258
+        y: 175.75430547329313
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-424
+            key: ''
+            type: text
+            value: "{\n\t\"mpnId\": \"{{#1757417750154.mpn_id#}}\",\n\t\"newMpnId\"\
+              : \"{{#1757417750154.mpn_id#}}\",\n\t\"procurementOrg\": \"{{#1757417750154.procurement_org#}}\"\
+              ,\n\t\"supplierCode\": \"{{#1757417750154.supplier_code#}}\",\n\t\"\
+              materialCategory\": \"{{#1757495462064.materialType#}}\",\n\t\"sourceType\"\
+              : \"{{#1757495462064.sourceType#}}\",\n\t\"purchaseMode\": \"{{#1757495462064.purchaseMode#}}\"\
+              ,\n     \"costPn\":\"{{#1757503861661.costPn#}}\",\n\t\"gross\": \"\
+              {{#1757495462064.gross#}}\",\n\t\"kpein\": \"{{#1757495462064.kpein#}}\"\
+              ,\n\t\"taxCode\": \"{{#1757495462064.taxCode#}}\",\n\t\"taxrt\": \"\
+              {{#1757495462064.taxrt#}}\",\n\t\"datab\": \"{{#1757495462064.datab#}}\"\
+              ,\n\t\"datbi\": \"{{#1757495462064.datbi#}}\",\n\t\"priceType\": \"\
+              mav_fee,odm_owned_fee\"\n}"
+          type: json
+        desc: ''
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 造价格接口
+        type: http-request
+        url: https://toolskit.test.mi.com/isc/data-pool/mpn/create
+        variables: []
+      height: 139
+      id: '17574681707080'
+      position:
+        x: 946.2955080286122
+        y: 689.7149462548724
+      positionAbsolute:
+        x: 946.2955080286122
+        y: 689.7149462548724
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1757555756397'
+          - result
+          variable: result
+        selected: false
+        title: 无费用PN结束
+        type: end
+      height: 90
+      id: '1757468257643'
+      position:
+        x: 2937.6234174494894
+        y: 197.50087829155672
+      positionAbsolute:
+        x: 2937.6234174494894
+        y: 197.50087829155672
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-424
+            key: ''
+            type: text
+            value: "{\n\t\"matnr\": \"{{#1757417750154.mpn_id#}}\",\n\t\"procurementOrg\"\
+              : \"{{#1757417750154.procurement_org#}}\",\n\t\"supplierCode\": \"{{#1757417750154.supplier_code#}}\"\
+              ,\n\t\"materialType\": \"{{#1757495462064.materialType#}}\",\n     \"\
+              costPn\":\"{{#1757503861661.costPn#}}\",\n     \"projectId\":\"\",\n\
+              \     \"costProjectPhase\":\"{{#1757495462064.sourceType#}}\"\n}"
+          type: json
+        desc: ''
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 价格检测接口
+        type: http-request
+        url: https://toolskit.test.mi.com/isc/srm-data-produce/data/improvement
+        variables: []
+      height: 155
+      id: '17574686095840'
+      position:
+        x: 1318.3486819477766
+        y: 689.7149462548724
+      positionAbsolute:
+        x: 1318.3486819477766
+        y: 689.7149462548724
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '17574686095840'
+          - body
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        prompt_template:
+        - id: a52c29dc-a9a9-40bd-a647-0c7b9f8d4b7e
+          role: system
+          text: '获取{{#17574686095840.body#}}中data数据，应该是个map格式，将每个ksy和value取出来进行解读
+
+            key为”price_type“的直接忽略
+
+            key为”asl“的若是存在，且内容为”公服不存在ASL“则调用则输出"ASL在公服中不存在"
+
+            key为”pn_map“的若是存在，且内容“价格中心”冒号后分号前没代码，则输出”价格中心未绑定费用PN“
+
+            key为”cost_configure“的若是存在，且内容为”费用项配置不存在”则输出"费用项未配置"
+
+            key为”price_list“的若是提示”不存在xxx定价单“，则输出”定价单在价格中心中不存在“
+
+            以上输出内容用分号连接
+
+            '
+        selected: false
+        title: 处理价格检测结果
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1757469041788'
+      position:
+        x: 1675.6518173323682
+        y: 689.7149462548724
+      positionAbsolute:
+        x: 1675.6518173323682
+        y: 689.7149462548724
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        classes:
+        - id: '1'
+          name: 若包含ASL在公服中不存在
+        - id: '2'
+          name: 若包含价格中心未绑定费用PN
+        - id: '1757470161304'
+          name: 若包含费用项未配置
+        - id: '1757504772415'
+          name: 定价单在价格中心中不存在
+        - id: '1757504789437'
+          name: 若不包含以上报错
+        desc: ''
+        instructions: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        query_variable_selector:
+        - '1757506001342'
+        - price_check
+        selected: false
+        title: 问题分类器
+        topics: []
+        type: question-classifier
+        vision:
+          enabled: false
+      height: 286
+      id: '1757470102848'
+      position:
+        x: 2505.0232443911573
+        y: 637.1119742674454
+      positionAbsolute:
+        x: 2505.0232443911573
+        y: 637.1119742674454
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-1849
+            key: ''
+            type: text
+            value: "{\n        \"matnr\": \"{{#1757417750154.mpn_id#}}\",\n      \
+              \  \"procurementOrg\": \"{{#1757417750154.procurement_org#}}\",\n  \
+              \      \"supplierCode\": \"{{#1757417750154.supplier_code#}}\",\n  \
+              \      \"purchaseMode\":\"{{#1757495462064.purchaseMode#}}\"\n}"
+          type: json
+        desc: ''
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 维护ASL并推送公服
+        type: http-request
+        url: https://toolskit.test.mi.com/isc/srm-tools/create/asl
+        variables: []
+      height: 139
+      id: '1757470203438'
+      position:
+        x: 2845.027127881045
+        y: 489.3721643912937
+      positionAbsolute:
+        x: 2845.027127881045
+        y: 489.3721643912937
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-1851
+            key: ''
+            type: text
+            value: "{\n        \"matnr\": \"{{#1757417750154.mpn_id#}}\",\n      \
+              \  \"procurementOrg\": \"{{#1757417750154.procurement_org#}}\",\n  \
+              \      \"supplierCode\": \"{{#1757417750154.supplier_code#}}\"\n}"
+          type: json
+        desc: ''
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 费用项配置
+        type: http-request
+        url: https://toolskit.test.mi.com/isc/srm-tools/create/cost
+        variables: []
+      height: 139
+      id: '1757470206176'
+      position:
+        x: 2855.0688830194485
+        y: 892.523492848796
+      positionAbsolute:
+        x: 2855.0688830194485
+        y: 892.523492848796
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-1850
+            key: ''
+            type: text
+            value: "{\n        \"matnr\": \"{{#1757417750154.mpn_id#}}\",\n      \
+              \  \"costPn\": \"{{#1757503861661.costPn#}}\",\n        \"costProjectPhase\"\
+              :\"{{#1757495462064.sourceType#}}\"\n}"
+          type: json
+        desc: ''
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 强制绑定费用PN
+        type: http-request
+        url: https://toolskit.test.mi.com/isc/srm-tools/bind/pn
+        variables: []
+      height: 139
+      id: '1757470208927'
+      position:
+        x: 2855.0688830194485
+        y: 667.2372396826544
+      positionAbsolute:
+        x: 2855.0688830194485
+        y: 667.2372396826544
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        instruction: '如果{{#1757555208218.body#}}是空的，则result赋值“造价格成功，请检查”
+
+          如果{{#1757555208218.body#}}不是空的，则将{{#1757555208218.body#}}赋值给result'
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        parameters:
+        - description: 通知用户结果
+          name: result
+          required: false
+          type: string
+        query:
+        - '1757555208218'
+        - body
+        reasoning_mode: prompt
+        selected: false
+        title: 通知用户结果
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1757555872856'
+      position:
+        x: 3270.926786938522
+        y: 753.7313338536984
+      positionAbsolute:
+        x: 3270.926786938522
+        y: 753.7313338536984
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "import datetime\nfrom datetime import timedelta\n\ndef main(arg1: str,\
+          \ arg2: str, arg3: str, arg4: str, arg5: str, arg6: str, arg7: str, arg8:\
+          \ str, arg9: str, arg10: str) -> dict:\n    current_date = datetime.date.today()\
+          \  # 获取当前日期（仅日期部分）\n    \n    # 正确计算一年后日期（timedelta不支持years，用年份直接+1并处理闰年）\n\
+          \    try:\n        one_year_later = current_date.replace(year=current_date.year\
+          \ + 1)\n    except ValueError:\n        # 处理闰年2月29日的特殊情况\n        one_year_later\
+          \ = current_date.replace(year=current_date.year + 1, month=3, day=1)\n \
+          \   \n    if arg1 not in (None, \"material\"):\n        if arg10 not in\
+          \ (None, \"\"):\n            priceType = arg10\n        else:\n        \
+          \    priceType = \"mav_fee,odm_owned_fee\"\n    else:\n        priceType\
+          \ = \"material\"\n\n    return {\n        \"materialType\": arg1 if arg1\
+          \ is not None else \"material\",\n        \"sourceType\": arg2 if arg2 is\
+          \ not None else \"ZWW\", \n        \"purchaseMode\": arg3 if arg3 is not\
+          \ None else \"NORMAL\",\n        \"gross\": arg4 if arg4 is not None else\
+          \ \"10000\",\n        \"kpein\": arg5 if arg5 is not None else \"WPCS\"\
+          , \n        \"taxCode\": arg6 if arg6 is not None else \"J2\", \n      \
+          \  \"taxrt\": arg7 if arg7 is not None else \"0.13\",\n        \"datab\"\
+          : arg8 if arg8 is not None else current_date.strftime(\"%Y%m%d\"), \n  \
+          \      \"datbi\": arg9 if arg9 is not None else one_year_later.strftime(\"\
+          %Y%m%d\"),\n        \"priceType\": priceType    \n    }\n"
+        code_language: python3
+        desc: ''
+        outputs:
+          datab:
+            children: null
+            type: string
+          datbi:
+            children: null
+            type: string
+          gross:
+            children: null
+            type: string
+          kpein:
+            children: null
+            type: string
+          materialType:
+            children: null
+            type: string
+          priceType:
+            children: null
+            type: string
+          purchaseMode:
+            children: null
+            type: string
+          sourceType:
+            children: null
+            type: string
+          taxCode:
+            children: null
+            type: string
+          taxrt:
+            children: null
+            type: string
+        selected: false
+        title: 给参数赋默认值
+        type: code
+        variables:
+        - value_selector:
+          - '1757417750154'
+          - material_type
+          variable: arg1
+        - value_selector:
+          - '1757417750154'
+          - source_type
+          variable: arg2
+        - value_selector:
+          - '1757417750154'
+          - purchase_mode
+          variable: arg3
+        - value_selector:
+          - '1757417750154'
+          - gross
+          variable: arg4
+        - value_selector:
+          - '1757417750154'
+          - kpein
+          variable: arg5
+        - value_selector:
+          - '1757417750154'
+          - tax_code
+          variable: arg6
+        - value_selector:
+          - '1757417750154'
+          - taxrt
+          variable: arg7
+        - value_selector:
+          - '1757417750154'
+          - datab
+          variable: arg8
+        - value_selector:
+          - '1757417750154'
+          - datbi
+          variable: arg9
+        - value_selector:
+          - '1757417750154'
+          - price_type
+          variable: arg10
+      height: 54
+      id: '1757495462064'
+      position:
+        x: 351.995710789368
+        y: 180.82799605994234
+      positionAbsolute:
+        x: 351.995710789368
+        y: 180.82799605994234
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        instruction: 将{{#1757419920897.body#}}中的data拿出来，冒号后面的字符串赋值给costPn
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        parameters:
+        - description: 费用PN
+          name: costPn
+          required: false
+          type: string
+        query:
+        - '1757419920897'
+        - body
+        reasoning_mode: prompt
+        selected: false
+        title: 参数提取器
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1757503739629'
+      position:
+        x: 1963.2556045993697
+        y: 180.82799605994234
+      positionAbsolute:
+        x: 1963.2556045993697
+        y: 180.82799605994234
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "def main(arg1: str, arg2: str) -> dict:\n    # 检查arg1是否不为空（空包括None和空字符串）\n\
+          \    if arg1 not in (None, \"\"):\n        costPn = arg1\n    # 当arg1为空时，检查arg2是否不为空\n\
+          \    elif arg2 not in (None, \"\"):\n        costPn = arg2\n    # 当arg1和arg2都为空时，返回空字符串\n\
+          \    else:\n        costPn = \"\"\n    return {\n        \"costPn\": costPn\n\
+          \    }"
+        code_language: python3
+        desc: ''
+        outputs:
+          costPn:
+            children: null
+            type: string
+        selected: false
+        title: 将费用PN的值聚合
+        type: code
+        variables:
+        - value_selector:
+          - '1757417750154'
+          - cost_pn
+          variable: arg1
+        - value_selector:
+          - '1757503739629'
+          - costPn
+          variable: arg2
+      height: 54
+      id: '1757503861661'
+      position:
+        x: 1360.2955080286106
+        y: 576.934448796221
+      positionAbsolute:
+        x: 1360.2955080286106
+        y: 576.934448796221
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-496
+            key: ''
+            type: text
+            value: "{\n\t\"matnr\": \"{{#1757417750154.mpn_id#}}\",\n\t\"procurementOrg\"\
+              : \"{{#1757417750154.procurement_org#}}\",\n\t\"supplierCode\": \"{{#1757417750154.supplier_code#}}\"\
+              ,\n\t\"materialType\": \"{{#1757495462064.materialType#}}\",\n\t\"costPn\"\
+              : \"{{#1757503861661.costPn#}}\",\n\t\"isForceNewPrice\": \"1\",\n\t\
+              \"strategyType\": \"\"\n}"
+          type: json
+        desc: ''
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 造新的定价单
+        type: http-request
+        url: https://toolskit.test.mi.com/isc/srm-data-produce/material
+        variables: []
+      height: 155
+      id: '1757504824389'
+      position:
+        x: 2862.0332875258173
+        y: 1104.3455153806412
+      positionAbsolute:
+        x: 2862.0332875258173
+        y: 1104.3455153806412
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        instruction: 将{{#1757469041788.text#}}中最后面“总结”冒号后面的字符串存为变量 price_check
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        parameters:
+        - description: 输出价格检测的结果
+          name: price_check
+          required: false
+          type: string
+        query:
+        - '1757469041788'
+        - text
+        reasoning_mode: prompt
+        selected: false
+        title: 获取价格处理结果
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1757506001342'
+      position:
+        x: 1985.0970577752246
+        y: 689.7149462548724
+      positionAbsolute:
+        x: 1985.0970577752246
+        y: 689.7149462548724
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: contains
+            id: 7f09b735-73a5-401b-8056-fca5e449721a
+            value: machine_fee
+            varType: string
+            variable_selector:
+            - '1757495462064'
+            - priceType
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 条件分支 3
+        type: if-else
+      height: 126
+      id: '1757507195729'
+      position:
+        x: 1013.7724507138904
+        y: 370.8787342763368
+      positionAbsolute:
+        x: 1013.7724507138904
+        y: 370.8787342763368
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-1
+            key: ''
+            type: text
+            value: "{\n\t\"matnr\": \"{{#1757417750154.mpn_id#}}\",\n\t\"procurementOrg\"\
+              : \"{{#1757417750154.procurement_org#}}\",\n\t\"supplierCode\": \"{{#1757417750154.supplier_code#}}\"\
+              ,\n\t\"isForceNewPrice\": \"1\",\n\t\"strategyType\": \"semiOtherGroup\"\
+              \n}"
+          type: json
+        desc: ''
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 造成品整机费
+        type: http-request
+        url: https://toolskit.test.mi.com/isc/srm-data-produce/material
+        variables: []
+      height: 155
+      id: '1757507260416'
+      position:
+        x: 1360.2955080286106
+        y: 395.9344487962218
+      positionAbsolute:
+        x: 1360.2955080286106
+        y: 395.9344487962218
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        instruction: 获取{{#1757504824389.body#}}中data作为priceId
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        parameters:
+        - description: 生成的定价单
+          name: priceId
+          required: false
+          type: string
+        query:
+        - '1757504824389'
+        - body
+        reasoning_mode: prompt
+        selected: false
+        title: 获取造的新定价单
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1757555095110'
+      position:
+        x: 3164.0332875258173
+        y: 1104.3455153806412
+      positionAbsolute:
+        x: 3164.0332875258173
+        y: 1104.3455153806412
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-2
+            key: ''
+            type: text
+            value: "{\n     \"prices\":\"{{#1757555095110.priceId#}}\"\n}"
+          type: json
+        desc: ''
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 查询定价单状态并重推
+        type: http-request
+        url: https://toolskit.test.mi.com/isc/srm-tools/price/status
+        variables: []
+      height: 139
+      id: '1757555208218'
+      position:
+        x: 3468.0332875258173
+        y: 1104.3455153806412
+      positionAbsolute:
+        x: 3468.0332875258173
+        y: 1104.3455153806412
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        instruction: 如果{{#1757503739629.costPn#}}是空的，则返回“请输入费用PN后重试”
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        parameters:
+        - description: 通知用户结果
+          name: result
+          required: false
+          type: string
+        query:
+        - '1757503739629'
+        - costPn
+        reasoning_mode: prompt
+        selected: false
+        title: 通知用户结果
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1757555756397'
+      position:
+        x: 2636.295508028607
+        y: 187.9344487962224
+      positionAbsolute:
+        x: 2636.295508028607
+        y: 187.9344487962224
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1757555872856'
+          - result
+          variable: result
+        selected: false
+        title: 造价格结束
+        type: end
+      height: 90
+      id: '1757556063723'
+      position:
+        x: 3574.926786938522
+        y: 753.7313338536984
+      positionAbsolute:
+        x: 3574.926786938522
+        y: 753.7313338536984
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        instruction: 获取{{#1757507260416.body#}}中data作为priceId
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        parameters:
+        - description: 定价单号
+          name: priceId
+          required: false
+          type: string
+        query:
+        - '1757507260416'
+        - body
+        reasoning_mode: prompt
+        selected: false
+        title: 获取定价单号
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1757561136732'
+      position:
+        x: 1664.2955080286106
+        y: 395.9344487962218
+      positionAbsolute:
+        x: 1664.2955080286106
+        y: 395.9344487962218
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-2
+            key: ''
+            type: text
+            value: "{\n     \"prices\":\"{{#1757561136732.priceId#}}\"\n}"
+          type: json
+        desc: ''
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 查询定价单状态并重推 (1)
+        type: http-request
+        url: https://toolskit.test.mi.com/isc/srm-tools/price/status
+        variables: []
+      height: 139
+      id: '17575612367690'
+      position:
+        x: 2002.822889056371
+        y: 387.22108919260916
+      positionAbsolute:
+        x: 2002.822889056371
+        y: 387.22108919260916
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        instruction: 将{{#17575612367690.body#}}中的data赋值给result
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        parameters:
+        - description: 通知用户结果
+          name: result
+          required: false
+          type: string
+        query:
+        - '17575612367690'
+        - body
+        reasoning_mode: prompt
+        selected: false
+        title: 通知用户结果
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1757561275304'
+      position:
+        x: 2315.4301077464306
+        y: 387.22108919260916
+      positionAbsolute:
+        x: 2315.4301077464306
+        y: 387.22108919260916
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1757561275304'
+          - result
+          variable: result
+        selected: false
+        title: 造整机价格结束
+        type: end
+      height: 90
+      id: '1757561375960'
+      position:
+        x: 2610.822889056371
+        y: 387.22108919260916
+      positionAbsolute:
+        x: 2610.822889056371
+        y: 387.22108919260916
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-60
+            key: ''
+            type: text
+            value: ''
+          type: x-www-form-urlencoded
+        desc: ''
+        headers: ''
+        method: get
+        params: 'materialCategory:{{#1757495462064.materialType#}}
+
+          procurementOrg:{{#1757417750154.procurement_org#}}'
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: true
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 获取全量价格类型
+        type: http-request
+        url: https://toolskit.test.mi.com/isc/data-pool/get/priceType
+        variables: []
+      height: 139
+      id: '1757561517278'
+      position:
+        x: 646.2955080286122
+        y: 175.75430547329313
+      positionAbsolute:
+        x: 646.2955080286122
+        y: 175.75430547329313
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        instruction: 将{{#1757561517278.body#}}中的data作为procurementOrg
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        parameters:
+        - description: 全量价格类型
+          name: price_type_list
+          required: false
+          type: string
+        query:
+        - '1757561517278'
+        - body
+        reasoning_mode: prompt
+        selected: false
+        title: 提取全量价格类型
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1757561598925'
+      position:
+        x: 985.8789326052511
+        y: 175.75430547329313
+      positionAbsolute:
+        x: 985.8789326052511
+        y: 175.75430547329313
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 100.74936155668297
+      y: 270.383124251552
+      zoom: 0.32987697769322344

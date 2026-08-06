@@ -1,16 +1,16 @@
 ---
 name: ai-dataforge-loop
 display_name: AI 数据智造闭环引擎(DataForge Loop)
-version: 4.2.0
+version: 5.0.0
 description: |
-  AI 数据智造闭环引擎:面向供应链测试场景,支持从文本、SOP、页面截图中识别造数需求,自动收口参数、执行 PRPO 造数、发起 UI 截图验收,并生成 HTML 证据包与失败诊断。
-  触发场景:用户说"帮我造单""造一条采购订单""PRPO拉料""帮我造数""看这个截图帮我造测试数据""按这个SOP造数""造完帮我页面验收""分析这张失败截图"等造数闭环相关请求。
+  AI 数据智造闭环引擎:面向供应链测试场景的跨系统(SRM+SAP)全链路造数引擎。支持从文本、SOP、页面截图中识别造数需求,自动收口参数、执行"寻源价格前置治理 → PRPO 造数 → PO 就绪闸门 → SRM 侧 ASN 承接"四阶段全链路,发起 UI 截图验收,并生成 HTML 证据包与失败诊断。
+  触发场景:用户说"帮我造单""造一条采购订单""PRPO拉料""帮我造数""看这个截图帮我造测试数据""按这个SOP造数""造完帮我页面验收""分析这张失败截图""基于这个PO建ASN""发货通知造数""全链路造数"等造数闭环相关请求。
   不触发场景:查询已有订单状态、报销、审批、查物料信息、问接口文档、编写通用 UI 自动化测试用例。
 author: MI
 track: C-跨部门协同
 platform: 工作虾(Open Claw)
 spec: MIT AI Skill 撰写规范 V1.1-beta
-tags: [造数, 测试数据, 供应链, 流程编排, Agent, 多模态, UI验收, PRPO]
+tags: [造数, 测试数据, 供应链, 流程编排, Agent, 多模态, UI验收, PRPO, ASN, 寻源, 跨系统]
 ---
 
 # AI 数据智造闭环引擎(DataForge Loop)
@@ -187,6 +187,54 @@ python tools/closed_loop_runner.py \
 
 边界说明:本仓库不在 Python 内部直接调用视觉大模型;真正的图片理解由 OpenClaw/飞书通道完成。本 Skill 负责提供 Prompt、字段契约、参数适配、执行编排和报告留痕,避免云端 OpenClaw 无浏览器权限时依赖 Playwright。
 
+## 5b. 跨系统四阶段全链路（SRM + SAP）
+
+DataForge Loop v5 把造数从"单系统 PRPO"扩展为**跨系统四阶段全链路**。一条可用的采购测试数据往往先要在 SRM 侧把寻源价格、ASL、费用项治理干净(否则 PRPO 转 PO 必失败),PO 审批通过后又要在 SRM 侧建 ASN 发货通知才算真正闭环。这条链路横跨 SRM 与 SAP 两个系统、两套编排范式,由 `tools/closed_loop_runner.py` 统一 run_id 串起:
+
+```text
+阶段0  SRM Sourcing Readiness Gate   寻源价格前置治理(ASL/费用PN/费用项/定价单)
+   │   configs/srm-price-clean.yaml + tools/srm_price_clean.py
+   ▼
+阶段1  PRPO 造数(SAP)                PR创建→审批→查合同→PR转PO→PO审批→查ERP
+   │   configs/*-prpo.yaml + engine.py(9-Action 引擎)
+   ▼
+阶段2  PO Ready Gate                  审批状态闸门(非新系统,仅状态判定放行)
+   │   tools/closed_loop_runner.py::_evaluate_po_ready
+   ▼
+阶段3  SRM 侧 ASN 承接                按 供应商类型×行数 路由 datacube 场景建 ASN
+   │   configs/srm-asn-create.yaml + tools/srm_asn_create.py
+   ▼
+阶段4/5  UI 验收 + 失败诊断 + 证据包
+```
+
+**核心亮点:跨编排范式统一。** SAP 侧用「YAML + 9-Action 引擎」声明式编排;SRM 侧 ASN 用平台原生「datacube 场景编排(scene/execute)」,二者是异构范式。DataForge Loop 不强行把它们塞进同一个引擎,而是用**同一套三道闸 + 同一个证据包 + 同一个 run_id** 把它们收口成一条对用户无感的链路——这是本 Skill 面向复杂供应链的关键工程价值。
+
+**PO Ready Gate 不是新系统。** 阶段2 只做一件事:判定 PO 是否已审批就绪、能否放行 ASN 承接。它复用造数结果的审批状态,不引入新的 BPM/审批服务。dry-run 下占位放行;existing-po 模式下沿用用户自带的已审批 PO。
+
+### ASN 承接:供应商类型 × 行数 → datacube 场景
+
+阶段3 把 ASN 机器人 60+ 节点收口为「解析承接类别 → 命中场景 → 执行 → 回查单号」四步。承接类别由 PO 信息推断(`tools/srm_asn_create.py::resolve_category`),优先级:
+
+1. **三大 EDI**(GAOTONG/TI/MTK)——按供应商编码硬匹配,建单后需外部凭证号回查真实 ASN
+2. **大货 CIN**——非三大 + 带拉料指令(`pullCommand` 必填)
+3. **成品 CHENGPIN**——ZWW/ZPJ/ZDB + 料号 s/f 开头(最多 2 行)
+4. **寄存 JC**——ZJC 订单类型
+5. **独立需求 PO**——兜底
+
+类别 × 行数命中 `_SCENE_MAP` 里的 datacube 场景(sceneId/sceneName),行数封顶(成品 2 行、其余 3 行)。未预置的类别**不谎报**,标记 `resolved=False`(配置已预留待接入)。
+
+### ASN 承接输入/输出契约
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| poNo | string | 是 | 已审批采购订单号 |
+| pullCommand | string | 条件必填 | 大货(CIN)承接必填拉料指令 |
+| warehouseId | string | 否 | 成品发大仓仓库,默认 420 |
+| supplierCode/bsart/matkl/lineCount | - | 否 | 供 resolve_category/scene 推断类别与场景 |
+| taskType/sceneId/sceneName/taskId | - | 否 | 由 Python 侧解析后注入;独立运行可显式传入 |
+
+输出写入 `asn-result.json`,`businessData` 含 `poNo/asnCategory/asnScene/taskType/pullCommand/warehouseId/zasnNo`。
+
 ## 6. 流程 DSL:9 种 Action
 
 | Action | 作用 | 调执行层 |
@@ -209,11 +257,18 @@ ai-dataforge-loop/
 ├── prompt.md           # 对话层提示词
 ├── engine.py           # 通用编排引擎
 ├── tools/              # 多模态闭环工具(识别/验收/诊断/证据包)
+│   ├── closed_loop_runner.py  # 四阶段全链路串接(阶段0→1→2→3→4)
+│   ├── srm_price_clean.py     # 阶段0 寻源价格前置治理执行器
+│   └── srm_asn_create.py      # 阶段3 SRM 侧 ASN 承接执行器(类别/场景解析)
 ├── lib/                # 引擎核心模块(client/config/flow/renderer/resolver)
-├── configs/            # YAML 流程定义(znb-prpo.yaml, zww-prpo.yaml, ...)
-├── templates/          # Jinja2 请求体模板
-├── shared/             # 可复用共享步骤(审批/查询/Cookie)
+├── configs/            # YAML 流程定义
+│   ├── znb-prpo.yaml / zww-prpo.yaml ...   # 阶段1 PRPO 造数
+│   ├── srm-price-clean.yaml                # 阶段0 寻源价格前置治理
+│   └── srm-asn-create.yaml                 # 阶段3 ASN 承接(datacube 场景编排)
+├── templates/          # Jinja2 请求体模板(含 asn-scene.json.j2)
+├── shared/             # 可复用共享步骤(审批/查询/Cookie/ASN/寻源)
 ├── references/         # 多模态契约、UI 验收契约、证据包结构
+│   └── workflows/      # 源工作流归档(血缘留痕,不参与运行)
 ├── mify-apps/          # mify 平台工具定义(http-call/sql-query)
 └── runners/            # 安全执行器
 ```
@@ -252,15 +307,39 @@ terminals:
   END_PO_FAIL: { type: error, message: "PO创建失败" }
 ```
 
-## 9. 两种执行模式
+## 9. 五种执行模式
 
 | 模式 | 适用场景 | 行为 |
 |------|---------|------|
 | **向导执行** | 汇报 / 排障 / 新人学习 | 逐步展示每阶段结果,等用户确认再继续 |
 | **静默执行** | 日常高频造数 | 一键跑完,只展示最终结果卡 |
 | **闭环执行** | 验收留痕 / 失败诊断 / 闭环回放 | 从文本、SOP 或截图识别需求,执行造数,打开页面截图验收,生成证据包 |
+| **全链路执行** | 端到端跨系统造数 | 阶段0→1→2→3→4 全跑:寻源前置治理 → PRPO 造数 → PO 就绪闸门 → SRM 侧 ASN 承接 → 验收留痕 |
+| **已有PO建ASN**(existing-po) | 已有已审批 PO,只需补 ASN | 跳过阶段0/1,直接从阶段2放行、阶段3承接 ASN(`--asn-mode existing-po`) |
 
-切换方式:用户说"一步步来"或"逐步执行"进入向导模式;说"直接跑"或"静默"进入静默模式。默认向导模式。
+切换方式:用户说"一步步来"或"逐步执行"进入向导模式;说"直接跑"或"静默"进入静默模式;说"全链路""从寻源到发货通知"进入全链路执行;说"基于这个PO建ASN"进入 existing-po 模式。默认向导模式。
+
+全链路命令示例:
+
+```bash
+python tools/closed_loop_runner.py \
+  --text "高通单行全链路造数,从寻源到 ASN" \
+  --config configs/znb-prpo.yaml \
+  --pre-clean-config configs/srm-price-clean.yaml \
+  --asn-config configs/srm-asn-create.yaml \
+  --ui-config configs/ui-verify-prpo.yaml \
+  supplierCode=SUPPLIER_DEMO materialCode=MAT_DEMO purchaseOrg=2120 \
+  priceType=machine_fee
+```
+
+已有 PO 建 ASN 命令示例:
+
+```bash
+python tools/closed_loop_runner.py \
+  --asn-mode existing-po \
+  --asn-config configs/srm-asn-create.yaml \
+  poNo=PO_DEMO supplierCode=SUPPLIER_DEMO pullCommand=PULL_DEMO bsart=ZWW
+```
 
 **⚠️ 所有模式必须跑完全链路**:造数 = PR创建 → PR审批 → 查合同 → PR转PO → PO审批 → 查ERP单号。绝对不允许只创建PR就停下。最终结果必须包含 PR号 + PO号 + ERP单号。
 
@@ -309,7 +388,7 @@ python tools/closed_loop_runner.py \
 | prNo | string | 是 | 采购申请号 |
 | poNo | string | 是 | 采购订单号 |
 | erpNo | string | 是 | ERP 推送单号 |
-| approvalStatus | enum | 是 | 已通过 / 审批中 / 已拒绝 |
+| approvalStatus | enum | 是 | PRPO 业务结果摘要（人类可读）：已通过 / 审批中 / 已拒绝。⚠️ 注意与全链路 **PO Ready Gate 输出**的机器枚举 `approvalStatus`（`DRYRUN/EXISTING/APPROVED/NOT_READY`，见 `closed_loop_runner.py`）区分——同名不同层，前者给结果卡展示、后者供程序判定放行。 |
 | duration | string | 是 | 执行耗时(如"2分38秒") |
 | stepsCompleted | string | 是 | 完成步骤(如"12/12") |
 
@@ -333,6 +412,9 @@ python tools/closed_loop_runner.py \
 | SCM 基址 | `SCM_BASE_URL` | 采购系统接口 |
 | BPM 审批地址 | `BPM_APPROVE_URL` | 审批系统接口 |
 | Cookie 获取地址 | `SCM_COOKIE_URL` | 认证 Cookie |
+| SRM 工具基址 | `SRM_TOOLKIT_BASE_URL` | 寻源价格治理 / ASN 承接工具接口 |
+| SRM datacube 基址 | `SRM_DATACUBE_BASE_URL` | ASN 场景编排(scene/execute) |
+| SRM 场景执行人 | `SRM_SCENE_EXECUTE_PERSON` | datacube 场景执行人标识 |
 
 调用方式:streaming SSE(`workflow_started` → `node_finished` → `workflow_finished`)。
 
@@ -360,12 +442,15 @@ python tools/closed_loop_runner.py \
 
 **当前覆盖:**
 - 采购订单核心链路:ZNB 标准采购、ZWW 成品采购(PRPO 全流程)
-- 4 种方法 × 已上线/待接入状态
+- 跨系统全链路:阶段0 寻源价格前置治理 + 阶段3 SRM 侧 ASN 承接(骨架贯通 + 核心分支)
+- ASN 承接核心分支:三大 EDI(GAOTONG/TI/MTK)、大货 CIN、独立需求 PO、成品 CHENGPIN、寄存 JC(按类别×行数路由 datacube 场景)
+- 4 种 PRPO 方法 × 已上线/待接入状态
 
 **未覆盖(诚实声明):**
 - 合同造数、付款造数、库存全链路(见未来规划)
 - 寄售、跨公司、委外等非标准订单类型(配置已预留,尚未接入)
 - 多行物料批量造数(当前单次 1 条链路)
+- ASN 承接长尾场景(部分类别行数组合 `resolved=False`,配置已预留待接入)
 
 **外部依赖:**
 - 依赖被测系统接口稳定性;接口大改需同步更新对应 YAML/模板

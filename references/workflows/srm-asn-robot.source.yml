@@ -1,0 +1,4378 @@
+app:
+  description: '三大EDI ASN-支持
+
+    非三大大货ASN-支持
+
+    非三大独立需求ASN-支持
+
+    成品创建ASN
+
+    备注：可能有接单失败、ASN创建失败的情况。具体错误可以联系陈雷、杨琛、刘四星排查；'
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: workflow
+  name: SRM ASN建单机器人
+  use_icon_as_answer_icon: false
+dependencies: []
+kind: app
+version: 0.3.1
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 100
+        batch_count_limit: 5
+        feishu_file_count_limit: 20
+        feishu_url_count_limit: 20
+        file_size_limit: 100
+        image_file_size_limit: 30
+        video_file_size_limit: 800
+        workflow_file_upload_limit: 50
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        sourceType: start
+        targetType: http-request
+      id: 1747896291380-source-1749801903418-target
+      selected: false
+      source: '1747896291380'
+      sourceHandle: source
+      target: '1749801903418'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: http-request
+        targetType: code
+      id: 1749801903418-source-1750649003091-target
+      selected: false
+      source: '1749801903418'
+      sourceHandle: source
+      target: '1750649003091'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17581982832610-source-17585254481980-target
+      selected: false
+      source: '17581982832610'
+      sourceHandle: source
+      target: '17585254481980'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17582705019400-source-17585256236200-target
+      selected: false
+      source: '17582705019400'
+      sourceHandle: source
+      target: '17585256236200'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17582705027010-source-17585257498690-target
+      selected: false
+      source: '17582705027010'
+      sourceHandle: source
+      target: '17585257498690'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17582702953420-source-17585259831560-target
+      selected: false
+      source: '17582702953420'
+      sourceHandle: source
+      target: '17585259831560'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17582702959080-source-17585260750840-target
+      selected: false
+      source: '17582702959080'
+      sourceHandle: source
+      target: '17585260750840'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17581982475600-source-17585261169400-target
+      selected: false
+      source: '17581982475600'
+      sourceHandle: source
+      target: '17585261169400'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17582701879420-source-17585261887320-target
+      selected: false
+      source: '17582701879420'
+      sourceHandle: source
+      target: '17585261887320'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17582701862700-source-17585262572350-target
+      selected: false
+      source: '17582701862700'
+      sourceHandle: source
+      target: '17585262572350'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17581982118970-source-17585262998040-target
+      selected: false
+      source: '17581982118970'
+      sourceHandle: source
+      target: '17585262998040'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17582700597050-source-17585263624120-target
+      selected: false
+      source: '17582700597050'
+      sourceHandle: source
+      target: '17585263624120'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17582700281200-source-17585264233720-target
+      selected: false
+      source: '17582700281200'
+      sourceHandle: source
+      target: '17585264233720'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17498039320640-source-17585264492280-target
+      selected: false
+      source: '17498039320640'
+      sourceHandle: source
+      target: '17585264492280'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17582701286220-source-17585264964200-target
+      selected: false
+      source: '17582701286220'
+      sourceHandle: source
+      target: '17585264964200'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17581981719940-source-17585265696990-target
+      selected: false
+      source: '17581981719940'
+      sourceHandle: source
+      target: '17585265696990'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17582701294980-source-17585265397800-target
+      selected: false
+      source: '17582701294980'
+      sourceHandle: source
+      target: '17585265397800'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 17585265696990-source-17585288603330-target
+      selected: false
+      source: '17585265696990'
+      sourceHandle: source
+      target: '17585288603330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 17585265397800-source-17585288603330-target
+      selected: false
+      source: '17585265397800'
+      sourceHandle: source
+      target: '17585288603330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 17585264964200-source-17585288603330-target
+      selected: false
+      source: '17585264964200'
+      sourceHandle: source
+      target: '17585288603330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 17585264492280-source-17585288603330-target
+      selected: false
+      source: '17585264492280'
+      sourceHandle: source
+      target: '17585288603330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 17585264233720-source-17585288603330-target
+      selected: false
+      source: '17585264233720'
+      sourceHandle: source
+      target: '17585288603330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 17585263624120-source-17585288603330-target
+      selected: false
+      source: '17585263624120'
+      sourceHandle: source
+      target: '17585288603330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 17585262998040-source-17585288603330-target
+      selected: false
+      source: '17585262998040'
+      sourceHandle: source
+      target: '17585288603330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 17585262572350-source-17585288603330-target
+      selected: false
+      source: '17585262572350'
+      sourceHandle: source
+      target: '17585288603330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 17585261887320-source-17585288603330-target
+      selected: false
+      source: '17585261887320'
+      sourceHandle: source
+      target: '17585288603330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 17585261169400-source-17585288603330-target
+      selected: false
+      source: '17585261169400'
+      sourceHandle: source
+      target: '17585288603330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 17585260750840-source-17585288603330-target
+      selected: false
+      source: '17585260750840'
+      sourceHandle: source
+      target: '17585288603330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 17585259831560-source-17585288603330-target
+      selected: false
+      source: '17585259831560'
+      sourceHandle: source
+      target: '17585288603330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 17585254481980-source-17585288603330-target
+      selected: false
+      source: '17585254481980'
+      sourceHandle: source
+      target: '17585288603330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 17585257498690-source-17585288603330-target
+      selected: false
+      source: '17585257498690'
+      sourceHandle: source
+      target: '17585288603330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 17585256236200-source-17585288603330-target
+      selected: false
+      source: '17585256236200'
+      sourceHandle: source
+      target: '17585288603330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: end
+      id: 1758270541118-false-1759199421202-target
+      source: '1758270541118'
+      sourceHandle: 'false'
+      target: '1759199421202'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17601717764750-source-17601721708510-target
+      source: '17601717764750'
+      sourceHandle: source
+      target: '17601721708510'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17601722211900-source-17601722243680-target
+      source: '17601722211900'
+      sourceHandle: source
+      target: '17601722243680'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 17601721708510-source-17585288603330-target
+      source: '17601721708510'
+      sourceHandle: source
+      target: '17585288603330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 17601722243680-source-17585288603330-target
+      source: '17601722243680'
+      sourceHandle: source
+      target: '17585288603330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17603444378080-source-17603444594160-target
+      source: '17603444378080'
+      sourceHandle: source
+      target: '17603444594160'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: http-request
+      id: 17603447296250-source-17603447446630-target
+      source: '17603447296250'
+      sourceHandle: source
+      target: '17603447446630'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 17603444594160-source-17585288603330-target
+      source: '17603444594160'
+      sourceHandle: source
+      target: '17585288603330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 17603447446630-source-17585288603330-target
+      source: '17603447446630'
+      sourceHandle: source
+      target: '17585288603330'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: end
+      id: 1761817246483-source-1749803725805-target
+      source: '1761817246483'
+      sourceHandle: source
+      target: '1749803725805'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: code
+      id: 1750649003091-source-1761985221516-target
+      source: '1750649003091'
+      sourceHandle: source
+      target: '1761985221516'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: http-request
+      id: 1761985221516-source-1761985419288-target
+      source: '1761985221516'
+      sourceHandle: source
+      target: '1761985419288'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: http-request
+        targetType: if-else
+      id: 1761985419288-source-1758270541118-target
+      source: '1761985419288'
+      sourceHandle: source
+      target: '1758270541118'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: code
+      id: 1762158063462-source-1750649003091-target
+      source: '1762158063462'
+      sourceHandle: source
+      target: '1750649003091'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1762159569624-true-1762158063462-target
+      source: '1762159569624'
+      sourceHandle: 'true'
+      target: '1762158063462'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: if-else
+      id: 1747896291380-source-1762159569624-target
+      source: '1747896291380'
+      sourceHandle: source
+      target: '1762159569624'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: code
+      id: 1762159569624-false-1750649003091-target
+      selected: false
+      source: '1762159569624'
+      sourceHandle: 'false'
+      target: '1750649003091'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1758270541118-eb63ddde-60c2-4b5b-a6ca-964389d3e2fa-17581982118970-target
+      source: '1758270541118'
+      sourceHandle: eb63ddde-60c2-4b5b-a6ca-964389d3e2fa
+      target: '17581982118970'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1758270541118-eaf39e82-6fc6-4ee6-bba2-fa84500f286d-17582701862700-target
+      source: '1758270541118'
+      sourceHandle: eaf39e82-6fc6-4ee6-bba2-fa84500f286d
+      target: '17582701862700'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1758270541118-032f51e8-ec75-4b3e-8d84-b6e862c5be66-17582701879420-target
+      source: '1758270541118'
+      sourceHandle: 032f51e8-ec75-4b3e-8d84-b6e862c5be66
+      target: '17582701879420'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1758270541118-7d950db7-3477-4d50-8822-27d141adeb05-17581982475600-target
+      source: '1758270541118'
+      sourceHandle: 7d950db7-3477-4d50-8822-27d141adeb05
+      target: '17581982475600'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1758270541118-cef0c8be-8d1b-49af-a7d3-aee9580e6c29-17582702959080-target
+      source: '1758270541118'
+      sourceHandle: cef0c8be-8d1b-49af-a7d3-aee9580e6c29
+      target: '17582702959080'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1758270541118-dab38895-834e-42b2-9138-c11604423651-17582702953420-target
+      source: '1758270541118'
+      sourceHandle: dab38895-834e-42b2-9138-c11604423651
+      target: '17582702953420'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1758270541118-e3468d61-550e-4377-9cd1-e987b093028e-17581982832610-target
+      source: '1758270541118'
+      sourceHandle: e3468d61-550e-4377-9cd1-e987b093028e
+      target: '17581982832610'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1758270541118-37a288c5-497c-4154-8cbf-724adbe50cdc-17582705027010-target
+      source: '1758270541118'
+      sourceHandle: 37a288c5-497c-4154-8cbf-724adbe50cdc
+      target: '17582705027010'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1758270541118-41c13f08-93d8-4159-82ed-b5a5373a096e-17582705019400-target
+      source: '1758270541118'
+      sourceHandle: 41c13f08-93d8-4159-82ed-b5a5373a096e
+      target: '17582705019400'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1758270541118-a75f2028-518f-4e24-b13d-71d461ac9527-17603444378080-target
+      source: '1758270541118'
+      sourceHandle: a75f2028-518f-4e24-b13d-71d461ac9527
+      target: '17603444378080'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1758270541118-0b6d619b-dca9-449f-9cf4-fc317f01d33d-17603447296250-target
+      source: '1758270541118'
+      sourceHandle: 0b6d619b-dca9-449f-9cf4-fc317f01d33d
+      target: '17603447296250'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1758270541118-cfe1572f-a93f-4c7b-a514-fe7240d68791-17601717764750-target
+      source: '1758270541118'
+      sourceHandle: cfe1572f-a93f-4c7b-a514-fe7240d68791
+      target: '17601717764750'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1758270541118-f8ffa7e3-0c35-4e8d-bc19-0282161dbf76-17601722211900-target
+      selected: false
+      source: '1758270541118'
+      sourceHandle: f8ffa7e3-0c35-4e8d-bc19-0282161dbf76
+      target: '17601722211900'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1758270541118-698b8ded-e1a3-446f-bc09-b35d28959700-17581981719940-target
+      source: '1758270541118'
+      sourceHandle: 698b8ded-e1a3-446f-bc09-b35d28959700
+      target: '17581981719940'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1758270541118-60e73e28-b830-44a1-8277-fed2522a4c26-17582701294980-target
+      source: '1758270541118'
+      sourceHandle: 60e73e28-b830-44a1-8277-fed2522a4c26
+      target: '17582701294980'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1758270541118-328714c4-ff5f-494b-8002-e59be4951794-17582701286220-target
+      source: '1758270541118'
+      sourceHandle: 328714c4-ff5f-494b-8002-e59be4951794
+      target: '17582701286220'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1758270541118-68e9a77d-cd9c-4084-9e91-6a42c061f435-17498039320640-target
+      source: '1758270541118'
+      sourceHandle: 68e9a77d-cd9c-4084-9e91-6a42c061f435
+      target: '17498039320640'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1758270541118-a804b769-ead6-448f-a9fc-4c69d88287b3-17582700281200-target
+      source: '1758270541118'
+      sourceHandle: a804b769-ead6-448f-a9fc-4c69d88287b3
+      target: '17582700281200'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 1758270541118-03e06990-11bb-4979-8dfc-84b49fff6aad-17582700597050-target
+      source: '1758270541118'
+      sourceHandle: 03e06990-11bb-4979-8dfc-84b49fff6aad
+      target: '17582700597050'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: http-request
+      id: 17585288603330-source-1761985518285-target
+      source: '17585288603330'
+      sourceHandle: source
+      target: '1761985518285'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: http-request
+        targetType: if-else
+      id: 1761985518285-source-1762227785389-target
+      source: '1761985518285'
+      sourceHandle: source
+      target: '1762227785389'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: http-request
+        targetType: llm
+      id: 1762229187884-source-1762229598813-target
+      source: '1762229187884'
+      sourceHandle: source
+      target: '1762229598813'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: 1762229598813-source-1762228682041-target
+      source: '1762229598813'
+      sourceHandle: source
+      target: '1762228682041'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: if-else
+      id: 1750649003091-source-17623224127210-target
+      source: '1750649003091'
+      sourceHandle: source
+      target: '17623224127210'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: http-request
+      id: 17623224127210-true-1762322492133-target
+      source: '17623224127210'
+      sourceHandle: 'true'
+      target: '1762322492133'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: http-request
+        targetType: parameter-extractor
+      id: 1762322492133-source-1762322639983-target
+      source: '1762322492133'
+      sourceHandle: source
+      target: '1762322639983'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: parameter-extractor
+        targetType: if-else
+      id: 1762322639983-source-1758270541118-target
+      source: '1762322639983'
+      sourceHandle: source
+      target: '1758270541118'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: code
+      id: 1762227785389-true-1763020591425-target
+      source: '1762227785389'
+      sourceHandle: 'true'
+      target: '1763020591425'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: llm
+      id: 1763020591425-source-1761817246483-target
+      source: '1763020591425'
+      sourceHandle: source
+      target: '1761817246483'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: code
+      id: 1762227785389-false-1763023016799-target
+      source: '1762227785389'
+      sourceHandle: 'false'
+      target: '1763023016799'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: http-request
+      id: 1763023016799-source-1762229187884-target
+      source: '1763023016799'
+      sourceHandle: source
+      target: '1762229187884'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: code
+      id: 1762227785389-fc1ebb29-fd09-4103-badf-83680412747d-17630248194970-target
+      source: '1762227785389'
+      sourceHandle: fc1ebb29-fd09-4103-badf-83680412747d
+      target: '17630248194970'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: code
+        targetType: llm
+      id: 17630248194970-source-17630248422760-target
+      source: '17630248194970'
+      sourceHandle: source
+      target: '17630248422760'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: end
+      id: 17630248422760-source-17630248727310-target
+      source: '17630248422760'
+      sourceHandle: source
+      target: '17630248727310'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: 开始
+        type: start
+        variables:
+        - label: 例如：4500189594
+          max_length: 48
+          options: []
+          required: true
+          type: text-input
+          variable: PO
+        - hide: false
+          label: 拉料指令(大货必输)， 例如：2509220000000001
+          max_length: 48
+          options: []
+          required: false
+          type: text-input
+          variable: pullCommand
+        - label: 成品发大仓时必填, 默认420
+          max_length: 48
+          options: []
+          required: false
+          type: text-input
+          variable: warehouseId
+      height: 142
+      id: '1747896291380'
+      position:
+        x: -2554.4584987072567
+        y: 655.34613471479
+      positionAbsolute:
+        x: -2554.4584987072567
+        y: 655.34613471479
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: 'query_table:ZV_PO
+
+          result_fields:MATNR,LIFNR_DG,EKORG,LIFNR,BSART,LGORT,STOCK_ORG_TO,MATKL
+
+          row_count:10
+
+          query_options:EBELN={{#1747896291380.PO#}}'
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: HTTP 请求-获取PO简要信息
+        type: http-request
+        url: https://toolskit.test.mi.com/isc/sourcing-data/newGetByOptions
+        variables: []
+      height: 183
+      id: '1749801903418'
+      position:
+        x: -1793.035418497875
+        y: 661.3261765035452
+      positionAbsolute:
+        x: -1793.035418497875
+        y: 661.3261765035452
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1761817246483'
+          - text
+          value_type: string
+          variable: text
+        selected: false
+        title: 独立需求/大货创建ASN结束
+        type: end
+      height: 90
+      id: '1749803725805'
+      position:
+        x: 5427.807796669682
+        y: 1994.3688926072723
+      positionAbsolute:
+        x: 5427.807796669682
+        y: 1994.3688926072723
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-615
+            key: ''
+            type: text
+            value: "{\n  \"taskId\": 390,\n  \"sceneName\": \"TI创建ASN_1行\",\n  \"\
+              sceneInput\": [\n    {\n      \"apiId\": 9983,\n      \"protocol\":\
+              \ \"http\",\n      \"apiName\": \"SRM_PO查询\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"erpNo\",\n          \"id\": 80442,\n\
+              \          \"type\": 1,\n          \"value\": \"{{#1747896291380.PO#}}\"\
+              \n        }\n      ],\n      \"order\": 1\n    },\n    {\n      \"apiId\"\
+              : 9398,\n      \"protocol\": \"x5\",\n      \"apiName\": \"【SIT】SRM自动接单1\"\
+              ,\n      \"order\": 2\n    },\n    {\n      \"apiId\": 10212,\n    \
+              \  \"protocol\": \"http\",\n      \"apiName\": \"SRM_补充供应商前导0\",\n \
+              \     \"order\": 3\n    },\n    {\n      \"apiId\": 9986,\n      \"\
+              protocol\": \"http\",\n      \"apiName\": \"SRM_供应商料号查询1\",\n      \"\
+              order\": 4\n    },\n    {\n      \"apiId\": 10060,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"srm根据计算属性\",\n      \"order\": 5\n\
+              \    },\n    {\n      \"apiId\": 10013,\n      \"protocol\": \"x5\"\
+              ,\n      \"apiName\": \"美金三大供应商(TI_133041)创建ASN_1颗料\",\n      \"apiVariables\"\
+              : [{\n\t\t\t\"name\": \"price\",\n\t\t\t\"id\": 87308,\n\t\t\t\"type\"\
+              : 2,\n\t\t\t\"value\": \"{{#1762322639983.price1#}}\"\n\t\t}, {\n\t\t\
+              \t\"name\": \"total_price\",\n\t\t\t\"id\": 87309,\n\t\t\t\"type\":\
+              \ 2,\n\t\t\t\"value\": \"{{#1762322639983.totalPrice1#}}\"\n\t\t}],\n\
+              \      \"order\": 6\n    },\n    {\n      \"apiId\": 9989,\n      \"\
+              protocol\": \"http\",\n      \"apiName\": \"srm查询表查询ASN_new\",\n   \
+              \   \"order\": 7\n    }\n  ],\n  \"sceneOutput\": {\n    \"name\": \"\
+              ASN_NO\",\n    \"id\": 87310,\n    \"type\": 6\n  },\n  \"sceneId\"\
+              : 372,\n  \"forCounter\": 1,\n  \"executePerson\": \"yangchen1\"\n}"
+          type: json
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: TI建ASN_单行
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/execute
+        variables: []
+      height: 167
+      id: '17498039320640'
+      position:
+        x: 2204.656306914171
+        y: 102.41181899837753
+      positionAbsolute:
+        x: 2204.656306914171
+        y: 102.41181899837753
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "import json\n\nCONST_T_CODES = [\"100227\", \"100015\", \"101550\"\
+          , \"101408\", \"100171\", \"124899\", \"133041\", \"126929\"]\nGAOTONG_CODES\
+          \ = [\"100171\", \"124899\"]\nMTK_CODES = [\"100227\", \"101550\", \"100015\"\
+          , \"101408\"]\nTI_CODES = [\"126929\", \"133041\"]\nCHENGPIN_TYPES = [\"\
+          ZWW\", \"ZPJ\", \"ZDB\"]\nJC_TYPES = [\"ZJC\"]\n\n# ZWW走成品判断\ndef zww_is_laliao(caizu,\
+          \ kuwei, stock_to, material_group):\n    if caizu == \"ZWW\" and kuwei ==\
+          \ \"F000\" and stock_to == \"MI_AUTOEACC\" and material_group and material_group.startswith(\"\
+          S\"):\n        return True\n    return False\n\ndef main(arg1: str, arg2:\
+          \ str) -> dict:\n    print(arg1)\n    callin_datas = []\n    if arg2 is\
+          \ not None and arg2.strip():\n        try:\n            callin_command_result\
+          \ = json.loads(arg2)\n            callin_datas = callin_command_result.get(\"\
+          data\", [])\n        except json.JSONDecodeError:\n            callin_datas\
+          \ = []\n    else:\n        callin_datas = []\n    \n    try:\n        result\
+          \ = json.loads(arg1)\n    except json.JSONDecodeError:\n        result =\
+          \ {}\n    datas = result.get(\"data\", [])\n    results = []\n    supplier_code\
+          \ = \"\"\n    caizu = \"\"\n    out_factory = \"\"\n    material_group =\
+          \ \"\"\n    stock_org_to = \"\"\n    kuwei = \"\"\n    \n    cnt = len(datas)\n\
+          \    if cnt > 3:\n        cnt = 3\n    ztcallin_cnt = len(callin_datas)\n\
+          \    if ztcallin_cnt > 3:\n        ztcallin_cnt = 3\n    \n    for data_item\
+          \ in datas:\n        material_code = data_item.get(\"MATNR\")\n        supplier_code\
+          \ = data_item.get(\"LIFNR\", \"\")\n        # 订单类型\n        caizu = data_item.get(\"\
+          BSART\", \"\")\n        out_factory = data_item.get(\"LIFNR_DG\", \"\")\n\
+          \        # ZWW额外处理, 物料组\n        material_group = data_item.get(\"MATKL\"\
+          , \"\")\n        stock_org_to = data_item.get(\"STOCK_ORG_TO\", \"\")\n\
+          \        kuwei = data_item.get(\"LGORT\", \"\")\n    \n    # 成品类的调整数量上限为2\n\
+          \    if caizu in CHENGPIN_TYPES + JC_TYPES and cnt >= 3:\n        cnt =\
+          \ 2\n    \n    is_znb = False\n    print(caizu, supplier_code, out_factory)\n\
+          \    print(caizu=='ZNB')\n    print(supplier_code not in CONST_T_CODES)\n\
+          \    print(out_factory == \"\")\n    \n    if caizu == \"ZNB\" and supplier_code\
+          \ not in CONST_T_CODES and out_factory == \"\":\n        is_znb = True\n\
+          \    \n    task_type = \"\"\n    print(\"is_ZNB\")\n    print(is_znb)\n\
+          \    \n    # 先判断三大\n    if supplier_code in GAOTONG_CODES:\n        task_type\
+          \ = \"GAOTONG_\" + str(cnt)\n    elif supplier_code in MTK_CODES:\n    \
+          \    task_type = \"MTK_\" + str(cnt)\n    elif supplier_code in TI_CODES:\n\
+          \        task_type = \"TI_\" + str(cnt)\n    else:\n        if arg2 is not\
+          \ None:\n            task_type = \"CIN_\" + str(ztcallin_cnt)\n        elif\
+          \ caizu in CHENGPIN_TYPES and material_group.lower().startswith((\"s\",\
+          \ \"f\")):\n            task_type = \"CHENGPIN_\" + str(cnt)\n        elif\
+          \ caizu in JC_TYPES:\n            task_type = \"JC_\" + str(cnt)\n     \
+          \   else:\n            task_type = \"PO_\" + str(cnt)\n        \n    zww_2_chengping\
+          \ = zww_is_laliao(caizu, kuwei, stock_org_to, material_group)\n    if zww_2_chengping:\n\
+          \        task_type = \"CHENGPIN_\" + str(cnt)\n    \n    return {\"task_type\"\
+          : task_type}"
+        code_language: python3
+        desc: ''
+        outputs:
+          task_type:
+            children: null
+            type: string
+        selected: false
+        title: 逻辑分支判断需要走哪个接口
+        type: code
+        variables:
+        - value_selector:
+          - '1749801903418'
+          - body
+          variable: arg1
+        - value_selector:
+          - '1762158063462'
+          - body
+          value_type: string
+          variable: arg2
+      height: 54
+      id: '1750649003091'
+      position:
+        x: 123.0808968862492
+        y: 1538.9298771072108
+      positionAbsolute:
+        x: 123.0808968862492
+        y: 1538.9298771072108
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-615
+            key: ''
+            type: text
+            value: "{\n  \"taskId\": 392,\n  \"sceneName\": \"高通创建ASN_1行\",\n  \"\
+              sceneInput\": [\n    {\n      \"apiId\": 9983,\n      \"protocol\":\
+              \ \"http\",\n      \"apiName\": \"SRM_PO查询\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"erpNo\",\n          \"id\": 80438,\n\
+              \          \"type\": 1,\n          \"value\": \"{{#1747896291380.PO#}}\"\
+              \n        }\n      ],\n      \"order\": 1\n    },\n    {\n      \"apiId\"\
+              : 9398,\n      \"protocol\": \"x5\",\n      \"apiName\": \"【SIT】SRM自动接单1\"\
+              ,\n      \"order\": 2\n    },\n    {\n      \"apiId\": 10212,\n    \
+              \  \"protocol\": \"http\",\n      \"apiName\": \"SRM_补充供应商前导0\",\n \
+              \     \"order\": 3\n    },\n    {\n      \"apiId\": 9986,\n      \"\
+              protocol\": \"http\",\n      \"apiName\": \"SRM_供应商料号查询1\",\n      \"\
+              order\": 4\n    },\n    {\n      \"apiId\": 10060,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"srm根据计算属性\",\n      \"order\": 5\n\
+              \    },\n    {\n      \"apiId\": 10017,\n      \"protocol\": \"x5\"\
+              ,\n      \"apiName\": \"美金三大供应商(高通_100171)创建ASN_单颗料\",\n      \"apiVariables\"\
+              : [{\n\t\t\t\"name\": \"price\",\n\t\t\t\"id\": 87468,\n\t\t\t\"type\"\
+              : 2,\n\t\t\t\"value\": \"{{#1762322639983.price1#}}\"\n\t\t}],\n   \
+              \   \"order\": 6\n    },\n    {\n      \"apiId\": 9989,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"srm查询表查询ASN_new\",\n      \"order\"\
+              : 7\n    }\n  ],\n  \"sceneOutput\": {\n    \"name\": \"ASN_NO\",\n\
+              \    \"id\": 87469,\n    \"type\": 6\n  },\n  \"sceneId\": 369,\n  \"\
+              forCounter\": 1,\n  \"executePerson\": \"yangchen1\"\n}"
+          type: json
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 高通建ASN_单行
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/execute
+        variables: []
+      height: 167
+      id: '17581981719940'
+      position:
+        x: 2204.656306914171
+        y: -766.3434293498239
+      positionAbsolute:
+        x: 2204.656306914171
+        y: -766.3434293498239
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-615
+            key: ''
+            type: text
+            value: "{\n  \"taskId\": 388,\n  \"sceneName\": \"MTK创建ASN_1行\",\n  \"\
+              sceneInput\": [\n    {\n      \"apiId\": 9983,\n      \"protocol\":\
+              \ \"http\",\n      \"apiName\": \"SRM_PO查询\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"erpNo\",\n          \"id\": 80500,\n\
+              \          \"type\": 1,\n          \"value\": \"{{#1747896291380.PO#}}\"\
+              \n        }\n      ],\n      \"order\": 1\n    },\n    {\n      \"apiId\"\
+              : 9398,\n      \"protocol\": \"x5\",\n      \"apiName\": \"【SIT】SRM自动接单1\"\
+              ,\n      \"order\": 2\n    },\n    {\n      \"apiId\": 10212,\n    \
+              \  \"protocol\": \"http\",\n      \"apiName\": \"SRM_补充供应商前导0\",\n \
+              \     \"order\": 3\n    },\n    {\n      \"apiId\": 9986,\n      \"\
+              protocol\": \"http\",\n      \"apiName\": \"SRM_供应商料号查询1\",\n      \"\
+              order\": 4\n    },\n    {\n      \"apiId\": 10060,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"srm根据计算属性\",\n      \"order\": 5\n\
+              \    },\n    {\n      \"apiId\": 10143,\n      \"protocol\": \"x5\"\
+              ,\n      \"apiName\": \"美金三大供应商(MTK_100227)创建ASN_1行\",\n     \"apiVariables\"\
+              : [{\n\t\t\t\"name\": \"price\",\n\t\t\t\"id\": 88084,\n\t\t\t\"type\"\
+              : 2,\n\t\t\t\"value\": \"{{#1762322639983.price1#}}\"\n\t\t}],\n   \
+              \   \"order\": 6\n    },\n    {\n      \"apiId\": 9989,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"srm查询表查询ASN_new\",\n      \"order\"\
+              : 7\n    }\n  ],\n  \"sceneOutput\": {\n    \"name\": \"baseRandom1\"\
+              ,\n    \"id\": 88085,\n    \"type\": 6\n  },\n  \"sceneId\": 373,\n\
+              \  \"forCounter\": 1,\n  \"executePerson\": \"yangchen1\"\n}"
+          type: json
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 'MTK建ASN_单行 '
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/execute
+        variables: []
+      height: 167
+      id: '17581982118970'
+      position:
+        x: 2204.656306914171
+        y: 930.8525283889742
+      positionAbsolute:
+        x: 2204.656306914171
+        y: 930.8525283889742
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-615
+            key: ''
+            type: text
+            value: "{\n  \"taskId\": 394,\n  \"sceneName\": \"SRM-根据PO创建ASN-仅限独立需求)_1行\"\
+              ,\n  \"sceneInput\": [\n    {\n      \"apiId\": 9983,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"SRM_PO查询\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"erpNo\",\n          \"id\": 93299,\n\
+              \          \"type\": 1,\n          \"value\": \"{{#1747896291380.PO#}}\"\
+              \n        }\n      ],\n      \"order\": 1\n    },\n    {\n      \"apiId\"\
+              : 10060,\n      \"protocol\": \"http\",\n      \"apiName\": \"srm根据计算属性\"\
+              ,\n      \"order\": 2\n    },\n    {\n      \"apiId\": 9398,\n     \
+              \ \"protocol\": \"x5\",\n      \"apiName\": \"【SIT】SRM自动接单1\",\n   \
+              \   \"order\": 3\n    },\n    {\n      \"apiId\": 10404,\n      \"protocol\"\
+              : \"x5\",\n      \"apiName\": \"非三大基于PO创建ASN(SIT专用)_1行\",\n      \"\
+              order\": 4\n    }\n  ],\n  \"sceneOutput\": {\n    \"name\": \"asnBusinessModel\"\
+              ,\n    \"id\": 93300,\n    \"type\": 6\n  },\n  \"sceneId\": 375,\n\
+              \  \"forCounter\": 1,\n  \"executePerson\": \"yangchen1\"\n}"
+          type: json
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 独立需求建ASN_单行
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/execute
+        variables: []
+      height: 167
+      id: '17581982475600'
+      position:
+        x: 2204.656306914171
+        y: 1644.3133846530159
+      positionAbsolute:
+        x: 2204.656306914171
+        y: 1644.3133846530159
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-2341
+            key: ''
+            type: text
+            value: "{\n  \"taskId\": 384,\n  \"sceneName\": \"SRM-根据拉料指令创建ASN-仅限大货ZNB材料_1行\"\
+              ,\n  \"sceneInput\": [\n    {\n      \"apiId\": 9990,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"SRM_拉料指令查询\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"callinCommandIn\",\n         \
+              \ \"id\": 93293,\n          \"type\": 1,\n          \"value\": \"{{#1747896291380.pullCommand#}}\"\
+              \n        }\n      ],\n      \"order\": 1\n    },\n    {\n      \"apiId\"\
+              : 9983,\n      \"protocol\": \"http\",\n      \"apiName\": \"SRM_PO查询\"\
+              ,\n      \"apiVariables\": [\n        {\n          \"name\": \"erpNo\"\
+              ,\n          \"id\": 93294,\n          \"type\": 1,\n          \"value\"\
+              : \"{{#1747896291380.PO#}}\"\n        }\n      ],\n      \"order\":\
+              \ 2\n    },\n    {\n      \"apiId\": 10060,\n      \"protocol\": \"\
+              http\",\n      \"apiName\": \"srm根据计算属性\",\n      \"order\": 3\n   \
+              \ },\n    {\n      \"apiId\": 9398,\n      \"protocol\": \"x5\",\n \
+              \     \"apiName\": \"【SIT】SRM自动接单1\",\n      \"order\": 4\n    },\n\
+              \    {\n      \"apiId\": 10146,\n      \"protocol\": \"x5\",\n     \
+              \ \"apiName\": \"非三大基于PO创建ASN(SIT专用)_1行\",\n      \"order\": 5\n   \
+              \ }\n  ],\n  \"sceneOutput\": {\n    \"name\": \"stockOrgTo\",\n   \
+              \ \"id\": 93295,\n    \"type\": 6\n  },\n  \"sceneId\": 378,\n  \"forCounter\"\
+              : 1,\n  \"executePerson\": \"yangchen1\"\n}"
+          type: json
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 大货建ASN_单行
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/execute
+        variables: []
+      height: 167
+      id: '17581982832610'
+      position:
+        x: 2204.656306914171
+        y: 2360.2212049107834
+      positionAbsolute:
+        x: 2204.656306914171
+        y: 2360.2212049107834
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-615
+            key: ''
+            type: text
+            value: "{\n  \"taskId\": 361,\n  \"sceneName\": \"TI创建ASN_2行\",\n  \"\
+              sceneInput\": [\n    {\n      \"apiId\": 9983,\n      \"protocol\":\
+              \ \"http\",\n      \"apiName\": \"SRM_PO查询\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"erpNo\",\n          \"id\": 80397,\n\
+              \          \"type\": 1,\n          \"value\": \"{{#1747896291380.PO#}}\"\
+              \n        }\n      ],\n      \"order\": 1\n    },\n    {\n      \"apiId\"\
+              : 9398,\n      \"protocol\": \"x5\",\n      \"apiName\": \"【SIT】SRM自动接单1\"\
+              ,\n      \"order\": 2\n    },\n    {\n      \"apiId\": 10212,\n    \
+              \  \"protocol\": \"http\",\n      \"apiName\": \"SRM_补充供应商前导0\",\n \
+              \     \"order\": 3\n    },\n    {\n      \"apiId\": 9986,\n      \"\
+              protocol\": \"http\",\n      \"apiName\": \"SRM_供应商料号查询1\",\n      \"\
+              order\": 4\n    },\n    {\n      \"apiId\": 9987,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"SRM_供应商料号查询2\",\n      \"order\":\
+              \ 5\n    },\n    {\n      \"apiId\": 10060,\n      \"protocol\": \"\
+              http\",\n      \"apiName\": \"srm根据计算属性\",\n      \"order\": 6\n   \
+              \ },\n    {\n      \"apiId\": 9581,\n      \"protocol\": \"x5\",\n \
+              \     \"apiName\": \"美金三大供应商(TI)创建ASN_2颗料\",\n      \"apiVariables\"\
+              : [{\n\t\t\t\"name\": \"price1\",\n\t\t\t\"id\": 87312,\n\t\t\t\"type\"\
+              : 2,\n\t\t\t\"value\": \"{{#1762322639983.price1#}}\"\n\t\t}, {\n\t\t\
+              \t\"name\": \"total_price1\",\n\t\t\t\"id\": 87313,\n\t\t\t\"type\"\
+              : 2,\n\t\t\t\"value\": \"{{#1762322639983.totalPrice1#}}\"\n\t\t}, {\n\
+              \t\t\t\"name\": \"price2\",\n\t\t\t\"id\": 87314,\n\t\t\t\"type\": 2,\n\
+              \t\t\t\"value\": \"{{#1762322639983.price2#}}\"\n\t\t}, {\n\t\t\t\"\
+              name\": \"total_price2\",\n\t\t\t\"id\": 87315,\n\t\t\t\"type\": 2,\n\
+              \t\t\t\"value\": \"{{#1762322639983.totalPrice2#}}\"\n\t\t}],\n    \
+              \  \"order\": 7\n    },\n    {\n      \"apiId\": 9989,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"srm查询表查询ASN_new\",\n      \"order\"\
+              : 8\n    }\n  ],\n  \"sceneOutput\": {\n    \"name\": \"ASN_NO\",\n\
+              \    \"id\": 87316,\n    \"type\": 6\n  },\n  \"sceneId\": 340,\n  \"\
+              forCounter\": 1,\n  \"executePerson\": \"yangchen1\"\n}"
+          type: json
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: TI建ASN_2行
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/execute
+        variables: []
+      height: 167
+      id: '17582700281200'
+      position:
+        x: 2204.656306914171
+        y: 412.8447918141751
+      positionAbsolute:
+        x: 2204.656306914171
+        y: 412.8447918141751
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-615
+            key: ''
+            type: text
+            value: "{\n  \"taskId\": 391,\n  \"sceneName\": \"TI创建ASN_3行\",\n  \"\
+              sceneInput\": [\n    {\n      \"apiId\": 9983,\n      \"protocol\":\
+              \ \"http\",\n      \"apiName\": \"SRM_PO查询\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"erpNo\",\n          \"id\": 80446,\n\
+                        \"type\": 1,\n          \"value\": \"{{#1747896291380.PO#}}\"\
+              \n        }\n      ],\n      \"order\": 1\n    },\n    {\n      \"apiId\"\
+              : 9398,\n      \"protocol\": \"x5\",\n      \"apiName\": \"【SIT】SRM自动接单1\"\
+              ,\n      \"order\": 2\n    },\n    {\n      \"apiId\": 10212,\n     \
+              \ \"protocol\": \"http\",\n      \"apiName\": \"SRM_补充供应商前导0\",\n   \
+              \   \"order\": 3\n    },\n    {\n      \"apiId\": 9986,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"SRM_供应商料号查询1\",\n      \"order\":\
+              \ 4\n    },\n    {\n      \"apiId\": 9987,\n      \"protocol\": \"http\"\
+              ,\n      \"apiName\": \"SRM_供应商料号查询2\",\n      \"order\": 5\n    },\n\
+                  {\n      \"apiId\": 10145,\n      \"protocol\": \"http\",\n     \
+              \ \"apiName\": \"SRM_供应商料号查询3\",\n      \"order\": 6\n    },\n    {\n\
+                    \"apiId\": 10060,\n      \"protocol\": \"http\",\n      \"apiName\"\
+              : \"srm根据计算属性\",\n      \"order\": 7\n    },\n    {\n      \"apiId\"\
+              : 9717,\n      \"protocol\": \"x5\",\n      \"apiName\": \"美金三大供应商(TI)创建ASN__3颗料\"\
+              ,\n      \"apiVariables\": [{\n\t\t\t\"name\": \"price1\",\n\t\t\t\"\
+              id\": 87318,\n\t\t\t\"type\": 2,\n\t\t\t\"value\": \"{{#1762322639983.price1#}}\"\
+              \n\t\t}, {\n\t\t\t\"name\": \"total_price1\",\n\t\t\t\"id\": 87319,\n\
+              \t\t\t\"type\": 2,\n\t\t\t\"value\": \"{{#1762322639983.totalPrice1#}}\"\
+              \n\t\t}, {\n\t\t\t\"name\": \"price2\",\n\t\t\t\"id\": 87320,\n\t\t\t\
+              \"type\": 2,\n\t\t\t\"value\": \"{{#1762322639983.price2#}}\"\n\t\t\
+              }, {\n\t\t\t\"name\": \"total_price2\",\n\t\t\t\"id\": 87321,\n\t\t\t\
+              \"type\": 2,\n\t\t\t\"value\": \"{{#1762322639983.totalPrice2#}}\"\n\
+              \t\t}, {\n\t\t\t\"name\": \"price3\",\n\t\t\t\"id\": 87322,\n\t\t\t\"\
+              type\": 2,\n\t\t\t\"value\": \"{{#1762322639983.price3#}}\"\n\t\t},\
+              \ {\n\t\t\t\"name\": \"total_price3\",\n\t\t\t\"id\": 87323,\n\t\t\t\
+              \"type\": 2,\n\t\t\t\"value\": \"{{#1762322639983.totalPrice3#}}\"\n\
+              \t\t}],\n      \"order\": 8\n    },\n    {\n      \"apiId\": 9989,\n\
+                    \"protocol\": \"http\",\n      \"apiName\": \"srm查询表查询ASN_new\"\
+              ,\n      \"order\": 9\n    }\n  ],\n  \"sceneOutput\": {\n    \"name\"\
+              : \"ASN_NO\",\n    \"id\": 87324,\n    \"type\": 6\n  },\n  \"sceneId\"\
+              : 371,\n  \"forCounter\": 1,\n  \"executePerson\": \"yangchen1\"\n}"
+          type: json
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: TI建ASN_3行
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/execute
+        variables: []
+      height: 167
+      id: '17582700597050'
+      position:
+        x: 2204.656306914171
+        y: 661.3261765035452
+      positionAbsolute:
+        x: 2204.656306914171
+        y: 661.3261765035452
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-615
+            key: ''
+            type: text
+            value: "{\n  \"taskId\": 393,\n  \"sceneName\": \"高通创建ASN_3行\",\n  \"\
+              sceneInput\": [\n    {\n      \"apiId\": 9983,\n      \"protocol\":\
+              \ \"http\",\n      \"apiName\": \"SRM_PO查询\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"erpNo\",\n          \"id\": 80222,\n\
+              \          \"type\": 1,\n          \"value\": \"{{#1747896291380.PO#}}\"\
+              \n        }\n      ],\n      \"order\": 1\n    },\n    {\n      \"apiId\"\
+              : 9398,\n      \"protocol\": \"x5\",\n      \"apiName\": \"【SIT】SRM自动接单1\"\
+              ,\n      \"order\": 2\n    },\n    {\n      \"apiId\": 10212,\n    \
+              \  \"protocol\": \"http\",\n      \"apiName\": \"SRM_补充供应商前导0\",\n \
+              \     \"order\": 3\n    },\n    {\n      \"apiId\": 9986,\n      \"\
+              protocol\": \"http\",\n      \"apiName\": \"SRM_供应商料号查询1\",\n      \"\
+              order\": 4\n    },\n    {\n      \"apiId\": 9987,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"SRM_供应商料号查询2\",\n      \"order\":\
+              \ 5\n    },\n    {\n      \"apiId\": 10145,\n      \"protocol\": \"\
+              http\",\n      \"apiName\": \"SRM_供应商料号查询3\",\n      \"order\": 6\n\
+              \    },\n    {\n      \"apiId\": 10060,\n      \"protocol\": \"http\"\
+              ,\n      \"apiName\": \"srm根据计算属性\",\n      \"order\": 7\n    },\n \
+              \   {\n      \"apiId\": 10016,\n      \"protocol\": \"x5\",\n      \"\
+              apiName\": \"美金三大供应商(高通_100171)创建ASN_三颗料\",\n      \"apiVariables\"\
+              : [{\n\t\t\t\"name\": \"price1\",\n\t\t\t\"id\": 87475,\n\t\t\t\"type\"\
+              : 2,\n\t\t\t\"value\": \"{{#1762322639983.price1#}}\"\n\t\t}, {\n\t\t\
+              \t\"name\": \"price2\",\n\t\t\t\"id\": 87476,\n\t\t\t\"type\": 2,\n\t\
+              \t\t\"value\": \"{{#1762322639983.price2#}}\"\n\t\t}, {\n\t\t\t\"name\"\
+              : \"price3\",\n\t\t\t\"id\": 87477,\n\t\t\t\"type\": 2,\n\t\t\t\"value\"\
+              : \"{{#1762322639983.price3#}}\"\n\t\t}],\n      \"order\": 8\n    },\n\
+              \    {\n      \"apiId\": 9989,\n      \"protocol\": \"http\",\n    \
+              \  \"apiName\": \"srm查询表查询ASN_new\",\n      \"order\": 9\n    }\n  ],\n\
+              \  \"sceneOutput\": {\n    \"name\": \"ASN_NO\",\n    \"id\": 87478,\n\
+              \    \"type\": 6\n  },\n  \"sceneId\": 370,\n  \"forCounter\": 1,\n\
+              \  \"executePerson\": \"yangchen1\"\n}"
+          type: json
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 高通建ASN_3行
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/execute
+        variables: []
+      height: 167
+      id: '17582701286220'
+      position:
+        x: 2204.656306914171
+        y: -169.47263339579354
+      positionAbsolute:
+        x: 2204.656306914171
+        y: -169.47263339579354
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-615
+            key: ''
+            type: text
+            value: "{\n  \"taskId\": 362,\n  \"sceneName\": \"高通创建ASN_2行\",\n  \"\
+              sceneInput\": [\n    {\n      \"apiId\": 9983,\n      \"protocol\":\
+              \ \"http\",\n      \"apiName\": \"SRM_PO查询\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"erpNo\",\n          \"id\": 80432,\n\
+              \          \"type\": 1,\n          \"value\": \"{{#1747896291380.PO#}}\"\
+              \n        }\n      ],\n      \"order\": 1\n    },\n    {\n      \"apiId\"\
+              : 9398,\n      \"protocol\": \"x5\",\n      \"apiName\": \"【SIT】SRM自动接单1\"\
+              ,\n      \"order\": 2\n    },\n    {\n      \"apiId\": 10212,\n    \
+              \  \"protocol\": \"http\",\n      \"apiName\": \"SRM_补充供应商前导0\",\n \
+              \     \"order\": 3\n    },\n    {\n      \"apiId\": 9986,\n      \"\
+              protocol\": \"http\",\n      \"apiName\": \"SRM_供应商料号查询1\",\n      \"\
+              order\": 4\n    },\n    {\n      \"apiId\": 9987,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"SRM_供应商料号查询2\",\n      \"order\":\
+              \ 5\n    },\n    {\n      \"apiId\": 10060,\n      \"protocol\": \"\
+              http\",\n      \"apiName\": \"srm根据计算属性\",\n      \"order\": 6\n   \
+              \ },\n    {\n      \"apiId\": 9580,\n      \"protocol\": \"x5\",\n \
+              \     \"apiName\": \"美金三大供应商(高通_100171)创建ASN_两颗料\",\n      \"apiVariables\"\
+              : [{\n\t\t\t\"name\": \"price1\",\n\t\t\t\"id\": 87471,\n\t\t\t\"type\"\
+              : 2,\n\t\t\t\"value\": \"{{#1762322639983.price1#}}\"\n\t\t}, {\n\t\t\
+              \t\"name\": \"price2\",\n\t\t\t\"id\": 87472,\n\t\t\t\"type\": 2,\n\t\
+              \t\t\"value\": \"{{#1762322639983.price2#}}\"\n\t\t}],\n      \"order\"\
+              : 7\n    },\n    {\n      \"apiId\": 9989,\n      \"protocol\": \"http\"\
+              ,\n      \"apiName\": \"srm查询表查询ASN_new\",\n      \"order\": 8\n   \
+              \ }\n  ],\n  \"sceneOutput\": {\n    \"name\": \"ASN_NO\",\n    \"id\"\
+              : 87473,\n    \"type\": 6\n  },\n  \"sceneId\": 339,\n  \"forCounter\"\
+              : 1,\n  \"executePerson\": \"yangchen1\"\n}"
+          type: json
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 高通建ASN_2行
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/execute
+        variables: []
+      height: 167
+      id: '17582701294980'
+      position:
+        x: 2204.656306914171
+        y: -467.01212803544286
+      positionAbsolute:
+        x: 2204.656306914171
+        y: -467.01212803544286
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-615
+            key: ''
+            type: text
+            value: "{\n  \"taskId\": 360,\n  \"sceneName\": \"MTK创建ASN_2行\",\n  \"\
+              sceneInput\": [\n    {\n      \"apiId\": 9983,\n      \"protocol\":\
+              \ \"http\",\n      \"apiName\": \"SRM_PO查询\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"erpNo\",\n          \"id\": 79835,\n\
+              \          \"type\": 1,\n          \"value\": \"{{#1747896291380.PO#}}\"\
+              \n        }\n      ],\n      \"order\": 1\n    },\n    {\n      \"apiId\"\
+              : 9398,\n      \"protocol\": \"x5\",\n      \"apiName\": \"【SIT】SRM自动接单1\"\
+              ,\n      \"order\": 2\n    },\n    {\n      \"apiId\": 10212,\n    \
+              \  \"protocol\": \"http\",\n      \"apiName\": \"SRM_补充供应商前导0\",\n \
+              \     \"order\": 3\n    },\n    {\n      \"apiId\": 9986,\n      \"\
+              protocol\": \"http\",\n      \"apiName\": \"SRM_供应商料号查询1\",\n      \"\
+              order\": 4\n    },\n    {\n      \"apiId\": 9987,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"SRM_供应商料号查询2\",\n      \"order\":\
+              \ 5\n    },\n    {\n      \"apiId\": 10060,\n      \"protocol\": \"\
+              http\",\n      \"apiName\": \"srm根据计算属性\",\n      \"order\": 6\n   \
+              \ },\n    {\n      \"apiId\": 9564,\n      \"protocol\": \"x5\",\n \
+              \     \"apiName\": \"美金三大供应商(MTK_100227)创建ASN_2行\",\n      \"apiVariables\"\
+              : [{\n\t\t\t\"name\": \"price1\",\n\t\t\t\"id\": 87680,\n\t\t\t\"type\"\
+              : 2,\n\t\t\t\"value\": \"{{#1762322639983.price1#}}\"\n\t\t}, {\n\t\t\
+              \t\"name\": \"price2\",\n\t\t\t\"id\": 87681,\n\t\t\t\"type\": 2,\n\t\
+              \t\t\"value\": \"{{#1762322639983.price2#}}\"\n\t\t}],\n      \"order\"\
+              : 7\n    },\n    {\n      \"apiId\": 9989,\n      \"protocol\": \"http\"\
+              ,\n      \"apiName\": \"srm查询表查询ASN_new\",\n      \"order\": 8\n   \
+              \ }\n  ],\n  \"sceneOutput\": {\n    \"name\": \"baseRandom1\",\n  \
+              \  \"id\": 87682,\n    \"type\": 6\n  },\n  \"sceneId\": 338,\n  \"\
+              forCounter\": 1,\n  \"executePerson\": \"yangchen1\"\n}"
+          type: json
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: MTK建ASN_2行
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/execute
+        variables: []
+      height: 167
+      id: '17582701862700'
+      position:
+        x: 2204.656306914171
+        y: 1170.816148580416
+      positionAbsolute:
+        x: 2204.656306914171
+        y: 1170.816148580416
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-615
+            key: ''
+            type: text
+            value: "{\n  \"taskId\": 389,\n  \"sceneName\": \"MTK创建ASN_3行\",\n  \"\
+              sceneInput\": [\n    {\n      \"apiId\": 9983,\n      \"protocol\":\
+              \ \"http\",\n      \"apiName\": \"SRM_PO查询\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"erpNo\",\n          \"id\": 80020,\n\
+              \          \"type\": 1,\n          \"value\": \"{{#1747896291380.PO#}}\"\
+              \n        }\n      ],\n      \"order\": 1\n    },\n    {\n      \"apiId\"\
+              : 9398,\n      \"protocol\": \"x5\",\n      \"apiName\": \"【SIT】SRM自动接单1\"\
+              ,\n      \"order\": 2\n    },\n    {\n      \"apiId\": 10212,\n    \
+              \  \"protocol\": \"http\",\n      \"apiName\": \"SRM_补充供应商前导0\",\n \
+              \     \"order\": 3\n    },\n    {\n      \"apiId\": 9986,\n      \"\
+              protocol\": \"http\",\n      \"apiName\": \"SRM_供应商料号查询1\",\n      \"\
+              order\": 4\n    },\n    {\n      \"apiId\": 9987,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"SRM_供应商料号查询2\",\n      \"order\":\
+              \ 5\n    },\n    {\n      \"apiId\": 10145,\n      \"protocol\": \"\
+              http\",\n      \"apiName\": \"SRM_供应商料号查询3\",\n      \"order\": 6\n\
+              \    },\n    {\n      \"apiId\": 10060,\n      \"protocol\": \"http\"\
+              ,\n      \"apiName\": \"srm根据计算属性\",\n      \"order\": 7\n    },\n \
+              \   {\n      \"apiId\": 10144,\n      \"protocol\": \"x5\",\n      \"\
+              apiName\": \"美金三大供应商(MTK_100227)创建ASN_3行\",\n      \"apiVariables\"\
+              : [{\n\t\t\t\"name\": \"price1\",\n\t\t\t\"id\": 87675,\n\t\t\t\"type\"\
+              : 2,\n\t\t\t\"value\": \"{{#1762322639983.price1#}}\"\n\t\t}, {\n\t\t\
+              \t\"name\": \"price2\",\n\t\t\t\"id\": 87676,\n\t\t\t\"type\": 2,\n\t\
+              \t\t\"value\": \"{{#1762322639983.price2#}}\"\n\t\t}, {\n\t\t\t\"name\"\
+              : \"price3\",\n\t\t\t\"id\": 87677,\n\t\t\t\"type\": 2,\n\t\t\t\"value\"\
+              : \"{{#1762322639983.price3#}}\"\n\t\t}],\n      \"order\": 8\n    },\n\
+              \    {\n      \"apiId\": 9989,\n      \"protocol\": \"http\",\n    \
+              \  \"apiName\": \"srm查询表查询ASN_new\",\n      \"order\": 9\n    }\n  ],\n\
+              \  \"sceneOutput\": {\n    \"name\": \"baseRandom1\",\n    \"id\": 87678,\n\
+              \    \"type\": 6\n  },\n  \"sceneId\": 374,\n  \"forCounter\": 1,\n\
+              \  \"executePerson\": \"yangchen1\"\n}"
+          type: json
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: MTK建ASN_3行
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/execute
+        variables: []
+      height: 167
+      id: '17582701879420'
+      position:
+        x: 2204.656306914171
+        y: 1404.809706527993
+      positionAbsolute:
+        x: 2204.656306914171
+        y: 1404.809706527993
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-615
+            key: ''
+            type: text
+            value: "{\n  \"taskId\": 387,\n  \"sceneName\": \"SRM-根据PO创建ASN-仅限独立需求)_3行\"\
+              ,\n  \"sceneInput\": [\n    {\n      \"apiId\": 9983,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"SRM_PO查询\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"erpNo\",\n          \"id\": 93301,\n\
+              \          \"type\": 1,\n          \"value\": \"{{#1747896291380.PO#}}\"\
+              \n        }\n      ],\n      \"order\": 1\n    },\n    {\n      \"apiId\"\
+              : 10060,\n      \"protocol\": \"http\",\n      \"apiName\": \"srm根据计算属性\"\
+              ,\n      \"order\": 2\n    },\n    {\n      \"apiId\": 9398,\n     \
+              \ \"protocol\": \"x5\",\n      \"apiName\": \"【SIT】SRM自动接单1\",\n   \
+              \   \"order\": 3\n    },\n    {\n      \"apiId\": 10406,\n      \"protocol\"\
+              : \"x5\",\n      \"apiName\": \"非三大基于PO创建ASN(SIT专用)_3行\",\n      \"\
+              order\": 4\n    }\n  ],\n  \"sceneOutput\": {\n    \"name\": \"asnBusinessModel\"\
+              ,\n    \"id\": 93302,\n    \"type\": 6\n  },\n  \"sceneId\": 376,\n\
+              \  \"forCounter\": 1,\n  \"executePerson\": \"yangchen1\"\n}"
+          type: json
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 独立需求建ASN_3行
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/execute
+        variables: []
+      height: 167
+      id: '17582702953420'
+      position:
+        x: 2204.656306914171
+        y: 2125.3148703749084
+      positionAbsolute:
+        x: 2204.656306914171
+        y: 2125.3148703749084
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-615
+            key: ''
+            type: text
+            value: "{\n  \"taskId\": 363,\n  \"sceneName\": \"SRM-根据PO创建ASN-仅限独立需求)_2行\"\
+              ,\n  \"sceneInput\": [\n    {\n      \"apiId\": 9983,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"SRM_PO查询\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"erpNo\",\n          \"id\": 93303,\n\
+              \          \"type\": 1,\n          \"value\": \"{{#1747896291380.PO#}}\"\
+              \n        }\n      ],\n      \"order\": 1\n    },\n    {\n      \"apiId\"\
+              : 10060,\n      \"protocol\": \"http\",\n      \"apiName\": \"srm根据计算属性\"\
+              ,\n      \"order\": 2\n    },\n    {\n      \"apiId\": 9398,\n     \
+              \ \"protocol\": \"x5\",\n      \"apiName\": \"【SIT】SRM自动接单1\",\n   \
+              \   \"order\": 3\n    },\n    {\n      \"apiId\": 10405,\n      \"protocol\"\
+              : \"x5\",\n      \"apiName\": \"非三大基于PO创建ASN(SIT专用)_2行\",\n      \"\
+              order\": 4\n    }\n  ],\n  \"sceneOutput\": {\n    \"name\": \"asnBusinessModel\"\
+              ,\n    \"id\": 93304,\n    \"type\": 6\n  },\n  \"sceneId\": 341,\n\
+              \  \"forCounter\": 1,\n  \"executePerson\": \"yangchen1\"\n}"
+          type: json
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 独立需求建ASN_2行
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/execute
+        variables: []
+      height: 167
+      id: '17582702959080'
+      position:
+        x: 2204.656306914171
+        y: 1896.0284025526157
+      positionAbsolute:
+        x: 2204.656306914171
+        y: 1896.0284025526157
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-615
+            key: ''
+            type: text
+            value: "{\n  \"taskId\": 385,\n  \"sceneName\": \"SRM-根据拉料指令创建ASN-仅限大货ZNB材料_3行\"\
+              ,\n  \"sceneInput\": [\n    {\n      \"apiId\": 9990,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"SRM_拉料指令查询\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"callinCommandIn\",\n         \
+              \ \"id\": 93296,\n          \"type\": 1,\n          \"value\": \"{{#1747896291380.pullCommand#}}\"\
+              \n        }\n      ],\n      \"order\": 1\n    },\n    {\n      \"apiId\"\
+              : 9983,\n      \"protocol\": \"http\",\n      \"apiName\": \"SRM_PO查询\"\
+              ,\n      \"apiVariables\": [\n        {\n          \"name\": \"erpNo\"\
+              ,\n          \"id\": 93297,\n          \"type\": 1,\n          \"value\"\
+              : \"{{#1747896291380.PO#}}\"\n        }\n      ],\n      \"order\":\
+              \ 2\n    },\n    {\n      \"apiId\": 10060,\n      \"protocol\": \"\
+              http\",\n      \"apiName\": \"srm根据计算属性\",\n      \"order\": 3\n   \
+              \ },\n    {\n      \"apiId\": 9398,\n      \"protocol\": \"x5\",\n \
+              \     \"apiName\": \"【SIT】SRM自动接单1\",\n      \"order\": 4\n    },\n\
+              \    {\n      \"apiId\": 10147,\n      \"protocol\": \"x5\",\n     \
+              \ \"apiName\": \"非三大基于PO创建ASN(SIT专用)_3行\",\n      \"order\": 5\n   \
+              \ }\n  ],\n  \"sceneOutput\": {\n    \"name\": \"stockOrgTo\",\n   \
+              \ \"id\": 93298,\n    \"type\": 6\n  },\n  \"sceneId\": 377,\n  \"forCounter\"\
+              : 1,\n  \"executePerson\": \"yangchen1\"\n}"
+          type: json
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 大货建ASN_3行
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/execute
+        variables: []
+      height: 167
+      id: '17582705019400'
+      position:
+        x: 2204.656306914171
+        y: 2913.418173184457
+      positionAbsolute:
+        x: 2204.656306914171
+        y: 2913.418173184457
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-615
+            key: ''
+            type: text
+            value: "{\n  \"taskId\": 364,\n  \"sceneName\": \"SRM-根据拉料指令创建ASN-仅限大货ZNB材料_2行\"\
+              ,\n  \"sceneInput\": [\n    {\n      \"apiId\": 9990,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"SRM_拉料指令查询\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"callinCommandIn\",\n         \
+              \ \"id\": 93290,\n          \"type\": 1,\n          \"value\": \"{{#1747896291380.pullCommand#}}\"\
+              \n        }\n      ],\n      \"order\": 1\n    },\n    {\n      \"apiId\"\
+              : 9983,\n      \"protocol\": \"http\",\n      \"apiName\": \"SRM_PO查询\"\
+              ,\n      \"apiVariables\": [\n        {\n          \"name\": \"erpNo\"\
+              ,\n          \"id\": 93291,\n          \"type\": 1,\n          \"value\"\
+              : \"{{#1747896291380.PO#}}\"\n        }\n      ],\n      \"order\":\
+              \ 2\n    },\n    {\n      \"apiId\": 10060,\n      \"protocol\": \"\
+              http\",\n      \"apiName\": \"srm根据计算属性\",\n      \"order\": 3\n   \
+              \ },\n    {\n      \"apiId\": 9398,\n      \"protocol\": \"x5\",\n \
+              \     \"apiName\": \"【SIT】SRM自动接单1\",\n      \"order\": 4\n    },\n\
+              \    {\n      \"apiId\": 9982,\n      \"protocol\": \"x5\",\n      \"\
+              apiName\": \"非三大基于PO创建ASN(SIT专用)_2行\",\n      \"order\": 5\n    }\n\
+              \  ],\n  \"sceneOutput\": {\n    \"name\": \"stockOrgTo\",\n    \"id\"\
+              : 93292,\n    \"type\": 6\n  },\n  \"sceneId\": 342,\n  \"forCounter\"\
+              : 1,\n  \"executePerson\": \"yangchen1\"\n}"
+          type: json
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 大货建ASN_2行
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/execute
+        variables: []
+      height: 167
+      id: '17582705027010'
+      position:
+        x: 2197.9356657193125
+        y: 2635.079721007827
+      positionAbsolute:
+        x: 2197.9356657193125
+        y: 2635.079721007827
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 698b8ded-e1a3-446f-bc09-b35d28959700
+          conditions:
+          - comparison_operator: contains
+            id: 8e5d35f0-a73f-4cf3-8162-f8e9fab05d25
+            value: GAOTONG_1
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: 698b8ded-e1a3-446f-bc09-b35d28959700
+          logical_operator: and
+        - case_id: 60e73e28-b830-44a1-8277-fed2522a4c26
+          conditions:
+          - comparison_operator: contains
+            id: c4dc066d-5128-41cf-b986-48a0cc3ecb9b
+            value: GAOTONG_2
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: 60e73e28-b830-44a1-8277-fed2522a4c26
+          logical_operator: and
+        - case_id: 328714c4-ff5f-494b-8002-e59be4951794
+          conditions:
+          - comparison_operator: contains
+            id: 63af16c7-7eec-4056-9b19-5c834bbf5e07
+            value: GAOTONG_3
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: 328714c4-ff5f-494b-8002-e59be4951794
+          logical_operator: and
+        - case_id: 68e9a77d-cd9c-4084-9e91-6a42c061f435
+          conditions:
+          - comparison_operator: contains
+            id: ef03f3ab-38a6-4f40-99f9-9246ef1686bf
+            value: TI_1
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: 68e9a77d-cd9c-4084-9e91-6a42c061f435
+          logical_operator: and
+        - case_id: a804b769-ead6-448f-a9fc-4c69d88287b3
+          conditions:
+          - comparison_operator: contains
+            id: 4038986b-4f95-47a9-b31c-f75e79e91180
+            value: TI_2
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: a804b769-ead6-448f-a9fc-4c69d88287b3
+          logical_operator: and
+        - case_id: 03e06990-11bb-4979-8dfc-84b49fff6aad
+          conditions:
+          - comparison_operator: contains
+            id: 5b7e606b-3801-433b-9049-9595f5f26e1e
+            value: TI_3
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: 03e06990-11bb-4979-8dfc-84b49fff6aad
+          logical_operator: and
+        - case_id: eb63ddde-60c2-4b5b-a6ca-964389d3e2fa
+          conditions:
+          - comparison_operator: contains
+            id: 63546038-cb64-41b2-8ff8-e843308df285
+            value: MTK_1
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: eb63ddde-60c2-4b5b-a6ca-964389d3e2fa
+          logical_operator: and
+        - case_id: eaf39e82-6fc6-4ee6-bba2-fa84500f286d
+          conditions:
+          - comparison_operator: contains
+            id: 5186ed42-90b2-4c33-b0ab-e517ae5f8b06
+            value: MTK_2
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: eaf39e82-6fc6-4ee6-bba2-fa84500f286d
+          logical_operator: and
+        - case_id: 032f51e8-ec75-4b3e-8d84-b6e862c5be66
+          conditions:
+          - comparison_operator: contains
+            id: 96e599c7-f6bb-48c2-a9d9-16377a9683f5
+            value: MTK_3
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: 032f51e8-ec75-4b3e-8d84-b6e862c5be66
+          logical_operator: and
+        - case_id: 7d950db7-3477-4d50-8822-27d141adeb05
+          conditions:
+          - comparison_operator: contains
+            id: 0ab51981-c9ed-48d9-aede-eb553bf4dd53
+            value: PO_1
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: 7d950db7-3477-4d50-8822-27d141adeb05
+          logical_operator: and
+        - case_id: cef0c8be-8d1b-49af-a7d3-aee9580e6c29
+          conditions:
+          - comparison_operator: contains
+            id: dfaf88a7-adc0-4cf5-a857-06563247d570
+            value: PO_2
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: cef0c8be-8d1b-49af-a7d3-aee9580e6c29
+          logical_operator: and
+        - case_id: dab38895-834e-42b2-9138-c11604423651
+          conditions:
+          - comparison_operator: contains
+            id: 416df3a7-2538-42ae-8c10-17f61c527ac1
+            value: PO_3
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: dab38895-834e-42b2-9138-c11604423651
+          logical_operator: and
+        - case_id: e3468d61-550e-4377-9cd1-e987b093028e
+          conditions:
+          - comparison_operator: contains
+            id: 6fe5bed6-c139-440a-b236-9901a8e68892
+            value: CIN_1
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: e3468d61-550e-4377-9cd1-e987b093028e
+          logical_operator: and
+        - case_id: 37a288c5-497c-4154-8cbf-724adbe50cdc
+          conditions:
+          - comparison_operator: contains
+            id: 342ba7bf-e626-4a31-bf01-1327f963a8d5
+            value: CIN_2
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: 37a288c5-497c-4154-8cbf-724adbe50cdc
+          logical_operator: and
+        - case_id: 41c13f08-93d8-4159-82ed-b5a5373a096e
+          conditions:
+          - comparison_operator: contains
+            id: 2bf89329-c65c-4678-9eaf-edbb169afbe2
+            value: CIN_3
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: 41c13f08-93d8-4159-82ed-b5a5373a096e
+          logical_operator: and
+        - case_id: a75f2028-518f-4e24-b13d-71d461ac9527
+          conditions:
+          - comparison_operator: contains
+            id: e70f307f-5764-49d1-8d2c-da87808d87e9
+            value: CHENGPIN_1
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: a75f2028-518f-4e24-b13d-71d461ac9527
+          logical_operator: and
+        - case_id: 0b6d619b-dca9-449f-9cf4-fc317f01d33d
+          conditions:
+          - comparison_operator: contains
+            id: b2638207-cb6e-4ca6-897d-4c27c460ff08
+            value: CHENGPIN_2
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: 0b6d619b-dca9-449f-9cf4-fc317f01d33d
+          logical_operator: and
+        - case_id: cfe1572f-a93f-4c7b-a514-fe7240d68791
+          conditions:
+          - comparison_operator: contains
+            id: 566c40b3-9ce3-4e46-81f5-ef7c2c755e42
+            value: JC_1
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: cfe1572f-a93f-4c7b-a514-fe7240d68791
+          logical_operator: and
+        - case_id: f8ffa7e3-0c35-4e8d-bc19-0282161dbf76
+          conditions:
+          - comparison_operator: contains
+            id: 6143083e-8e6d-41b3-b803-e93489e85d06
+            value: JC_2
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: f8ffa7e3-0c35-4e8d-bc19-0282161dbf76
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 条件分支
+        type: if-else
+      height: 990
+      id: '1758270541118'
+      position:
+        x: 1181.089808047282
+        y: 1525.734797737809
+      positionAbsolute:
+        x: 1181.089808047282
+        y: 1525.734797737809
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 大货建ASN_单行_查询
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/executeRecordLog?sceneId=378&username=yangchen1
+        variables: []
+      height: 199
+      id: '17585254481980'
+      position:
+        x: 2707.5572560757328
+        y: 2360.2212049107834
+      positionAbsolute:
+        x: 2707.5572560757328
+        y: 2360.2212049107834
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 大货建ASN_3行_查询
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/executeRecordLog?sceneId=377&username=yangchen1
+        variables: []
+      height: 199
+      id: '17585256236200'
+      position:
+        x: 2712.765399305006
+        y: 2913.418173184457
+      positionAbsolute:
+        x: 2712.765399305006
+        y: 2913.418173184457
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 大货建ASN_2行_查询
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/executeRecordLog?sceneId=342&username=yangchen1
+        variables: []
+      height: 199
+      id: '17585257498690'
+      position:
+        x: 2712.765399305006
+        y: 2627.4260468040848
+      positionAbsolute:
+        x: 2712.765399305006
+        y: 2627.4260468040848
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 独立需求建ASN_3行_查询
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/executeRecordLog?sceneId=376&username=yangchen1
+        variables: []
+      height: 199
+      id: '17585259831560'
+      position:
+        x: 2712.765399305006
+        y: 2125.3148703749084
+      positionAbsolute:
+        x: 2712.765399305006
+        y: 2125.3148703749084
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 独立需求建ASN_2行_查询
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/executeRecordLog?sceneId=341&username=yangchen1
+        variables: []
+      height: 199
+      id: '17585260750840'
+      position:
+        x: 2707.5572560757328
+        y: 1879.9466255826571
+      positionAbsolute:
+        x: 2707.5572560757328
+        y: 1879.9466255826571
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 独立需求建ASN_单行_查询
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/executeRecordLog?sceneId=375&username=yangchen1
+        variables: []
+      height: 199
+      id: '17585261169400'
+      position:
+        x: 2707.5572560757328
+        y: 1644.3133846530159
+      positionAbsolute:
+        x: 2707.5572560757328
+        y: 1644.3133846530159
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: MTK建ASN_3行_查询
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/executeRecordLog?sceneId=374&username=yangchen1
+        variables: []
+      height: 199
+      id: '17585261887320'
+      position:
+        x: 2707.5572560757328
+        y: 1404.809706527993
+      positionAbsolute:
+        x: 2707.5572560757328
+        y: 1404.809706527993
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: MTK建ASN_2行_查询
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/executeRecordLog?sceneId=338&username=yangchen1
+        variables: []
+      height: 199
+      id: '17585262572350'
+      position:
+        x: 2707.5572560757328
+        y: 1170.816148580416
+      positionAbsolute:
+        x: 2707.5572560757328
+        y: 1170.816148580416
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: MTK建ASN_1行_查询
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/executeRecordLog?sceneId=373&username=yangchen1
+        variables: []
+      height: 199
+      id: '17585262998040'
+      position:
+        x: 2698.6862922415035
+        y: 930.8525283889742
+      positionAbsolute:
+        x: 2698.6862922415035
+        y: 930.8525283889742
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: TI建ASN_3行_查询
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/executeRecordLog?sceneId=371&username=yangchen1
+        variables: []
+      height: 199
+      id: '17585263624120'
+      position:
+        x: 2698.6862922415035
+        y: 661.3261765035452
+      positionAbsolute:
+        x: 2698.6862922415035
+        y: 661.3261765035452
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: TI建ASN_2行_查询
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/executeRecordLog?sceneId=340&username=yangchen1
+        variables: []
+      height: 199
+      id: '17585264233720'
+      position:
+        x: 2698.6862922415035
+        y: 383.13391311560997
+      positionAbsolute:
+        x: 2698.6862922415035
+        y: 383.13391311560997
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: TI建ASN_1行_查询
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/executeRecordLog?sceneId=372&username=yangchen1
+        variables: []
+      height: 199
+      id: '17585264492280'
+      position:
+        x: 2698.6862922415035
+        y: 102.41181899837753
+      positionAbsolute:
+        x: 2698.6862922415035
+        y: 102.41181899837753
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 高通建ASN_3行_查询
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/executeRecordLog?sceneId=370&username=yangchen1
+        variables: []
+      height: 199
+      id: '17585264964200'
+      position:
+        x: 2698.6862922415035
+        y: -169.47263339579354
+      positionAbsolute:
+        x: 2698.6862922415035
+        y: -169.47263339579354
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 高通建ASN_2行_查询
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/executeRecordLog?sceneId=339&username=yangchen1
+        variables: []
+      height: 199
+      id: '17585265397800'
+      position:
+        x: 2698.6862922415035
+        y: -467.01212803544286
+      positionAbsolute:
+        x: 2698.6862922415035
+        y: -467.01212803544286
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 高通建ASN_1行_查询
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/executeRecordLog?sceneId=369&username=yangchen1
+        variables: []
+      height: 199
+      id: '17585265696990'
+      position:
+        x: 2698.6862922415035
+        y: -766.3434293498239
+      positionAbsolute:
+        x: 2698.6862922415035
+        y: -766.3434293498239
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "import json\ndef main(\n    arg1: str,\n    arg2: str,\n    arg3,\n\
+          \    arg4,\n    arg5,\n    arg6,\n    arg7,\n    arg8,\n    arg9,\n    arg10,\n\
+          \    arg11,\n    arg12,\n    arg13,\n    arg14,\n    arg15,\n    arg16,\n\
+          \    arg17,\n    arg18,\n    arg19\n) -> dict:\n    # 使用Python的逻辑或运算符or（替代||），取第一个为真的值\n\
+          \    result = arg1 or arg2 or arg3 or arg4 or arg5 or arg6 or arg7 or arg8\
+          \ or \\\n             arg9 or arg10 or arg11 or arg12 or arg13 or arg14\
+          \ or arg15 or arg16 or arg17 or arg18 or arg19\n    # 返回包含结果的字典（修正原代码中未定义的task_type为result）\n\
+          \    try:\n        result = json.loads(result)\n    except:\n        result\
+          \ = {}\n    return {\"outputData\": result}\n"
+        code_language: python3
+        desc: ''
+        outputs:
+          outputData:
+            children: null
+            type: object
+        selected: false
+        title: 归一化
+        type: code
+        variables:
+        - value_selector:
+          - '17585265696990'
+          - body
+          value_type: string
+          variable: arg1
+        - value_selector:
+          - '17585265397800'
+          - body
+          value_type: string
+          variable: arg2
+        - value_selector:
+          - '17585264964200'
+          - body
+          value_type: string
+          variable: arg3
+        - value_selector:
+          - '17585264492280'
+          - body
+          value_type: string
+          variable: arg4
+        - value_selector:
+          - '17585264233720'
+          - body
+          value_type: string
+          variable: arg5
+        - value_selector:
+          - '17585263624120'
+          - body
+          value_type: string
+          variable: arg6
+        - value_selector:
+          - '17585262998040'
+          - body
+          value_type: string
+          variable: arg7
+        - value_selector:
+          - '17585262572350'
+          - body
+          value_type: string
+          variable: arg8
+        - value_selector:
+          - '17585261887320'
+          - body
+          value_type: string
+          variable: arg9
+        - value_selector:
+          - '17585261169400'
+          - body
+          value_type: string
+          variable: arg10
+        - value_selector:
+          - '17585260750840'
+          - body
+          value_type: string
+          variable: arg11
+        - value_selector:
+          - '17585259831560'
+          - body
+          value_type: string
+          variable: arg12
+        - value_selector:
+          - '17585254481980'
+          - body
+          value_type: string
+          variable: arg13
+        - value_selector:
+          - '17585257498690'
+          - body
+          value_type: string
+          variable: arg14
+        - value_selector:
+          - '17585256236200'
+          - body
+          value_type: string
+          variable: arg15
+        - value_selector:
+          - '17601721708510'
+          - body
+          value_type: string
+          variable: arg16
+        - value_selector:
+          - '17601722243680'
+          - body
+          value_type: string
+          variable: arg17
+        - value_selector:
+          - '17603444594160'
+          - body
+          value_type: string
+          variable: arg18
+        - value_selector:
+          - '17603447446630'
+          - body
+          value_type: string
+          variable: arg19
+      height: 54
+      id: '17585288603330'
+      position:
+        x: 3663.9888639835876
+        y: 1994.3688926072723
+      positionAbsolute:
+        x: 3663.9888639835876
+        y: 1994.3688926072723
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs: []
+        selected: false
+        title: 结束 2
+        type: end
+      height: 54
+      id: '1759199421202'
+      position:
+        x: 1322.702249121979
+        y: 3035.560893993435
+      positionAbsolute:
+        x: 1322.702249121979
+        y: 3035.560893993435
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-615
+            key: ''
+            type: text
+            value: "{\n  \"taskId\": 398,\n  \"sceneName\": \"SRM-成品(ZJC)创建ASN_1行\"\
+              ,\n  \"sceneInput\": [\n    {\n      \"apiId\": 9983,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"SRM_PO查询\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"erpNo\",\n          \"id\": 83097,\n\
+              \          \"type\": 1,\n          \"value\": \"{{#1747896291380.PO#}}\"\
+              \n        }\n      ],\n      \"order\": 1\n    },\n    {\n      \"apiId\"\
+              : 9398,\n      \"protocol\": \"x5\",\n      \"apiName\": \"【SIT】SRM自动接单1\"\
+              ,\n      \"order\": 2\n    },\n    {\n      \"apiId\": 10245,\n    \
+              \  \"protocol\": \"x5\",\n      \"apiName\": \"成品创建出库申请(SIT专用)_1行\"\
+              ,\n      \"order\": 3\n    },\n    {\n      \"apiId\": 10060,\n    \
+              \  \"protocol\": \"http\",\n      \"apiName\": \"srm根据计算属性\",\n    \
+              \  \"order\": 4\n    },\n    {\n      \"apiId\": 10246,\n      \"protocol\"\
+              : \"x5\",\n      \"apiName\": \"成品创建提货计划(SIT专用)_1行\",\n      \"order\"\
+              : 5\n    },\n    {\n      \"apiId\": 10084,\n      \"protocol\": \"\
+              x5\",\n      \"apiName\": \"成品创建ASN_单行(无预约单)\",\n      \"order\": 6\n\
+              \    }\n  ],\n  \"sceneOutput\": {\n    \"name\": \"asnBusinessModel\"\
+              ,\n    \"id\": 83098,\n    \"type\": 6\n  },\n  \"sceneId\": 382,\n\
+              \  \"forCounter\": 1,\n  \"executePerson\": \"yangchen1\"\n}"
+          type: json
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 成品ZJC_1行
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/execute
+        variables: []
+      height: 167
+      id: '17601717764750'
+      position:
+        x: 2204.656306914171
+        y: 3852.2598778078004
+      positionAbsolute:
+        x: 2204.656306914171
+        y: 3852.2598778078004
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 成品ZJC_查询
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/executeRecordLog?sceneId=382&username=yangchen1
+        variables: []
+      height: 199
+      id: '17601721708510'
+      position:
+        x: 2707.5572560757328
+        y: 3852.2598778078004
+      positionAbsolute:
+        x: 2707.5572560757328
+        y: 3852.2598778078004
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-615
+            key: ''
+            type: text
+            value: "{\n  \"taskId\": 399,\n  \"sceneName\": \"SRM-成品(ZJC)创建ASN_2行\"\
+              ,\n  \"sceneInput\": [\n    {\n      \"apiId\": 9983,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"SRM_PO查询\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"erpNo\",\n          \"id\": 83095,\n\
+              \          \"type\": 1,\n          \"value\": \"{{#1747896291380.PO#}}\"\
+              \n        }\n      ],\n      \"order\": 1\n    },\n    {\n      \"apiId\"\
+              : 9398,\n      \"protocol\": \"x5\",\n      \"apiName\": \"【SIT】SRM自动接单1\"\
+              ,\n      \"order\": 2\n    },\n    {\n      \"apiId\": 10228,\n    \
+              \  \"protocol\": \"x5\",\n      \"apiName\": \"成品创建出库申请(SIT专用)_2行\"\
+              ,\n      \"order\": 3\n    },\n    {\n      \"apiId\": 10060,\n    \
+              \  \"protocol\": \"http\",\n      \"apiName\": \"srm根据计算属性\",\n    \
+              \  \"order\": 4\n    },\n    {\n      \"apiId\": 10253,\n      \"protocol\"\
+              : \"x5\",\n      \"apiName\": \"成品创建提货计划(SIT专用)_2行(集成)\",\n      \"\
+              order\": 5\n    },\n    {\n      \"apiId\": 10087,\n      \"protocol\"\
+              : \"x5\",\n      \"apiName\": \"成品创建ASN_2行(无预约单)\",\n      \"order\"\
+              : 6\n    }\n  ],\n  \"sceneOutput\": {\n    \"name\": \"asnBusinessModel\"\
+              ,\n    \"id\": 83096,\n    \"type\": 6\n  },\n  \"sceneId\": 383,\n\
+              \  \"forCounter\": 1,\n  \"executePerson\": \"yangchen1\"\n}"
+          type: json
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 成品ZJC_2行
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/execute
+        variables: []
+      height: 167
+      id: '17601722211900'
+      position:
+        x: 2204.656306914171
+        y: 4153.926531416912
+      positionAbsolute:
+        x: 2204.656306914171
+        y: 4153.926531416912
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 成品ZJC_2行_查询
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/executeRecordLog?sceneId=383&username=yangchen1
+        variables: []
+      height: 199
+      id: '17601722243680'
+      position:
+        x: 2698.6862922415035
+        y: 4153.926531416912
+      positionAbsolute:
+        x: 2698.6862922415035
+        y: 4153.926531416912
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-615
+            key: ''
+            type: text
+            value: "{\n  \"taskId\": 400,\n  \"sceneName\": \"SRM-成品(ZPJ\\\\ZWW)创建ASN_1行\"\
+              ,\n  \"sceneInput\": [\n    {\n      \"apiId\": 9983,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"SRM_PO查询\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"erpNo\",\n          \"id\": 83092,\n\
+              \          \"type\": 1,\n          \"value\": \"{{#1747896291380.PO#}}\"\
+              \n        }\n      ],\n      \"order\": 1\n    },\n    {\n      \"apiId\"\
+              : 9398,\n      \"protocol\": \"x5\",\n      \"apiName\": \"【SIT】SRM自动接单1\"\
+              ,\n      \"order\": 2\n    },\n    {\n      \"apiId\": 10245,\n    \
+              \  \"protocol\": \"x5\",\n      \"apiName\": \"成品创建出库申请(SIT专用)_1行\"\
+              ,\n      \"order\": 3\n    },\n    {\n      \"apiId\": 10060,\n    \
+              \  \"protocol\": \"http\",\n      \"apiName\": \"srm根据计算属性\",\n    \
+              \  \"order\": 4\n    },\n    {\n      \"apiId\": 9869,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"根据PO生成提货计划-自提\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"mihomeId\",\n          \"id\"\
+              : 83093,\n          \"type\": 1,\n          \"value\": \"420\"\n   \
+              \     }\n      ],\n      \"order\": 5\n    },\n    {\n      \"apiId\"\
+              : 10084,\n      \"protocol\": \"x5\",\n      \"apiName\": \"成品创建ASN_单行(无预约单)\"\
+              ,\n      \"order\": 6\n    }\n  ],\n  \"sceneOutput\": {\n    \"name\"\
+              : \"asnBusinessModel\",\n    \"id\": 83094,\n    \"type\": 6\n  },\n\
+              \  \"sceneId\": 384,\n  \"forCounter\": 1,\n  \"executePerson\": \"\
+              yangchen1\"\n}"
+          type: json
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 成品ZPJ/ZWW_1行
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/execute
+        variables: []
+      height: 167
+      id: '17603444378080'
+      position:
+        x: 2197.9356657193125
+        y: 3240.055409011597
+      positionAbsolute:
+        x: 2197.9356657193125
+        y: 3240.055409011597
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 成品ZPJ/ZWW_查询
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/executeRecordLog?sceneId=384&username=yangchen1
+        variables: []
+      height: 199
+      id: '17603444594160'
+      position:
+        x: 2712.765399305006
+        y: 3240.055409011597
+      positionAbsolute:
+        x: 2712.765399305006
+        y: 3240.055409011597
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data:
+          - id: key-value-615
+            key: ''
+            type: text
+            value: "{\n  \"taskId\": 401,\n  \"sceneName\": \"SRM-成品(ZPJ\\\\ZWW)创建ASN_2行\"\
+              ,\n  \"sceneInput\": [\n    {\n      \"apiId\": 9983,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"SRM_PO查询\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"erpNo\",\n          \"id\": 83089,\n\
+              \          \"type\": 1,\n          \"value\": \"{{#1747896291380.PO#}}\"\
+              \n        }\n      ],\n      \"order\": 1\n    },\n    {\n      \"apiId\"\
+              : 9398,\n      \"protocol\": \"x5\",\n      \"apiName\": \"【SIT】SRM自动接单1\"\
+              ,\n      \"order\": 2\n    },\n    {\n      \"apiId\": 10228,\n    \
+              \  \"protocol\": \"x5\",\n      \"apiName\": \"成品创建出库申请(SIT专用)_2行\"\
+              ,\n      \"order\": 3\n    },\n    {\n      \"apiId\": 10060,\n    \
+              \  \"protocol\": \"http\",\n      \"apiName\": \"srm根据计算属性\",\n    \
+              \  \"order\": 4\n    },\n    {\n      \"apiId\": 9869,\n      \"protocol\"\
+              : \"http\",\n      \"apiName\": \"根据PO生成提货计划-自提\",\n      \"apiVariables\"\
+              : [\n        {\n          \"name\": \"mihomeId\",\n          \"id\"\
+              : 82360,\n          \"type\": 1,\n          \"value\": \"420\"\n   \
+              \     }\n      ],\n      \"order\": 5\n    },\n    {\n      \"apiId\"\
+              : 10087,\n      \"protocol\": \"x5\",\n      \"apiName\": \"成品创建ASN_2行(无预约单)\"\
+              ,\n      \"order\": 6\n    }\n  ],\n  \"sceneOutput\": {\n    \"name\"\
+              : \"asnBusinessModel\",\n    \"id\": 83091,\n    \"type\": 6\n  },\n\
+              \  \"sceneId\": 385,\n  \"forCounter\": 1,\n  \"executePerson\": \"\
+              yangchen1\"\n}"
+          type: json
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: post
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 成品ZPJ/ZWW_2行
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/execute
+        variables: []
+      height: 167
+      id: '17603447296250'
+      position:
+        x: 2204.656306914171
+        y: 3529.408846484704
+      positionAbsolute:
+        x: 2204.656306914171
+        y: 3529.408846484704
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: 从SRM PO表获取物料信息
+        headers: ''
+        method: get
+        params: ''
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 成品ZPJ/ZWW_2行_查询
+        type: http-request
+        url: https://toolskit.test.mi.com/datacube/scene/executeRecordLog?sceneId=385&username=yangchen1
+        variables: []
+      height: 199
+      id: '17603447446630'
+      position:
+        x: 2707.5572560757328
+        y: 3529.408846484704
+      positionAbsolute:
+        x: 2707.5572560757328
+        y: 3529.408846484704
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1763020591425'
+          - code
+        desc: ''
+        model:
+          completion_params: {}
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        prompt_template:
+        - id: 658357a6-7829-482b-baf6-e2115c327ba8
+          role: system
+          text: '如果{{#1763020591425.code#}}不等于"200"或者200，请输出“抱歉，ASN暂未生成，原因：” + {{#1763020591425.desc#}}
+
+            如果{{#1763020591425.code#}}等于"200"或者200，请输出“创建ASN成功，单号为：”+{{#1763020591425.asn#}}'
+        selected: false
+        title: 独立需求/大货创建ASN结果处理
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1761817246483'
+      position:
+        x: 5005.923784831847
+        y: 1994.3688926072723
+      positionAbsolute:
+        x: 5005.923784831847
+        y: 1994.3688926072723
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "import time\n\ndef main() -> dict:\n    return {\n        \"time\"\
+          : str(int(time.time()))\n    }\n"
+        code_language: python3
+        desc: ''
+        outputs:
+          time:
+            children: null
+            type: string
+        selected: false
+        title: 获取当前时间戳
+        type: code
+        variables: []
+      height: 54
+      id: '1761985221516'
+      position:
+        x: 446.4118697744143
+        y: 1538.9298771072108
+      positionAbsolute:
+        x: 446.4118697744143
+        y: 1538.9298771072108
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: ''
+        headers: ''
+        method: get
+        params: 'po:{{#1747896291380.PO#}}
+
+          key:{{#1761985221516.time#}}'
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 临时关闭历史PO
+        type: http-request
+        url: https://toolskit.test.mi.com/isc/srm-tools/po/close
+        variables: []
+      height: 139
+      id: '1761985419288'
+      position:
+        x: 769.063820283966
+        y: 1538.9298771072108
+      positionAbsolute:
+        x: 769.063820283966
+        y: 1538.9298771072108
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: ''
+        headers: ''
+        method: get
+        params: 'po:{{#1747896291380.PO#}}
+
+          key:{{#1761985221516.time#}}'
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 还原关闭的PO
+        type: http-request
+        url: https://toolskit.test.mi.com/isc/srm-tools/po/open
+        variables: []
+      height: 139
+      id: '1761985518285'
+      position:
+        x: 3983.8518780587665
+        y: 1994.3688926072723
+      positionAbsolute:
+        x: 3983.8518780587665
+        y: 1994.3688926072723
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: ''
+        headers: ''
+        method: post
+        params: 'query_table:ZTCALLIN_COMMAND
+
+          result_fields:CALLIN_COMMAND_NO,BUKRS,MATNR,SHIP_LIFNR_CODE,FINAL_LIFNR_CODE
+
+          query_options:CALLIN_COMMAND_NO={{#1747896291380.pullCommand#}}
+
+          row_count:10'
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 获取拉料指令详情
+        type: http-request
+        url: https://toolskit.test.mi.com/isc/sourcing-data/newGetByOptions
+        variables: []
+      height: 155
+      id: '1762158063462'
+      position:
+        x: -773.3082912588545
+        y: 1448.3926149335075
+      positionAbsolute:
+        x: -773.3082912588545
+        y: 1448.3926149335075
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: not empty
+            id: 2ec4b876-b482-4f99-bc55-54cd7bf67978
+            value: ''
+            varType: string
+            variable_selector:
+            - '1747896291380'
+            - pullCommand
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 判断有无拉料指令
+        type: if-else
+      height: 126
+      id: '1762159569624'
+      position:
+        x: -1266.5705239757988
+        y: 1538.9298771072108
+      positionAbsolute:
+        x: -1266.5705239757988
+        y: 1538.9298771072108
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: contains
+            id: 8b9ea2bf-dd04-4508-9e4c-ee5a3b0da3ac
+            value: PO_1
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          - comparison_operator: contains
+            id: d77f43bd-87e6-46f4-931c-06834f1242d6
+            value: PO_2
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          - comparison_operator: contains
+            id: 4ae03286-b16e-4484-8eed-42e0655607ba
+            value: PO_3
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          - comparison_operator: contains
+            id: 0380c2de-6676-44dd-82b2-7c1000b2851a
+            value: CIN_1
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          - comparison_operator: contains
+            id: b62bbffc-b6f7-4d0f-bf9c-f4a4bcbffaa2
+            value: CIN_2
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          - comparison_operator: contains
+            id: 4748ca2a-344b-4ac1-8143-d7c1fcaece85
+            value: CIN_3
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: 'true'
+          logical_operator: or
+        - case_id: fc1ebb29-fd09-4103-badf-83680412747d
+          conditions:
+          - comparison_operator: contains
+            id: 2b7305a5-c4e4-4976-8485-748e0bd0f8c2
+            value: CHENGPIN_1
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          - comparison_operator: contains
+            id: a35b93a6-50d8-4483-99db-d41c309a66d4
+            value: CHENGPIN_2
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          - comparison_operator: contains
+            id: 7bad60b0-2f1d-456e-985c-c42a328886e5
+            value: JC_1
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          - comparison_operator: contains
+            id: cd22ddf3-f5d0-44f9-8cf8-20122ac2b73c
+            value: JC_2
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: fc1ebb29-fd09-4103-badf-83680412747d
+          logical_operator: or
+        desc: ''
+        selected: false
+        title: 判断是否走三大逻辑
+        type: if-else
+      height: 382
+      id: '1762227785389'
+      position:
+        x: 4314.48731247072
+        y: 1994.3688926072723
+      positionAbsolute:
+        x: 4314.48731247072
+        y: 1994.3688926072723
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '1762229598813'
+          - text
+          value_type: string
+          variable: text
+        selected: false
+        title: 三大创建ASN结束
+        type: end
+      height: 90
+      id: '1762228682041'
+      position:
+        x: 5843.54839341603
+        y: 2207.599779707203
+      positionAbsolute:
+        x: 5843.54839341603
+        y: 2207.599779707203
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: ''
+        headers: ''
+        method: post
+        params: 'query_table:ZV_ASN
+
+          result_fields:ASN_NO
+
+          query_options:EXT_DOC_NO={{#1763023016799.zasn_no#}}
+
+          row_count:10'
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 根据外部凭证号获取ASN
+        type: http-request
+        url: https://toolskit.test.mi.com/isc/sourcing-data/newGetByOptions
+        variables: []
+      height: 155
+      id: '1762229187884'
+      position:
+        x: 5012.504734710015
+        y: 2330.4441774330016
+      positionAbsolute:
+        x: 5012.504734710015
+        y: 2330.4441774330016
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1762229187884'
+          - body
+        desc: ''
+        model:
+          completion_params: {}
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        prompt_template:
+        - id: b473fd47-1a78-495a-b729-473395a6762d
+          role: system
+          text: 如果{{#1762229187884.body#}}中有值，则请输出提取出93开头的10位数字，并输出：“已为您创建的ASN=该数字，请查收~”。，若无值，则输出：“抱歉，ASN暂未生成，外部凭证号为{{#1763023016799.zasn_no#}}"。
+        selected: false
+        title: 三大创建ASN获取结果处理
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1762229598813'
+      position:
+        x: 5416.839546872736
+        y: 2330.4441774330016
+      positionAbsolute:
+        x: 5416.839546872736
+        y: 2330.4441774330016
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: not contains
+            id: 8b9ea2bf-dd04-4508-9e4c-ee5a3b0da3ac
+            value: PO_1
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          - comparison_operator: not contains
+            id: d77f43bd-87e6-46f4-931c-06834f1242d6
+            value: PO_2
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          - comparison_operator: not contains
+            id: 4ae03286-b16e-4484-8eed-42e0655607ba
+            value: PO_3
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          - comparison_operator: not contains
+            id: 0380c2de-6676-44dd-82b2-7c1000b2851a
+            value: CIN_1
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          - comparison_operator: not contains
+            id: b62bbffc-b6f7-4d0f-bf9c-f4a4bcbffaa2
+            value: CIN_2
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          - comparison_operator: not contains
+            id: 4748ca2a-344b-4ac1-8143-d7c1fcaece85
+            value: CIN_3
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          - comparison_operator: not contains
+            id: 2d0fdbdd-367d-496e-bc6e-8a1de256c6b4
+            value: CHENGPIN_1
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          - comparison_operator: not contains
+            id: 206208dd-37e0-4bca-a8cd-eff897e2b2c5
+            value: CHENGPIN_2
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          - comparison_operator: not contains
+            id: e8756fcd-17fd-4bb1-a4d2-5d652765c76d
+            value: JC_1
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          - comparison_operator: not contains
+            id: 407daff7-9fb6-4255-adfe-00c19678f244
+            value: JC_2
+            varType: string
+            variable_selector:
+            - '1750649003091'
+            - task_type
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 判断是否走三大逻辑 (1)
+        type: if-else
+      height: 360
+      id: '17623224127210'
+      position:
+        x: 203.60306163292682
+        y: 1667.533506414933
+      positionAbsolute:
+        x: 203.60306163292682
+        y: 1667.533506414933
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        authorization:
+          config: null
+          type: no-auth
+        body:
+          data: []
+          type: none
+        desc: ''
+        headers: ''
+        method: post
+        params: purchaseOrder:{{#1747896291380.PO#}}
+        retry_config:
+          max_retries: 3
+          retry_enabled: true
+          retry_interval: 100
+        selected: false
+        ssl_verify: true
+        timeout:
+          max_connect_timeout: 0
+          max_read_timeout: 0
+          max_write_timeout: 0
+        title: 获取PO中物料价格
+        type: http-request
+        url: http://toolskit.test.mi.com/isc/srm-tools/get/price
+        variables: []
+      height: 139
+      id: '1762322492133'
+      position:
+        x: 566.3841417141385
+        y: 1800.0241950039763
+      positionAbsolute:
+        x: 566.3841417141385
+        y: 1800.0241950039763
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        instruction: '解析{{#1762322492133.body#}}中data为一个数组，获取数组的第一个值为price1，第二个值为price2，第三个值为price3
+
+          将price1乘以10的值作为totalPrice1，将price2乘以10的值作为totalPrice2，将price3乘以10的值作为totalPrice3，'
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        parameters:
+        - description: 第一个物料价格
+          name: price1
+          required: false
+          type: string
+        - description: 第二个物料价格
+          name: price2
+          required: false
+          type: string
+        - description: 第三个物料价格
+          name: price3
+          required: false
+          type: string
+        - description: 物料1总价
+          name: totalPrice1
+          required: false
+          type: string
+        - description: 物料2总价
+          name: totalPrice2
+          required: false
+          type: string
+        - description: 物料3总价
+          name: totalPrice3
+          required: false
+          type: string
+        query:
+        - '1762322492133'
+        - body
+        reasoning_mode: prompt
+        selected: false
+        title: 参数提取器 2
+        type: parameter-extractor
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1762322639983'
+      position:
+        x: 875.982340051924
+        y: 1800.0241950039763
+      positionAbsolute:
+        x: 875.982340051924
+        y: 1800.0241950039763
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "import json\nfrom typing import Union\n\ndef main(arg1: dict) -> Union[dict,\
+          \ None]:\n    try:\n        if not isinstance(arg1, dict) or \"data\" not\
+          \ in arg1:\n            raise ValueError(\"输入JSON缺少'data'字段\")\n       \
+          \ if \"result\" not in arg1[\"data\"] or not isinstance(arg1[\"data\"][\"\
+          result\"], list):\n            raise ValueError(\"'data'字段下缺少有效的'result'数组\"\
+          )\n        \n        result_list = arg1[\"data\"][\"result\"]\n        if\
+          \ not result_list:\n            print(\"警告：result数组为空\")\n            return\
+          \ None\n        \n        latest_item = max(result_list, key=lambda x: x.get(\"\
+          executeTime\", \"\"))\n        print(f\"最新执行时间：{latest_item.get('executeTime')}\"\
+          )\n        \n        debug_logs = latest_item.get(\"sceneApiDebugLogVos\"\
+          , [])\n        if not debug_logs or not isinstance(debug_logs, list):\n\
+          \            print(\"警告：该项目下无有效的sceneApiDebugLogVos数组\")\n            return\
+          \ None\n        \n        target_log = None\n        for log in debug_logs:\n\
+          \            if \"url\" in log and \"/asn/create\" in log[\"url\"].lower():\n\
+          \                target_log = log\n                break\n        \n   \
+          \     if not target_log:\n            print(\"警告：未找到url包含/asn/create的日志项\"\
+          )\n            return None\n        \n        response_str = target_log.get(\"\
+          response\", \"{}\")\n        try:\n            response_dict = json.loads(response_str)\n\
+          \        except json.JSONDecodeError as e:\n            raise ValueError(f\"\
+          response字段JSON解析失败：{e}\")\n        \n        final_code = \"\"\n       \
+          \ final_desc = \"\"\n        final_body = \"\"\n        miasn_num = \"\"\
+          \  # 初始化MIASN_NUM变量\n        \n        if \"code\" in response_dict:\n \
+          \           final_code = str(response_dict[\"code\"])\n            final_desc\
+          \ = response_dict.get(\"msg\", response_dict.get(\"message\", \"\"))\n \
+          \           data_dict = response_dict.get(\"data\", {})\n            final_body\
+          \ = json.dumps(data_dict, ensure_ascii=False, indent=0)\n            # 提取ASN_NUM（若存在）\n\
+          \            miasn_num = data_dict.get(\"MIASN_NUM\", \"\")\n        elif\
+          \ \"header\" in response_dict:\n            final_code = str(response_dict[\"\
+          header\"].get(\"code\", \"\"))\n            final_desc = response_dict[\"\
+          header\"].get(\"desc\", \"\")\n            body_dict = response_dict.get(\"\
+          body\", {})\n            final_body = json.dumps(body_dict, ensure_ascii=False,\
+          \ indent=0)\n            # 提取ASN_NUM（若存在）\n            miasn_num = body_dict.get(\"\
+          MIASN_NUM\", \"\")\n        else:\n            raise ValueError(\"response格式不支持，未找到code/desc字段\"\
+          )\n        \n        return {\n            \"code\": final_code,\n     \
+          \       \"desc\": final_desc,\n            \"asn\": miasn_num  # 新增字段：返回MIASN_NUM的值（空字符串表示不存在）\n\
+          \        }\n    \n    except Exception as e:\n        print(f\"处理失败：{str(e)}\"\
+          )\n        return None"
+        code_language: python3
+        desc: ''
+        outputs:
+          asn:
+            children: null
+            type: string
+          code:
+            children: null
+            type: string
+          desc:
+            children: null
+            type: string
+        selected: false
+        title: 提取日志中最新的结果（独立需求/大货）
+        type: code
+        variables:
+        - value_selector:
+          - '17585288603330'
+          - outputData
+          value_type: object
+          variable: arg1
+      height: 54
+      id: '1763020591425'
+      position:
+        x: 4647.937404812919
+        y: 1994.3688926072723
+      positionAbsolute:
+        x: 4647.937404812919
+        y: 1994.3688926072723
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "import json\nfrom typing import Union\n\ndef main(arg1: dict) -> Union[dict,\
+          \ None]:\n    try:\n        if not isinstance(arg1, dict) or \"data\" not\
+          \ in arg1:\n            raise ValueError(\"输入JSON缺少'data'字段\")\n       \
+          \ if \"result\" not in arg1[\"data\"] or not isinstance(arg1[\"data\"][\"\
+          result\"], list):\n            raise ValueError(\"'data'字段下缺少有效的'result'数组\"\
+          )\n        \n        result_list = arg1[\"data\"][\"result\"]\n        if\
+          \ not result_list:\n            print(\"警告：result数组为空\")\n            return\
+          \ None\n        \n        # 找到executeTime最新的项\n        latest_item = max(result_list,\
+          \ key=lambda x: x.get(\"executeTime\", \"\"))\n        print(f\"最新执行时间：{latest_item.get('executeTime')}\"\
+          )\n        \n        # 提取sceneApiDebugLogVos数组\n        debug_logs = latest_item.get(\"\
+          sceneApiDebugLogVos\", [])\n        if not debug_logs or not isinstance(debug_logs,\
+          \ list):\n            print(\"警告：该项目下无有效的sceneApiDebugLogVos数组\")\n    \
+          \        return None\n        \n        # 筛选url包含/edi-desadv-asn/push的项（大小写不敏感）\n\
+          \        target_log = None\n        for log in debug_logs:\n           \
+          \ if \"url\" in log and \"/edi-desadv-asn/push\" in log[\"url\"].lower():\n\
+          \                target_log = log\n                break\n        \n   \
+          \     if not target_log:\n            print(\"警告：未找到url包含/edi-desadv-asn/push的日志项\"\
+          )\n            return None\n        \n        # 解析request字段（JSON字符串转字典）\n\
+          \        request_str = target_log.get(\"request\", \"{}\")\n        try:\n\
+          \            request_dict = json.loads(request_str)\n        except json.JSONDecodeError\
+          \ as e:\n            raise ValueError(f\"request字段JSON解析失败：{e}\")\n    \
+          \    \n        # 提取ZASN_NO（不存在时返回空字符串）\n        zasn_no = \"\"\n       \
+          \ it_item_list = request_dict.get(\"IT_ITEM\", [])\n        if it_item_list\
+          \ and isinstance(it_item_list, list):\n            # 取第一个子项的ZASN_NO，若需校验所有子项一致可添加额外逻辑\n\
+          \            zasn_no = it_item_list[0].get(\"ZASN_NO\", \"\")\n        \n\
+          \        return {\n            \"zasn_no\": zasn_no  # 输出ZASN_NO值，字符串类型\n\
+          \        }\n    \n    except Exception as e:\n        print(f\"处理失败：{str(e)}\"\
+          )\n        return None"
+        code_language: python3
+        desc: ''
+        outputs:
+          zasn_no:
+            children: null
+            type: string
+        selected: false
+        title: 获取创建ASN时的ZASN_NO
+        type: code
+        variables:
+        - value_selector:
+          - '17585288603330'
+          - outputData
+          value_type: object
+          variable: arg1
+      height: 54
+      id: '1763023016799'
+      position:
+        x: 4647.937404812919
+        y: 2330.4441774330016
+      positionAbsolute:
+        x: 4647.937404812919
+        y: 2330.4441774330016
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "import json\nfrom typing import Union\n\ndef main(arg1: dict) -> Union[dict,\
+          \ None]:\n    try:\n        if not isinstance(arg1, dict) or \"data\" not\
+          \ in arg1:\n            raise ValueError(\"输入JSON缺少'data'字段\")\n       \
+          \ if \"result\" not in arg1[\"data\"] or not isinstance(arg1[\"data\"][\"\
+          result\"], list):\n            raise ValueError(\"'data'字段下缺少有效的'result'数组\"\
+          )\n        \n        result_list = arg1[\"data\"][\"result\"]\n        if\
+          \ not result_list:\n            print(\"警告：result数组为空\")\n            return\
+          \ None\n        \n        latest_item = max(result_list, key=lambda x: x.get(\"\
+          executeTime\", \"\"))\n        print(f\"最新执行时间：{latest_item.get('executeTime')}\"\
+          )\n        \n        debug_logs = latest_item.get(\"sceneApiDebugLogVos\"\
+          , [])\n        if not debug_logs or not isinstance(debug_logs, list):\n\
+          \            print(\"警告：该项目下无有效的sceneApiDebugLogVos数组\")\n            return\
+          \ None\n        \n        target_log = None\n        for log in debug_logs:\n\
+          \            if \"url\" in log and \"/finished-product-asn/create\" in log[\"\
+          url\"].lower():\n                target_log = log\n                break\n\
+          \        \n        if not target_log:\n            print(\"警告：未找到url包含/asn/create的日志项\"\
+          )\n            return None\n        \n        response_str = target_log.get(\"\
+          response\", \"{}\")\n        try:\n            response_dict = json.loads(response_str)\n\
+          \        except json.JSONDecodeError as e:\n            raise ValueError(f\"\
+          response字段JSON解析失败：{e}\")\n        \n        final_code = \"\"\n       \
+          \ final_desc = \"\"\n        final_body = \"\"\n        asn_num = \"\" \
+          \ # 初始化MIASN_NUM变量\n        \n        if \"header\" in response_dict:\n\
+          \            # 场景1：包含header的结构（目标场景）\n            final_code = str(response_dict[\"\
+          header\"].get(\"code\", \"\"))\n            final_desc = str(response_dict[\"\
+          header\"].get(\"desc\", \"\"))\n            body_dict = response_dict.get(\"\
+          body\", {})\n            asn_num = body_dict.get(\"ASN_NUM\", final_desc)\n\
+          \        elif \"code\" in response_dict:\n            # 场景2：直接包含code的结构（兼容场景）\n\
+          \            final_code = str(response_dict[\"code\"])\n            final_desc\
+          \ = response_dict.get(\"msg\", response_dict.get(\"message\", \"\"))\n \
+          \           data_dict_inner = response_dict.get(\"data\", {})\n        \
+          \    asn_num = data_dict_inner.get(\"ASN_NUM\", final_desc)\n        else:\n\
+          \            print(\"警告：response格式不支持，未找到header/code字段\")\n            return\
+          \ default_result\n        \n        return {\n            \"code\": final_code,\n\
+          \            \"desc\": final_desc,\n            \"asn\": asn_num  # 新增字段：返回ASN_NUM的值（空字符串表示不存在）\n\
+          \        }\n    \n    except Exception as e:\n        print(f\"处理失败：{str(e)}\"\
+          )\n        return None"
+        code_language: python3
+        desc: ''
+        outputs:
+          asn:
+            children: null
+            type: string
+          code:
+            children: null
+            type: string
+          desc:
+            children: null
+            type: string
+        selected: false
+        title: 提取日志中最新的结果（成品）
+        type: code
+        variables:
+        - value_selector:
+          - '17585288603330'
+          - outputData
+          value_type: object
+          variable: arg1
+      height: 54
+      id: '17630248194970'
+      position:
+        x: 4653.666454436382
+        y: 2160.4659039798735
+      positionAbsolute:
+        x: 4653.666454436382
+        y: 2160.4659039798735
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '17630248194970'
+          - code
+        desc: ''
+        model:
+          completion_params: {}
+          mode: chat
+          name: gpt-4o-mini_mi_sys
+          provider: langgenius/azure_openai/azure_openai
+        prompt_template:
+        - id: 658357a6-7829-482b-baf6-e2115c327ba8
+          role: system
+          text: '如果{{#17630248194970.code#}}不等于"200"或者200，请输出“抱歉，ASN暂未生成，原因：” + {{#17630248194970.desc#}}
+
+            如果{{#17630248194970.code#}}等于"200"或者200，请输出“创建ASN成功，单号为：”+{{#17630248194970.asn#}}'
+        selected: false
+        title: '成品创建ASN结果处理 '
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '17630248422760'
+      position:
+        x: 5005.923784831847
+        y: 2160.4659039798735
+      positionAbsolute:
+        x: 5005.923784831847
+        y: 2160.4659039798735
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        outputs:
+        - value_selector:
+          - '17630248422760'
+          - text
+          value_type: string
+          variable: text
+        selected: false
+        title: 成品创建ASN结束
+        type: end
+      height: 90
+      id: '17630248727310'
+      position:
+        x: 5427.807796669682
+        y: 2160.4659039798735
+      positionAbsolute:
+        x: 5427.807796669682
+        y: 2160.4659039798735
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 257.51609540979706
+      y: -226.0868393668884
+      zoom: 0.37892914162759966
