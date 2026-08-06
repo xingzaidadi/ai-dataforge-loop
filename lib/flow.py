@@ -657,6 +657,20 @@ class FlowEngine:
         def _eval_single(single_expr: str) -> Any:
             """解析单个比较表达式"""
             single_expr = single_expr.strip()
+            # contains：子串包含判断（左值包含右值字面量）
+            # 用于如 "{{inputs.priceType}} contains 'machine_fee'"
+            m = _re.match(r'^(.+?)\s+contains\s+(.+)$', single_expr)
+            if m:
+                left_raw = m.group(1).strip()
+                right_raw = m.group(2).strip().strip("'\"")
+                left_val = resolve_ref(left_raw, self.context)
+                if right_raw.startswith("{{") and right_raw.endswith("}}"):
+                    right_val = resolve_ref(right_raw, self.context)
+                else:
+                    right_val = right_raw
+                if left_val is None or right_val is None:
+                    return False
+                return str(right_val) in str(left_val)
             if "==" in single_expr:
                 m = _re.match(r'^(.+?)\s*==\s*(.+)$', single_expr)
                 if m:

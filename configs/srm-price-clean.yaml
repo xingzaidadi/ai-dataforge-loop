@@ -111,6 +111,10 @@ steps:
         costProjectPhase: "{{inputs.sourceType}}"
     extract:
       verify_result: "$.body.data"
+
+  # machine_fee 分支收尾：http_call 不承载 goto（引擎特性），用 noop 跳转终止
+  - id: machine_fee_done
+    action: noop
     goto: SUCCESS
 
   # ── 非 machine_fee 分支：诊断+修复 ──

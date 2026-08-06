@@ -1,0 +1,129 @@
+# shared/asn-steps.yaml
+# SRM 侧 ASN 承接 — 后置发货通知共享步骤（阶段3）
+#
+# 底层执行范式：SRM datacube 场景编排（scene/execute + executeRecordLog 轮询），
+# 异构于 SAP 侧 YAML 引擎；本文件把 60+ 节点的 ASN 机器人收口为可复用步骤。
+#
+# 用法：configs/srm-asn-create.yaml
+#   use:
+#     - asn-steps.get_po_info
+#   steps:
+#     - use: asn-steps.query_asn_result
+
+common_steps:
+
+  # ═══════════════════════════════════════════════
+  #  1. 查询 PO 简要信息（推断供应商类型 / 行数 / 订单类型）
+  #     查 ZV_PO: MATNR,LIFNR_DG,EKORG,LIFNR,BSART,LGORT,STOCK_ORG_TO,MATKL by EBELN=PO
+  # ═══════════════════════════════════════════════
+  get_po_info:
+    id: get_po_info
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/sourcing-data/newGetByOptions"
+      method: POST
+      body:
+        table: "ZV_PO"
+        columns: "MATNR,LIFNR_DG,EKORG,LIFNR,BSART,LGORT,STOCK_ORG_TO,MATKL"
+        conditions:
+          EBELN: "{{inputs.poNo}}"
+    extract:
+      po_rows: "$.body.data"
+      po_supplier: "$.body.data[0].LIFNR"
+      po_bsart: "$.body.data[0].BSART"
+      po_matkl: "$.body.data[0].MATKL"
+
+  # ═══════════════════════════════════════════════
+  #  2. 查询拉料指令详情（大货/寄调必需）
+  #     查 ZTCALLIN_COMMAND by CALLIN_COMMAND_NO=pullCommand
+  # ═══════════════════════════════════════════════
+  get_pull_command:
+    id: get_pull_command
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/sourcing-data/newGetByOptions"
+      method: POST
+      body:
+        table: "ZTCALLIN_COMMAND"
+        conditions:
+          CALLIN_COMMAND_NO: "{{inputs.pullCommand}}"
+    extract:
+      pull_rows: "$.body.data"
+
+  # ═══════════════════════════════════════════════
+  #  3. 查询 PO 物料价格（三大 EDI 场景组装 sceneInput 用）
+  # ═══════════════════════════════════════════════
+  get_po_price:
+    id: get_po_price
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-tools/get/price"
+      method: POST
+      body:
+        po: "{{inputs.poNo}}"
+    extract:
+      po_price: "$.body.data"
+
+  # ═══════════════════════════════════════════════
+  #  4. 临时关闭历史 PO（三大 EDI 前置，必须在结束前还原）
+  # ═══════════════════════════════════════════════
+  close_history_po:
+    id: close_history_po
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-tools/po/close"
+      method: GET
+      params:
+        po: "{{inputs.poNo}}"
+    extract:
+      close_result: "$.body.data"
+
+  # ═══════════════════════════════════════════════
+  #  5. 还原临时关闭的 PO（与 close_history_po 成对出现）
+  # ═══════════════════════════════════════════════
+  reopen_history_po:
+    id: reopen_history_po
+    action: http_call
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-tools/po/open"
+      method: GET
+      params:
+        po: "{{inputs.poNo}}"
+    extract:
+      reopen_result: "$.body.data"
+
+  # ═══════════════════════════════════════════════
+  #  6. 轮询场景执行日志（所有 _查询 节点归一）
+  #     GET /datacube/scene/executeRecordLog?sceneId=<ID>&username=<person>
+  # ═══════════════════════════════════════════════
+  query_scene_log:
+    id: query_scene_log
+    action: http_call
+    retry: { max: 5, interval_ms: 3000 }
+    params:
+      url: "${SRM_DATACUBE_BASE_URL}/datacube/scene/executeRecordLog"
+      method: GET
+      params:
+        sceneId: "{{steps.execute_asn_scene.extracted.scene_id}}"
+        username: "${SRM_SCENE_EXECUTE_PERSON}"
+    extract:
+      scene_log: "$.body.data"
+
+  # ═══════════════════════════════════════════════
+  #  7. 外部凭证号查 ASN（三大 EDI 专用：ZASN_NO → 真实 ASN）
+  #     查 ZV_ASN: ASN_NO by EXT_DOC_NO=zasn_no
+  # ═══════════════════════════════════════════════
+  query_asn_by_voucher:
+    id: query_asn_by_voucher
+    action: http_call
+    retry: { max: 5, interval_ms: 3000 }
+    params:
+      url: "${SRM_TOOLKIT_BASE_URL}/isc/sourcing-data/newGetByOptions"
+      method: POST
+      body:
+        table: "ZV_ASN"
+        columns: "ASN_NO"
+        conditions:
+          EXT_DOC_NO: "{{steps.execute_asn_scene.extracted.zasn_no}}"
+    extract:
+      asn_no: "$.body.data[0].ASN_NO"

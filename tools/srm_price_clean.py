@@ -17,6 +17,14 @@ import sys
 from pathlib import Path
 from typing import Any
 
+# Windows 控制台默认 GBK，含 emoji 的 print 会抛 UnicodeEncodeError
+for _stream in (sys.stdout, sys.stderr):
+    if hasattr(_stream, "reconfigure"):
+        try:
+            _stream.reconfigure(encoding="utf-8", errors="replace")
+        except (ValueError, OSError):
+            pass
+
 from common import ROOT, StepResult, parse_kv_pairs, write_json
 
 

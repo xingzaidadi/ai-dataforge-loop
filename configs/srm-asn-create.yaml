@@ -1,0 +1,83 @@
+# configs/srm-asn-create.yaml
+# SRM 侧 ASN 承接（阶段3）— 基于已审批 PO 建发货通知
+#
+# 独立运行：python engine.py configs/srm-asn-create.yaml --poNo 4500189594 ...
+# 闭环运行：python tools/closed_loop_runner.py --asn-config configs/srm-asn-create.yaml
+#
+# 五步骨架（把 ASN 机器人 60+ 节点收口）：
+#   ① get_po_info      查 PO 简要信息（供应商/行数/订单类型）
+#   ② route_asn_scene  按 供应商类型 × 行数 命中场景（taskType）
+#   ③ execute_asn_scene  datacube scene/execute 建 ASN
+#   ④ query_asn_result   轮询场景日志 → [三大: 外部凭证号查 ASN | 其余: 直接取单号]
+#   ⑤ normalize_output   结果归一化，输出 zasnNo / asnScene
+#
+# 底层执行范式：SRM datacube 场景编排（异构于 SAP-YAML 引擎），
+# 但复用同一套三道闸 + 证据包。scene 元数据（sceneId/sceneName/taskId）
+# 由 tools/srm_asn_create.py 依据 PO 信息与 SCENE_MAP 解析后注入。
+
+name: SRM侧ASN承接
+description: 基于已审批PO建ASN发货通知；按供应商类型(高通/TI/MTK/独立需求/大货/成品)×行数(1/2/3)路由 datacube 场景编排
+
+inputs:
+  poNo:          { label: 采购订单号, required: true, example: "4500189594" }
+  pullCommand:   { label: 拉料指令(大货必填), required: false, example: "2509220000000001" }
+  warehouseId:   { label: 成品发大仓仓库(默认420), required: false, default: "420" }
+  # 以下由 srm_asn_create.py 依据 PO 信息解析后注入；独立运行时可显式传入
+  taskType:      { label: 命中场景键(CATEGORY_lineCount), required: false, example: "GAOTONG_1" }
+  sceneId:       { label: datacube 场景ID, required: false }
+  sceneName:     { label: datacube 场景名, required: false }
+  taskId:        { label: datacube 任务ID, required: false }
+  asnCategory:   { label: "承接类别(GAOTONG/TI/MTK/PO/CIN/CHENGPIN/JC)；通常由 srm_asn_create.py::resolve_category 自动推断注入，独立运行本配置时需显式传入", required: false }
+
+config:
+  srm_toolkit_base: "${SRM_TOOLKIT_BASE_URL}"
+  srm_datacube_base: "${SRM_DATACUBE_BASE_URL}"
+  execute_person: "${SRM_SCENE_EXECUTE_PERSON}"
+
+steps:
+  # ① 查询 PO 简要信息
+  - use: asn-steps.get_po_info
+
+  # ② 组装场景执行入参（scene 元数据已由 Python 侧注入 inputs）
+  - id: build_scene_body
+    action: template
+    template: "templates/asn-scene.json.j2"
+    context:
+      taskId: "{{inputs.taskId}}"
+      sceneId: "{{inputs.sceneId}}"
+      sceneName: "{{inputs.sceneName}}"
+      executePerson: "{{config.execute_person}}"
+      poNo: "{{inputs.poNo}}"
+      pullCommand: "{{inputs.pullCommand}}"
+      warehouseId: "{{inputs.warehouseId}}"
+
+  # ③ 执行建 ASN 场景（datacube scene/execute）
+  - id: execute_asn_scene
+    action: http_call
+    params:
+      url: "${SRM_DATACUBE_BASE_URL}/datacube/scene/execute"
+      method: POST
+      body: "{{steps.build_scene_body.output}}"
+    extract:
+      scene_id: "{{inputs.sceneId}}"
+      execute_result: "$.body.data"
+      zasn_no: "$.body.data.ZASN_NO"
+
+  # ④ 轮询场景日志
+  - use: asn-steps.query_scene_log
+
+  # ⑤ 分支：三大 EDI 需外部凭证号回查真实 ASN；其余直接取单号
+  - id: is_edi_branch
+    action: condition
+    if: "{{inputs.asnCategory}} == 'GAOTONG' || {{inputs.asnCategory}} == 'TI' || {{inputs.asnCategory}} == 'MTK'"
+    then: query_asn_by_voucher
+    else: normalize_output
+
+  - use: asn-steps.query_asn_by_voucher
+
+  - id: normalize_output
+    action: noop
+    goto: SUCCESS
+
+terminals:
+  SUCCESS: { type: success, message: "SRM 侧 ASN 承接完成" }

@@ -1,0 +1,29 @@
+{
+  "taskId": "{{ taskId }}",
+  "sceneId": {{ sceneId }},
+  "sceneName": "{{ sceneName }}",
+  "executePerson": "{{ executePerson }}",
+  "sceneInput": [
+    {
+      "key": "PO",
+      "value": "{{ poNo }}"
+    }{% if pullCommand %},
+    {
+      "key": "CALLIN_COMMAND_NO",
+      "value": "{{ pullCommand }}"
+    }{% endif %}{% if warehouseId %},
+    {
+      "key": "WAREHOUSE_ID",
+      "value": "{{ warehouseId }}"
+    }{% endif %}{% for p in prices | default([]) %},
+    {
+      "key": "PRICE{{ loop.index }}",
+      "value": "{{ p }}"
+    }{% endfor %}{% if totalPrice %},
+    {
+      "key": "TOTAL_PRICE",
+      "value": "{{ totalPrice }}"
+    }{% endif %}
+  ],
+  "sceneOutput": {{ sceneOutput | default('["result"]') | safe }}
+}
