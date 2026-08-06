@@ -33,7 +33,7 @@ def _status_class(status: str) -> str:
         return "success"
     if normalized in {"FAILED", "FAIL"}:
         return "failed"
-    if normalized in {"PARTIAL", "RECOVERED"}:
+    if normalized in {"PARTIAL", "RECOVERED", "BLOCKED"}:
         return "warning"
     if normalized == "SKIPPED":
         return "skipped"
@@ -145,6 +145,28 @@ def _clean_result_panel(pre_clean: dict[str, Any]) -> str:
     if data.get("errors"):
         rows.append(("输入校验错误", "; ".join(data.get("errors", []))))
     return _table(rows)
+
+
+def _asn_stage_extra(asn: dict[str, Any]) -> str:
+    """阶段3 ASN 承接的明细表；BLOCKED 时显式给出阻断原因，不谎报已建单。"""
+    data = asn.get("data", {}) or {}
+    business = data.get("businessData", {}) or {}
+    rows = [
+        ("承接类别", business.get("asnCategory", "")),
+        ("命中场景", business.get("asnScene", "")),
+        ("taskType", business.get("taskType") or data.get("taskType", "")),
+        ("PO 单号", business.get("poNo", "")),
+        ("拉料指令", business.get("pullCommand", "")),
+        ("ASN 单号", business.get("zasnNo", "")),
+    ]
+    if asn.get("status") == "BLOCKED":
+        rows.append(("阻断原因", data.get("note") or asn.get("detail", "")))
+    if business.get("categoryDegraded"):
+        rows.append(("类别降级", "缺 PO 元数据降级到 PO 兜底，非确认独立需求"))
+    warnings = data.get("warnings")
+    if warnings:
+        rows.append(("告警", "; ".join(w for w in warnings if w)))
+    return _table([(k, v) for k, v in rows if v not in (None, "")])
 
 
 def _stage(name: str, status: str, detail: str, extra: str = "") -> str:
@@ -365,6 +387,8 @@ def build_evidence_pack(run_dir: Path, title: str = "AI 数据智造多模态闭
     pre_clean = _safe_json(run_dir, "srm-price-clean-result.json") or (summary.get("preClean") or {})
     screenshot_params = _safe_json(run_dir, "screenshot-params-result.json")
     datamake = _safe_json(run_dir, "datamake-result.json")
+    po_ready = _safe_json(run_dir, "po-ready-result.json") or (summary.get("poReady") or {})
+    asn = _safe_json(run_dir, "asn-result.json") or (summary.get("asn") or {})
     ui_verify = _safe_json(run_dir, "ui-verify-result.json")
     diagnosis = _safe_json(run_dir, "diagnosis.json")
 
@@ -380,6 +404,28 @@ def build_evidence_pack(run_dir: Path, title: str = "AI 数据智造多模态闭
         business_data = {**params, **business_data}
     command = datamake_data.get("command", [])
     screenshots = sorted((run_dir / "screenshots").glob("*.png"))
+
+    # 阶段2 PO Ready Gate / 阶段3 ASN 承接仅在全链路模式下产出，缺省则不渲染，避免空卡片
+    chain_stages = []
+    if po_ready:
+        pr_data = po_ready.get("data", {}) or {}
+        chain_stages.append(_stage(
+            "PO Ready Gate（审批状态闸门）",
+            po_ready.get("status", "UNKNOWN"),
+            po_ready.get("detail", ""),
+            _table([
+                ("放行状态", pr_data.get("approvalStatus", "")),
+                ("是否放行", "是" if pr_data.get("approved") else "否"),
+                ("PO 单号", pr_data.get("poNo", "")),
+            ]),
+        ))
+    if asn:
+        chain_stages.append(_stage(
+            "SRM 侧 ASN 承接",
+            asn.get("status", "UNKNOWN"),
+            asn.get("detail", ""),
+            _asn_stage_extra(asn),
+        ))
 
     stage_html = "\n".join([
         _stage(
@@ -416,6 +462,7 @@ def build_evidence_pack(run_dir: Path, title: str = "AI 数据智造多模态闭
                 ("返回码", datamake_data.get("returncode", "")),
             ]),
         ),
+        *chain_stages,
         _stage(
             "SCM/SRM 页面验收",
             ui_verify.get("status", "UNKNOWN"),
