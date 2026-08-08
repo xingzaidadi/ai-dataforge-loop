@@ -44,6 +44,7 @@ steps:
       projectCode: "{{inputs.projectCode}}"
       materials: "{{steps.filter_materials.output}}"
       receiveFactoryId: ""
+      purchaseType: 9
 
   # ⑤ 创建PR（ZNB 特有：用 /mrp/pr/ordinary）
   - id: create_pr

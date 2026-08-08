@@ -6,6 +6,7 @@ FlowEngine 编排核心 — 执行步骤、条件分支、循环、路由
 import json
 import sys
 import time
+import urllib.parse
 from pathlib import Path
 from typing import Any, Optional
 
@@ -305,6 +306,13 @@ class FlowEngine:
         url = params.get("url") or ""
         method = params.get("method", "get")
         body = params.get("body", "")
+
+        # query-string 参数（SRM sourcing-data / srm-tools 等接口要求 query 而非 JSON body）
+        # 用法：params.query: {query_table: ZV_PO, ...}，urlencode 后拼到 URL
+        query = params.get("query")
+        if isinstance(query, dict) and query:
+            qs = urllib.parse.urlencode({k: ("" if v is None else str(v)) for k, v in query.items()})
+            url = url + ("&" if "?" in url else "?") + qs
 
         # body 如果是 dict/list，转成 JSON 字符串
         if isinstance(body, (dict, list)):

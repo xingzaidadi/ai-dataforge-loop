@@ -28,6 +28,7 @@ inputs:
   sceneName:     { label: datacube 场景名, required: false }
   taskId:        { label: datacube 任务ID, required: false }
   asnCategory:   { label: "承接类别(GAOTONG/TI/MTK/PO/CIN/CHENGPIN/JC)；通常由 srm_asn_create.py::resolve_category 自动推断注入，独立运行本配置时需显式传入", required: false }
+  sceneBody:     { label: "真实 scene/execute 请求体骨架(按 sceneId 注入、PO 已替换)；由 srm_asn_create.py 从 asn-scene-skeletons.json 取，缺失时模板回退最小结构", required: false }
 
 config:
   srm_toolkit_base: "${SRM_TOOLKIT_BASE_URL}"
@@ -50,6 +51,7 @@ steps:
       poNo: "{{inputs.poNo}}"
       pullCommand: "{{inputs.pullCommand}}"
       warehouseId: "{{inputs.warehouseId}}"
+      sceneBody: "{{inputs.sceneBody}}"
 
   # ③ 执行建 ASN 场景（datacube scene/execute）
   - id: execute_asn_scene

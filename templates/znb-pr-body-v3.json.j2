@@ -1,6 +1,6 @@
 {
   "stockOrg": "{{ stockOrg }}",
-  "receiveFactoryId": {{ receiveFactoryId if receiveFactoryId else 0 }},
+  "receiveFactoryId": "{{ receiveFactoryId }}",
   "specialApprove": 0,
   "materials": [
     {% for mat in materials %}
@@ -57,6 +57,8 @@
   "projectDesc": "",
   "trialStage": "{{ trialStage | default('P0') }}",
   "isSubmit": true,
+  "purchaseReason": "{{ purchaseReason | default('14') }}",
+  "materialCheckerList": {{ materialCheckerList | default(['kangtao']) | tojson }},
   "purchaseType": {{ purchaseType | default(4) }},
   "stageRemark": ""
 }

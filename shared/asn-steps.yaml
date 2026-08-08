@@ -20,13 +20,15 @@ common_steps:
     id: get_po_info
     action: http_call
     params:
+      # 真实接口用 query-string 参数（query_table/result_fields/query_options），
+      # 非 JSON body。poNo 必须是 ERP 号（EBELN，如 4500236548），SCM 号查不到。
       url: "${SRM_TOOLKIT_BASE_URL}/isc/sourcing-data/newGetByOptions"
       method: POST
-      body:
-        table: "ZV_PO"
-        columns: "MATNR,LIFNR_DG,EKORG,LIFNR,BSART,LGORT,STOCK_ORG_TO,MATKL"
-        conditions:
-          EBELN: "{{inputs.poNo}}"
+      query:
+        query_table: "ZV_PO"
+        result_fields: "MATNR,LIFNR_DG,EKORG,LIFNR,BSART,LGORT,STOCK_ORG_TO,MATKL"
+        row_count: 10
+        query_options: "EBELN={{inputs.poNo}}"
     extract:
       po_rows: "$.body.data"
       po_supplier: "$.body.data[0].LIFNR"
@@ -43,10 +45,11 @@ common_steps:
     params:
       url: "${SRM_TOOLKIT_BASE_URL}/isc/sourcing-data/newGetByOptions"
       method: POST
-      body:
-        table: "ZTCALLIN_COMMAND"
-        conditions:
-          CALLIN_COMMAND_NO: "{{inputs.pullCommand}}"
+      query:
+        query_table: "ZTCALLIN_COMMAND"
+        result_fields: "*"
+        row_count: 10
+        query_options: "CALLIN_COMMAND_NO={{inputs.pullCommand}}"
     extract:
       pull_rows: "$.body.data"
 
@@ -73,7 +76,7 @@ common_steps:
     params:
       url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-tools/po/close"
       method: GET
-      params:
+      query:
         po: "{{inputs.poNo}}"
     extract:
       close_result: "$.body.data"
@@ -87,7 +90,7 @@ common_steps:
     params:
       url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-tools/po/open"
       method: GET
-      params:
+      query:
         po: "{{inputs.poNo}}"
     extract:
       reopen_result: "$.body.data"
@@ -103,7 +106,7 @@ common_steps:
     params:
       url: "${SRM_DATACUBE_BASE_URL}/datacube/scene/executeRecordLog"
       method: GET
-      params:
+      query:
         sceneId: "{{steps.execute_asn_scene.extracted.scene_id}}"
         username: "${SRM_SCENE_EXECUTE_PERSON}"
     extract:
@@ -120,10 +123,10 @@ common_steps:
     params:
       url: "${SRM_TOOLKIT_BASE_URL}/isc/sourcing-data/newGetByOptions"
       method: POST
-      body:
-        table: "ZV_ASN"
-        columns: "ASN_NO"
-        conditions:
-          EXT_DOC_NO: "{{steps.execute_asn_scene.extracted.zasn_no}}"
+      query:
+        query_table: "ZV_ASN"
+        result_fields: "ASN_NO"
+        row_count: 10
+        query_options: "EXT_DOC_NO={{steps.execute_asn_scene.extracted.zasn_no}}"
     extract:
       asn_no: "$.body.data[0].ASN_NO"

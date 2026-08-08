@@ -54,18 +54,49 @@ _SUPPLIER_CATEGORY = {
 _EDI_CATEGORIES = {"GAOTONG", "TI", "MTK"}
 
 # 场景映射：category → [1行, 2行, 3行] 的 (sceneId, sceneName)
-# sceneId 来源于 ASN 机器人 scene/execute + executeRecordLog 的 sceneId；
-# 顺序为行数升序，成品(CHENGPIN/JC)最多 2 行。
-# 注：sceneName 为可读标签，真实环境以 sceneId 为准。
+# sceneId/sceneName 逐一核对自 ASN 机器人 YAML 中 scene/execute 节点的真实请求体
+# （见 templates/asn-scene-skeletons.json，由 _extract_scenes.py 提取）。
+# 顺序严格为行数升序 [1行, 2行, 3行]；成品(CHENGPIN/JC)最多 2 行；TI 无 3 行场景。
+# ⚠️ 历史版本此表 1行/3行 多处颠倒（如 PO 单行误配 376=3行场景），
+#    导致单行 PO 发出 3 行 scene、空行触发 SAP 500 CX_SY_ITAB_LINE_NOT_FOUND；已按真值修正。
 _SCENE_MAP: dict[str, list[tuple[int, str]]] = {
-    "GAOTONG":  [(370, "高通建ASN_单行"), (339, "高通建ASN_2行"), (369, "高通建ASN_3行")],
-    "TI":       [(371, "TI建ASN_单行"),   (340, "TI建ASN_2行"),   (372, "TI建ASN_3行")],
-    "MTK":      [(374, "MTK建ASN_单行"),  (338, "MTK建ASN_2行"),  (373, "MTK建ASN_3行")],
-    "PO":       [(376, "独立需求建ASN_单行"), (341, "独立需求建ASN_2行"), (375, "独立需求建ASN_3行")],
-    "CIN":      [(378, "大货建ASN_单行"), (377, "大货建ASN_2行"), (342, "大货建ASN_3行")],
-    "CHENGPIN": [(384, "成品ZPJ_ZWW建ASN_单行"), (385, "成品ZPJ_ZWW建ASN_2行")],
-    "JC":       [(382, "成品ZJC建ASN_单行"), (383, "成品ZJC建ASN_2行")],
+    "GAOTONG":  [(369, "高通创建ASN_1行"), (339, "高通创建ASN_2行"), (370, "高通创建ASN_3行")],
+    "TI":       [(372, "TI创建ASN_1行"),   (340, "TI创建ASN_2行")],
+    "MTK":      [(373, "MTK创建ASN_1行"),  (338, "MTK创建ASN_2行"),  (374, "MTK创建ASN_3行")],
+    "PO":       [(375, "SRM-根据PO创建ASN-仅限独立需求)_1行"), (341, "SRM-根据PO创建ASN-仅限独立需求)_2行"), (376, "SRM-根据PO创建ASN-仅限独立需求)_3行")],
+    "CIN":      [(378, "SRM-根据拉料指令创建ASN-仅限大货ZNB材料_1行"), (342, "SRM-根据拉料指令创建ASN-仅限大货ZNB材料_2行"), (377, "SRM-根据拉料指令创建ASN-仅限大货ZNB材料_3行")],
+    "CHENGPIN": [(384, "SRM-成品(ZPJ\\ZWW)创建ASN_1行"), (385, "SRM-成品(ZPJ\\ZWW)创建ASN_2行")],
+    "JC":       [(382, "SRM-成品(ZJC)创建ASN_1行"), (383, "SRM-成品(ZJC)创建ASN_2行")],
 }
+
+# 真实 scene/execute 请求体骨架（按 sceneId）——含各场景特有的内嵌 API 编排，
+# body 中 __PO__ 为 ERP 采购单号占位，运行时由 build_scene_body_from_skeleton 替换。
+_SKELETON_PATH = ROOT / "templates" / "asn-scene-skeletons.json"
+
+
+def _load_skeletons() -> dict[str, Any]:
+    try:
+        with open(_SKELETON_PATH, encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def build_scene_body_from_skeleton(scene_id: Any, po_no: str) -> str | None:
+    """按 sceneId 取真实骨架并注入 ERP PO，返回可直接 POST 的 JSON 字符串。
+
+    未找到骨架时返回 None（调用方回退到 Jinja 模板或阻断）。
+    """
+    if scene_id in (None, ""):
+        return None
+    skeletons = _load_skeletons()
+    entry = skeletons.get(str(scene_id))
+    if not entry:
+        return None
+    body = entry.get("body", "")
+    if not body:
+        return None
+    return body.replace("__PO__", str(po_no or ""))
 
 
 def _validate_inputs(params: dict[str, Any]) -> list[str]:
@@ -224,6 +255,13 @@ def run_srm_asn_create(
         write_json(run_dir / "asn-result.json", result.to_dict())
         print(f"  🚧 {detail}")
         return result
+
+    # ── 阶段 1.6：注入真实 scene 骨架（按 sceneId 取内嵌 API 编排，替换 PO）──
+    # 未找到骨架不阻断——模板会回退到最小结构（仅够发出请求，真建单能力有限）。
+    if not params.get("sceneBody"):
+        skeleton_body = build_scene_body_from_skeleton(params.get("sceneId"), params.get("poNo", ""))
+        if skeleton_body:
+            params["sceneBody"] = skeleton_body
 
     # ── 阶段 2：输入校验 ──
     errors = _validate_inputs(params)

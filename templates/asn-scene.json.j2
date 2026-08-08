@@ -1,29 +1,26 @@
+{#- SRM datacube scene/execute 请求体。
+    优先使用 Python 侧按 sceneId 注入的真实骨架 sceneBody（含各场景特有的内嵌
+    API 编排 + PO 已替换）；仅在缺骨架时回退到最小结构（仅够发出、无法真正建单）。 -#}
+{%- if sceneBody %}
+{{ sceneBody | safe }}
+{%- else %}
 {
-  "taskId": "{{ taskId }}",
-  "sceneId": {{ sceneId }},
+  "taskId": {{ taskId | default(0, true) }},
   "sceneName": "{{ sceneName }}",
-  "executePerson": "{{ executePerson }}",
   "sceneInput": [
     {
-      "key": "PO",
-      "value": "{{ poNo }}"
-    }{% if pullCommand %},
-    {
-      "key": "CALLIN_COMMAND_NO",
-      "value": "{{ pullCommand }}"
-    }{% endif %}{% if warehouseId %},
-    {
-      "key": "WAREHOUSE_ID",
-      "value": "{{ warehouseId }}"
-    }{% endif %}{% for p in prices | default([]) %},
-    {
-      "key": "PRICE{{ loop.index }}",
-      "value": "{{ p }}"
-    }{% endfor %}{% if totalPrice %},
-    {
-      "key": "TOTAL_PRICE",
-      "value": "{{ totalPrice }}"
-    }{% endif %}
+      "apiId": 9983,
+      "protocol": "http",
+      "apiName": "SRM_PO查询",
+      "apiVariables": [
+        { "name": "erpNo", "id": 0, "type": 1, "value": "{{ poNo }}" }
+      ],
+      "order": 1
+    }
   ],
-  "sceneOutput": {{ sceneOutput | default('["result"]') | safe }}
+  "sceneOutput": { "name": "ASN_NO", "id": 0, "type": 6 },
+  "sceneId": {{ sceneId | default(0, true) }},
+  "forCounter": 1,
+  "executePerson": "{{ executePerson }}"
 }
+{%- endif %}
