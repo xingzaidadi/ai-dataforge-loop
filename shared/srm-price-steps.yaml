@@ -18,7 +18,9 @@ common_steps:
     params:
       url: "${SRM_TOOLKIT_BASE_URL}/isc/data-pool/get/priceType"
       method: GET
-      params:
+      # 引擎只认 query:（会 urlencode 拼到 URL）；嵌套 params.params 会被静默忽略，
+      # 导致 materialCategory/procurementOrg 根本没进请求，发出裸 GET。
+      query:
         materialCategory: "{{inputs.materialType}}"
         procurementOrg: "{{inputs.purchaseOrg}}"
     extract:

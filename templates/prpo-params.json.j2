@@ -6,11 +6,11 @@
     "priceUnit": "10000",
     {% if c.gfa_no and c.gfa_no != 'None' %}
     "gfaNo": "{{ c.gfa_no }}",
-    "gfaRowNo": {{ c.gfa_row_no }},
+    "gfaRowNo": {{ c.gfa_row_no | default(0, true) }},
     {% endif %}
     "purchaseNo": "{{ purchaseNo }}",
     "receiveDate": 1917516799999,
-    "id": {{ c.pr_item_id }},
+    "id": {{ c.pr_item_id | default(0, true) }},
     "purchaseNum": 1,
     "supplierCode": "{{ supplierCode }}",
     "purchaseOrg": "{{ purchaseOrg }}",

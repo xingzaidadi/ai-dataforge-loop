@@ -18,6 +18,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -82,10 +84,71 @@ def _load_skeletons() -> dict[str, Any]:
         return {}
 
 
-def build_scene_body_from_skeleton(scene_id: Any, po_no: str) -> str | None:
-    """按 sceneId 取真实骨架并注入 ERP PO，返回可直接 POST 的 JSON 字符串。
+def _fetch_po_prices(po_no: str) -> list[str]:
+    """调 SRM get/price 接口取 PO 各物料价格（对齐机器人"获取PO中物料价格"节点）。
 
-    未找到骨架时返回 None（调用方回退到 Jinja 模板或阻断）。
+    接口：POST {SRM_TOOLKIT_BASE_URL}/isc/srm-tools/get/price?purchaseOrder=<PO>
+    返回 data 为价格字符串数组（如 ['1.0','1.0']）；失败返回 []。
+    仅三大 EDI 场景（高通/TI/MTK）需要，其余场景不调用。
+    """
+    import ssl
+    import urllib.error
+    import urllib.parse
+    import urllib.request
+
+    base = (os.environ.get("SRM_TOOLKIT_BASE_URL", "") or "").rstrip("/")
+    if not base or not po_no:
+        return []
+    qs = urllib.parse.urlencode({"purchaseOrder": str(po_no)})
+    url = f"{base}/isc/srm-tools/get/price?{qs}"
+    try:
+        ctx = ssl.create_default_context()
+        req = urllib.request.Request(url, method="POST")
+        req.add_header("User-Agent", "datamaker-asn/4.1")
+        resp = urllib.request.urlopen(req, timeout=30, context=ctx)
+        data = json.loads(resp.read().decode())
+        prices = data.get("data") or []
+        return [str(p) for p in prices] if isinstance(prices, list) else []
+    except (urllib.error.URLError, OSError, json.JSONDecodeError, ValueError):
+        return []
+
+
+def _build_field_values(fields: list[str], po_no: str,
+                        pull_command: str | None) -> dict[str, str]:
+    """依据骨架声明的动态字段，组装 {占位符字段: 值}。
+
+    - priceN      ← get/price 接口返回的第 N 个价格
+    - totalPriceN ← priceN × 10（对齐机器人参数提取器 2 的规则）
+    - pullCommand ← 大货 CIN 场景的拉料指令
+    """
+    values: dict[str, str] = {}
+    need_price = any(f.startswith("price") or f.startswith("totalPrice") for f in fields)
+    prices = _fetch_po_prices(po_no) if need_price else []
+
+    for f in fields:
+        if f == "pullCommand":
+            values[f] = str(pull_command or "")
+        elif f.startswith("totalPrice"):
+            idx = int(f[len("totalPrice"):] or 1) - 1
+            if 0 <= idx < len(prices):
+                try:
+                    values[f] = str(float(prices[idx]) * 10)
+                except (TypeError, ValueError):
+                    values[f] = ""
+            else:
+                values[f] = ""
+        elif f.startswith("price"):
+            idx = int(f[len("price"):] or 1) - 1
+            values[f] = prices[idx] if 0 <= idx < len(prices) else ""
+    return values
+
+
+def build_scene_body_from_skeleton(scene_id: Any, po_no: str,
+                                    pull_command: str | None = None) -> str | None:
+    """按 sceneId 取真实骨架并注入所有动态占位符，返回可直接 POST 的 JSON 字符串。
+
+    注入字段：__PO__（ERP 采购单号）、__priceN__/__totalPriceN__（三大 EDI 场景）、
+    __pullCommand__（大货 CIN 场景）。未找到骨架时返回 None（调用方回退/阻断）。
     """
     if scene_id in (None, ""):
         return None
@@ -96,7 +159,12 @@ def build_scene_body_from_skeleton(scene_id: Any, po_no: str) -> str | None:
     body = entry.get("body", "")
     if not body:
         return None
-    return body.replace("__PO__", str(po_no or ""))
+    body = body.replace("__PO__", str(po_no or ""))
+    fields = entry.get("fields", []) or []
+    if fields:
+        for name, val in _build_field_values(fields, po_no, pull_command).items():
+            body = body.replace(f"__{name}__", val)
+    return body
 
 
 def _validate_inputs(params: dict[str, Any]) -> list[str]:
@@ -256,11 +324,33 @@ def run_srm_asn_create(
         print(f"  🚧 {detail}")
         return result
 
-    # ── 阶段 1.6：注入真实 scene 骨架（按 sceneId 取内嵌 API 编排，替换 PO）──
+    # ── 阶段 1.6：注入真实 scene 骨架（按 sceneId 取内嵌 API 编排，替换所有动态占位符）──
     # 未找到骨架不阻断——模板会回退到最小结构（仅够发出请求，真建单能力有限）。
     if not params.get("sceneBody"):
-        skeleton_body = build_scene_body_from_skeleton(params.get("sceneId"), params.get("poNo", ""))
+        skeleton_body = build_scene_body_from_skeleton(
+            params.get("sceneId"),
+            params.get("poNo", ""),
+            pull_command=params.get("pullCommand"),
+        )
         if skeleton_body:
+            # 残留占位符守卫：三大/大货场景若价格接口取值失败会留下 __priceN__ 等，
+            # 带字面量占位符发请求必失败——诚实标记，不静默发脏请求。
+            residual = re.findall(r"__[A-Za-z0-9_]+__", skeleton_body)
+            if residual:
+                detail = (
+                    f"场景 {params.get('sceneId')} 骨架仍有未填充占位符 {sorted(set(residual))}"
+                    "（价格/拉料指令取值失败）——不带脏占位符进入真实执行"
+                )
+                result = StepResult(
+                    name="srm_asn_create",
+                    status="BLOCKED",
+                    detail=detail,
+                    data={"resolved": False, "residualPlaceholders": sorted(set(residual)),
+                          "sceneId": params.get("sceneId"), "params": params},
+                )
+                write_json(run_dir / "asn-result.json", result.to_dict())
+                print(f"  🚧 {detail}")
+                return result
             params["sceneBody"] = skeleton_body
 
     # ── 阶段 2：输入校验 ──

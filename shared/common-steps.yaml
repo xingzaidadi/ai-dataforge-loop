@@ -307,4 +307,7 @@ common_steps:
         purchaseNo: "{{steps.query_pr_info.extracted.purchase_no}}"
     extract:
       erp_no: "$.body.erp_purchase_order_no"
-    goto: check_erp
+    # 重推后必须回到 query_erp 重新查库，再由 check_erp 判定——
+    # 若直接 goto check_erp 会复用 repush 前的旧 query_erp 结果（恒为空），
+    # 触发 max_goto 次无效重推。goto query_erp 形成"重推→重查→判定"的有界重试环。
+    goto: query_erp

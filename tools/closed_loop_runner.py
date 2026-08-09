@@ -61,11 +61,23 @@ def _flatten_for_clean(params: dict[str, Any]) -> dict[str, Any]:
 
 
 def _extract_po_no(datamake_result: Any) -> str | None:
-    """从阶段1造数结果中提取 poNo，供阶段2/3 承接使用。"""
+    """从阶段1造数结果中提取 SCM PO 号（purchase_order_no，如 6000...），供阶段2 状态判定。"""
     business = {}
     if datamake_result and isinstance(datamake_result.data, dict):
         business = datamake_result.data.get("businessData", {}) or {}
     return business.get("poNo")
+
+
+def _extract_erp_no(datamake_result: Any) -> str | None:
+    """从阶段1造数结果中提取 ERP 采购单号（erpNo，如 4500...）。
+
+    ⚠️ 阶段3 SRM 场景接口（scene/execute、newGetByOptions 的 EBELN）只认 ERP 号，
+    SCM 号（6000...）查不到数据。故 ASN 承接必须用此 ERP 号，不能用 poNo。
+    """
+    business = {}
+    if datamake_result and isinstance(datamake_result.data, dict):
+        business = datamake_result.data.get("businessData", {}) or {}
+    return business.get("erpNo")
 
 
 def _evaluate_po_ready(datamake_result: Any, dry_run: bool,
@@ -76,6 +88,8 @@ def _evaluate_po_ready(datamake_result: Any, dry_run: bool,
     existing-po 模式：跳过阶段1造数，用户直接提供已审批 PO，凭 existing_po_no 放行。
     """
     po_no = _extract_po_no(datamake_result) or existing_po_no
+    # 阶段3 ASN 用 ERP 号；existing-po 模式用户可用 poNo 直接给 ERP 号（自带已审批 PO 场景）
+    erp_no = _extract_erp_no(datamake_result) or existing_po_no
     # existing-po 模式：造数被跳过，用户自带已审批 PO——优先于 dry-run 判定，
     # 使 existing-po + dry-run 也如实显示 EXISTING（沿用已审批 PO），而非笼统的 DRYRUN。
     if existing_po_no and (datamake_result is None or datamake_result.status == "SKIPPED"):
@@ -86,7 +100,8 @@ def _evaluate_po_ready(datamake_result: Any, dry_run: bool,
             name="po_ready_gate",
             status="SUCCESS",
             detail=detail,
-            data={"approved": True, "approvalStatus": "EXISTING", "poNo": existing_po_no},
+            data={"approved": True, "approvalStatus": "EXISTING",
+                  "poNo": existing_po_no, "erpNo": erp_no},
         )
     if dry_run:
         return StepResult(
@@ -97,6 +112,7 @@ def _evaluate_po_ready(datamake_result: Any, dry_run: bool,
                 "approved": True,
                 "approvalStatus": "DRYRUN",
                 "poNo": po_no or "PO-DRYRUN-PLACEHOLDER",
+                "erpNo": erp_no or "ERP-DRYRUN-PLACEHOLDER",
             },
         )
     if datamake_result and datamake_result.status == "SUCCESS" and po_no:
@@ -104,19 +120,25 @@ def _evaluate_po_ready(datamake_result: Any, dry_run: bool,
             name="po_ready_gate",
             status="SUCCESS",
             detail=f"PO {po_no} 已就绪，可承接 ASN",
-            data={"approved": True, "approvalStatus": "APPROVED", "poNo": po_no},
+            data={"approved": True, "approvalStatus": "APPROVED",
+                  "poNo": po_no, "erpNo": erp_no},
         )
     return StepResult(
         name="po_ready_gate",
         status="FAILED",
         detail="PO 未就绪（造数失败或无 PO 号），ASN 不放行",
-        data={"approved": False, "approvalStatus": "NOT_READY", "poNo": po_no},
+        data={"approved": False, "approvalStatus": "NOT_READY",
+              "poNo": po_no, "erpNo": erp_no},
     )
 
 
-def _flatten_for_asn(params: dict[str, Any], po_no: str | None) -> dict[str, Any]:
-    """将闭环参数展平为 srm_asn_create 需要的 ASN 承接参数。"""
-    flat = {"poNo": po_no or params.get("poNo")}
+def _flatten_for_asn(params: dict[str, Any], erp_no: str | None) -> dict[str, Any]:
+    """将闭环参数展平为 srm_asn_create 需要的 ASN 承接参数。
+
+    ⚠️ ASN 的 poNo 字段传的是 ERP 采购单号（4500...），非 SCM 号——SRM 场景接口只认 ERP 号。
+    erp_no 为空时回退到 params.poNo（独立运行/existing-po 时用户可能直接给 ERP 号）。
+    """
+    flat = {"poNo": erp_no or params.get("poNo")}
     for key in ("pullCommand", "warehouseId", "supplierCode", "bsart", "matkl",
                 "lineCount", "asnCategory", "taskType", "sceneId", "sceneName", "taskId"):
         if params.get(key) not in (None, ""):
@@ -148,7 +170,7 @@ def _build_chain_summary(pre_clean_result, datamake_result, po_ready_result, asn
         "priceReady": price_ready,
         "prNo": ph(dm_business.get("prNo"), "PR-DRYRUN-PLACEHOLDER"),
         "poNo": ph(dm_business.get("poNo") or po_ready_result.data.get("poNo"), "PO-DRYRUN-PLACEHOLDER"),
-        "erpNo": ph(dm_business.get("erpNo"), "ERP-DRYRUN-PLACEHOLDER"),
+        "erpNo": ph(dm_business.get("erpNo") or po_ready_result.data.get("erpNo"), "ERP-DRYRUN-PLACEHOLDER"),
         "approved": po_ready_result.data.get("approved"),
         "asnScene": asn_business.get("asnScene"),
         "zasnNo": zasn_no,
@@ -251,13 +273,14 @@ def run_closed_loop(
     po_ready_result = _evaluate_po_ready(datamake_result, dry_run=dry_run, existing_po_no=existing_po_no)
     write_json(run_dir / "po-ready-result.json", po_ready_result.to_dict())
     po_no = po_ready_result.data.get("poNo")
+    erp_no = po_ready_result.data.get("erpNo")
 
     # ── 阶段 3：SRM 侧 ASN 承接 ──
     asn_result = None
     if not skip_asn and asn_config:
         print("▶ 阶段3 · SRM 侧 ASN 承接")
         if po_ready_result.data.get("approved"):
-            asn_params = _flatten_for_asn(final_params, po_no)
+            asn_params = _flatten_for_asn(final_params, erp_no)
             asn_result = run_srm_asn_create(
                 config=asn_config,
                 params=asn_params,

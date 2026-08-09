@@ -22,6 +22,8 @@ SENSITIVE_PATTERNS = [
     (re.compile(r"https?://[^\s\"']*mioffice\.cn[^\s\"']*"), "${INTERNAL_MIOFFICE_URL}"),
     (re.compile(r"https?://[^\s\"']*toolskit\.test\.mi\.com[^\s\"']*"), "${INTERNAL_TOOLSKIT_URL}"),
     (re.compile(r"Bearer\s+[A-Za-z0-9._\-]+", re.IGNORECASE), "Bearer ***"),
+    # Cookie 值：匹配 "Cookie: xxx"、'Cookie': 'xxx'、cookie=xxx（到行尾/引号/分号止）
+    (re.compile(r"(['\"]?[Cc]ookie['\"]?\s*[:=]\s*['\"]?)[^'\"\n;]+"), r"\1***"),
 ]
 
 

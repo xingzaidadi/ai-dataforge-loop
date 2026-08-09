@@ -38,11 +38,15 @@ def resolve_ref(ref: str, context: dict) -> Any:
 def _resolve_expr(expr: str, context: dict) -> Any:
     """解析单个表达式，支持 ==, !=, ||, &&"""
 
+    # 空值等价集合：None、空串、字面量 'None'/'null'（== null 的右值是字符串）。
+    _EMPTY = {'', 'None', 'null'}
+
+    def _is_empty(v):
+        return v is None or (isinstance(v, str) and v.strip() in _EMPTY) or str(v) in _EMPTY
+
     def _none_safe_eq(left_val, right_val):
-        if left_val is None:
-            return right_val is None or right_val == '' or right_val == 'None'
-        if right_val is None or right_val == '':
-            return left_val is None or str(left_val) == ''
+        if _is_empty(left_val) or _is_empty(right_val):
+            return _is_empty(left_val) and _is_empty(right_val)
         return str(left_val) == str(right_val)
 
     def _none_safe_neq(left_val, right_val):
@@ -156,7 +160,12 @@ def extract_value(data: Any, path: str) -> Any:
     if not path or path == "$":
         return data
 
-    path = path.lstrip("$.")
+    # 去掉 JSONPath 前缀 "$."：必须用 removeprefix，不能用 lstrip——
+    # lstrip("$.") 会逐字符剥掉开头所有 $ 和 .，把 "$.status" 误剥成 "tatus"。
+    if path.startswith("$."):
+        path = path[2:]
+    elif path.startswith("$"):
+        path = path[1:]
     parts = re.split(r'\.(?![^\[]*\])', path)
     current = data
 

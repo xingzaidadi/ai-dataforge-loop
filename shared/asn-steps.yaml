@@ -60,10 +60,12 @@ common_steps:
     id: get_po_price
     action: http_call
     params:
+      # 真实接口用 query-string 参数 purchaseOrder（对齐 ASN 机器人"获取PO中物料价格"
+      # 节点 params: purchaseOrder:{{PO}}），非 JSON body{po:...}。poNo 传 ERP 号。
       url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-tools/get/price"
       method: POST
-      body:
-        po: "{{inputs.poNo}}"
+      query:
+        purchaseOrder: "{{inputs.poNo}}"
     extract:
       po_price: "$.body.data"
 
@@ -74,10 +76,12 @@ common_steps:
     id: close_history_po
     action: http_call
     params:
+      # 机器人同时传 po 与 key(当前秒级时间戳,cache-buster)；{{now_ts}} 由引擎每次调用刷新
       url: "${SRM_TOOLKIT_BASE_URL}/isc/srm-tools/po/close"
       method: GET
       query:
         po: "{{inputs.poNo}}"
+        key: "{{now_ts}}"
     extract:
       close_result: "$.body.data"
 
@@ -92,6 +96,7 @@ common_steps:
       method: GET
       query:
         po: "{{inputs.poNo}}"
+        key: "{{now_ts}}"
     extract:
       reopen_result: "$.body.data"
 

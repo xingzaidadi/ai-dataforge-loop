@@ -43,13 +43,14 @@ def test_resolve_category():
 def test_resolve_scene():
     # 高通单行
     s = resolve_scene("GAOTONG", 1)
-    assert s["taskType"] == "GAOTONG_1" and s["sceneId"] == 370 and s["resolved"]
+    # 行序严格升序：1行=369、2行=339、3行=370（对照 _SCENE_MAP 与机器人 YAML 场景名）
+    assert s["taskType"] == "GAOTONG_1" and s["sceneId"] == 369 and s["resolved"]
     # 大货单行
     s = resolve_scene("CIN", 1)
     assert s["taskType"] == "CIN_1" and s["sceneId"] == 378 and s["resolved"]
-    # 行数封顶：三大最多 3 行
+    # 行数封顶：三大最多 3 行（3行=370，锁死行序防回归）
     s = resolve_scene("GAOTONG", 9)
-    assert s["taskType"] == "GAOTONG_3"
+    assert s["taskType"] == "GAOTONG_3" and s["sceneId"] == 370
     # 成品最多 2 行
     s = resolve_scene("CHENGPIN", 3)
     assert s["taskType"] == "CHENGPIN_2"

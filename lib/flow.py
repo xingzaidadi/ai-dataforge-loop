@@ -4,6 +4,7 @@ FlowEngine 编排核心 — 执行步骤、条件分支、循环、路由
 """
 
 import json
+import os
 import sys
 import time
 import urllib.parse
@@ -13,6 +14,11 @@ from typing import Any, Optional
 # 强制行缓冲，确保每步输出实时可见
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(line_buffering=True)
+
+# 详细调试输出（完整请求体、SQL 全量行、headers 等）默认关闭——
+# 这些内容会被 datamake_runner 抓进证据包，含业务字段/Cookie，属敏感信息。
+# 需排障时设 DATAFORGE_DEBUG=1 开启。
+_DEBUG = os.environ.get("DATAFORGE_DEBUG", "").strip() not in ("", "0", "false", "False")
 
 from .resolver import resolve_ref, resolve_params, extract_value
 from .renderer import render_template
@@ -250,9 +256,9 @@ class FlowEngine:
         action = step.get("action")
         step_id = step["id"]
 
-        # 如果是 create_pr 类步骤，先记录当前最大 purchase_no 作为基准
-        if action == "http_call" and "create_pr" in step_id:
-            self._set_baseline_pr()
+        # 注：baseline_pr_id 曾在 create_pr 前查一次 MAX(id) 存基准，但全代码库无任何
+        # 地方读取它做过滤（query_pr_info 用 status>=10 ORDER BY id DESC LIMIT 1 定位），
+        # 属死代码且每次多一次 mify 往返。已移除该调用；属性保留以兼容旧 state 文件。
 
         # 如果是 get_cookie 步骤且 cookie 已获取，跳过执行
         if step_id == "get_cookie" and self.cookie:
@@ -301,6 +307,9 @@ class FlowEngine:
 
     def _do_http_call(self, step: dict) -> str:
         """执行 HTTP 调用（通过 mify）"""
+        # 暴露一个每次调用刷新的秒级时间戳，供需要 cache-buster/key 的接口引用
+        # （如 SRM po/close、po/open 的 key 参数）。用 {{now_ts}} 引用。
+        self.context["now_ts"] = str(int(time.time()))
         params = resolve_params(step.get("params", {}), self.context)
 
         url = params.get("url") or ""
@@ -335,7 +344,8 @@ class FlowEngine:
             cookie_from_header = headers_obj.pop("Cookie")
             if cookie_from_header:
                 self.cookie = cookie_from_header
-        print(f"  🔍 headers_obj: {headers_obj}")  # DEBUG
+        if _DEBUG:
+            print(f"  🔍 headers_obj: {headers_obj}")  # DEBUG（含 Cookie，默认关闭）
 
         wait = step.get("wait", 0)
         if wait:
@@ -357,10 +367,10 @@ class FlowEngine:
                 cookie=self.cookie,
                 headers=headers_obj,
             )
-            # DEBUG: 打印 result
-            if "get_cookie" in step.get("id", "") or "create_pr" in step.get("id", ""):
+            # DEBUG: 打印 result（含完整响应/请求体，默认关闭，设 DATAFORGE_DEBUG=1 开启）
+            if _DEBUG and ("get_cookie" in step.get("id", "") or "create_pr" in step.get("id", "")):
                 print(f"  📍 result: {json.dumps(result, ensure_ascii=False)[:2000]}")
-            if "create_pr" in step.get("id", ""):
+            if _DEBUG and "create_pr" in step.get("id", ""):
                 print(f"  🔴 create_pr full body: {json.dumps(result.get('body', ''), ensure_ascii=False)}")
                 print(f"  🔴 create_pr request body length: {len(body)}")
                 print(f"  🔴 create_pr request body (first 3000): {body[:3000]}")
@@ -409,7 +419,10 @@ class FlowEngine:
             v_display = str(v)[:100] if v is not None else "None"
             print(f"  📌 {k} = {v_display}")
 
-        return None
+        # 尊重步骤上声明的 goto（历史缺陷：此处曾无条件 return None，
+        # 导致 http_call 的 goto 被静默忽略，引擎退化为顺序执行；一旦 goto
+        # 目标非相邻步骤即静默跑错分支。无 goto 时返回 None 保持顺序执行不变）。
+        return step.get("goto")
 
     # ──────────────────────────────────────────────
     #  SQL 查询
@@ -520,7 +533,8 @@ class FlowEngine:
                 extracted[key] = resolve_ref(path, self.context)
             else:
                 val = extract_value(result, path)
-                print(f"  🔍 DEBUG extract: key={key}, path={path}, result_rows={result.get('rows', [])}, val={val!r}")
+                if _DEBUG:
+                    print(f"  🔍 DEBUG extract: key={key}, path={path}, result_rows={result.get('rows', [])}, val={val!r}")
                 extracted[key] = val
 
         self.context["steps"][step["id"]] = {
@@ -623,11 +637,12 @@ class FlowEngine:
         """渲染 Jinja2 模板"""
         template_path = step.get("template", "")
         ctx = resolve_params(step.get("context", {}), self.context)
-        # DEBUG
-        print(f"  🔧 ENGINE inputs keys: {list(self.context.get('inputs', {}).keys())}")
-        print(f"  🔧 ENGINE inputs.materials: {str(self.context.get('inputs', {}).get('materials', 'MISSING'))[:100]}")
-        for k, v in (ctx or {}).items():
-            print(f"  🔧 ctx: {k} = {str(v)[:100]}")
+        # DEBUG（渲染上下文含业务字段，默认关闭，设 DATAFORGE_DEBUG=1 开启）
+        if _DEBUG:
+            print(f"  🔧 ENGINE inputs keys: {list(self.context.get('inputs', {}).keys())}")
+            print(f"  🔧 ENGINE inputs.materials: {str(self.context.get('inputs', {}).get('materials', 'MISSING'))[:100]}")
+            for k, v in (ctx or {}).items():
+                print(f"  🔧 ctx: {k} = {str(v)[:100]}")
         output = render_template(template_path, ctx)
         self.context["steps"][step["id"]] = {"output": output}
         print(f"  📝 模板渲染完成，长度: {len(output)}")
@@ -652,11 +667,16 @@ class FlowEngine:
         """解析条件表达式，支持 ==, !=, ||, &&，None 与空字符串互认"""
         import re as _re
 
+        # 空值等价集合：None、空串、字面量 'None'/'null'（YAML 里写 == null 会被
+        # 当作字符串右值，DB 也可能存字符串 "null"）——统一视作"空"。
+        _EMPTY = {'', 'None', 'null'}
+
+        def _is_empty(v):
+            return v is None or (isinstance(v, str) and v.strip() in _EMPTY) or str(v) in _EMPTY
+
         def _none_safe_eq(left_val, right_val):
-            if left_val is None:
-                return right_val is None or right_val == '' or right_val == 'None'
-            if right_val is None or right_val == '':
-                return left_val is None or str(left_val) == ''
+            if _is_empty(left_val) or _is_empty(right_val):
+                return _is_empty(left_val) and _is_empty(right_val)
             return str(left_val) == str(right_val)
 
         def _none_safe_neq(left_val, right_val):
