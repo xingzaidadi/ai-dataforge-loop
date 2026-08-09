@@ -112,7 +112,8 @@ steps:
     extract:
       verify_result: "$.body.data"
 
-  # machine_fee 分支收尾：http_call 不承载 goto（引擎特性），用 noop 跳转终止
+  # machine_fee 分支收尾：用 noop 空动作显式承载 goto 跳转终止
+  # （早期 http_call 会吞掉 goto，根因已在 flow.py 修正；此处保留 noop 作显式终止点）
   - id: machine_fee_done
     action: noop
     goto: SUCCESS

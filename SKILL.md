@@ -118,7 +118,7 @@ DataForge Loop 把这条"长在人脑里"的协同链路,沉淀为**机器可执
 |---|------|------|
 | **对话层** | `prompt.md` | 收集参数、确认、映射转换、格式化输出 |
 | **闭环编排层** | `tools/closed_loop_runner.py` | 统一 run_id,串联意图识别、造数、UI 验收、失败诊断、证据包 |
-| **编排引擎** | `engine.py` | 读 YAML、执行 9 种 Action、管理状态/重试/分支 |
+| **编排引擎** | `engine.py` | 读 YAML、执行 10 种 Action、管理状态/重试/分支 |
 | **YAML 配置层** | `configs/*.yaml` | 声明式描述每种订单的完整流程步骤 |
 | **模板层** | `templates/*.j2` | Jinja2 渲染复杂请求体 |
 | **执行层** | mify 平台 | 只提供 `http_call` 和 `sql_query` 两个通用工具 |
@@ -196,7 +196,7 @@ DataForge Loop v5 把造数从"单系统 PRPO"扩展为**跨系统四阶段全�
    │   configs/srm-price-clean.yaml + tools/srm_price_clean.py
    ▼
 阶段1  PRPO 造数(SAP)                PR创建→审批→查合同→PR转PO→PO审批→查ERP
-   │   configs/*-prpo.yaml + engine.py(9-Action 引擎)
+   │   configs/*-prpo.yaml + engine.py(10-Action 引擎)
    ▼
 阶段2  PO Ready Gate                  审批状态闸门(非新系统,仅状态判定放行)
    │   tools/closed_loop_runner.py::_evaluate_po_ready
@@ -207,7 +207,7 @@ DataForge Loop v5 把造数从"单系统 PRPO"扩展为**跨系统四阶段全�
 阶段4/5  UI 验收 + 失败诊断 + 证据包
 ```
 
-**核心亮点:跨编排范式统一。** SAP 侧用「YAML + 9-Action 引擎」声明式编排;SRM 侧 ASN 用平台原生「datacube 场景编排(scene/execute)」,二者是异构范式。DataForge Loop 不强行把它们塞进同一个引擎,而是用**同一套三道闸 + 同一个证据包 + 同一个 run_id** 把它们收口成一条对用户无感的链路——这是本 Skill 面向复杂供应链的关键工程价值。
+**核心亮点:跨编排范式统一。** SAP 侧用「YAML + 10-Action 引擎」声明式编排;SRM 侧 ASN 用平台原生「datacube 场景编排(scene/execute)」,二者是异构范式。DataForge Loop 不强行把它们塞进同一个引擎,而是用**同一套三道闸 + 同一个证据包 + 同一个 run_id** 把它们收口成一条对用户无感的链路——这是本 Skill 面向复杂供应链的关键工程价值。
 
 **PO Ready Gate 不是新系统。** 阶段2 只做一件事:判定 PO 是否已审批就绪、能否放行 ASN 承接。它复用造数结果的审批状态,不引入新的 BPM/审批服务。dry-run 下占位放行;existing-po 模式下沿用用户自带的已审批 PO。
 
@@ -235,7 +235,7 @@ DataForge Loop v5 把造数从"单系统 PRPO"扩展为**跨系统四阶段全�
 
 输出写入 `asn-result.json`,`businessData` 含 `poNo/asnCategory/asnScene/taskType/pullCommand/warehouseId/zasnNo`。
 
-## 6. 流程 DSL:9 种 Action
+## 6. 流程 DSL:10 种 Action
 
 | Action | 作用 | 调执行层 |
 |--------|------|---------|
@@ -248,6 +248,7 @@ DataForge Loop v5 把造数从"单系统 PRPO"扩展为**跨系统四阶段全�
 | `loop` | 循环遍历(items/collect) | 间接 |
 | `route` | 路由到子流程(orderType/routes) | 否 |
 | `filter_collection` | 集合过滤(source/match_field) | 否 |
+| `noop` | 空动作,承载分支收尾的 `goto` 跳转 | 否 |
 
 ## 7. 目录结构
 

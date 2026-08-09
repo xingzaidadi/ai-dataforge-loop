@@ -78,6 +78,39 @@ def test_http_call_now_ts_refreshed():
     assert eng.context.get("now_ts", "").isdigit()
 
 
+def test_http_call_goto_end_to_end_no_fallthrough():
+    """端到端复现文章场景：machine_fee 分支的 http_call 带 goto:SUCCESS 应干净收尾，
+    绝不能"串味"顺序落到下一条（非 machine_fee 的诊断修复）分支。
+
+    这是对长文/QA "早期 http_call 吞 goto、后在引擎层修正" 说法的真实回归证明：
+    若 goto 再次被静默丢弃，force_new_price 会 fall-through 执行 wrong_branch，
+    fake.calls 里就会出现 wrong_branch 的 URL、断言失败。
+    """
+    fake = _FakeMify()
+    config = {
+        "steps": [
+            {
+                "id": "force_new_price",  # machine_fee 分支：推价成功后直接收尾
+                "action": "http_call",
+                "params": {"url": "http://x/force_new_price", "method": "POST"},
+                "goto": "SUCCESS",
+            },
+            {
+                "id": "wrong_branch",  # 非 machine_fee 分支：绝不该被执行到
+                "action": "http_call",
+                "params": {"url": "http://x/wrong_branch", "method": "POST"},
+            },
+        ],
+        "terminals": {"SUCCESS": {"type": "success", "message": "价格治理完成"}},
+    }
+    eng = FlowEngine(config=config, inputs={}, mify=fake)
+    eng.run()
+    assert "http://x/force_new_price" in fake.calls
+    assert not any("wrong_branch" in u for u in fake.calls), (
+        f"http_call 的 goto 被吞了，串味执行了 wrong_branch：{fake.calls}"
+    )
+
+
 # ═══════════════════════════════════════════════
 #  ② 空值归一判定（== / !=）
 # ═══════════════════════════════════════════════
@@ -114,6 +147,7 @@ if __name__ == "__main__":
     test_http_call_returns_goto()
     test_http_call_no_goto_returns_none()
     test_http_call_now_ts_refreshed()
+    test_http_call_goto_end_to_end_no_fallthrough()
     test_none_equals_empty_string()
     test_literal_none_equals_empty()
     test_nonempty_not_equal_empty()

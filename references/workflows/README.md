@@ -13,7 +13,7 @@
 
 - **寻源价格造数**：原工作流的价格检测 / ASL 创建 / 费用项造价 / 定价单重推等节点，
   被拆成声明式步骤（`shared/srm-price-steps.yaml`）+ 分支配置（`configs/srm-price-clean.yaml`），
-  由 9-Action 引擎执行。machine_fee 强制造价分支用 `condition + contains` 命中、`noop` 终止（http_call 不承载 goto）。
+  由 10-Action 引擎执行。machine_fee 强制造价分支用 `condition + contains` 命中、`noop` 显式终止（早期 http_call 会吞掉 goto，根因已在引擎层修正，noop 收尾点保留作显式终止）。
 - **ASN 建单机器人**：原工作流 60+ 节点的「按供应商类型×行数判断走哪条建单路径」逻辑，
   收口为 `tools/srm_asn_create.py::resolve_category / resolve_scene` 的类别与场景解析，
   真正的建单调用统一走平台原生 `datacube scene/execute`（异构于 SAP-YAML 引擎，但复用同一套三道闸 + 证据包）。
