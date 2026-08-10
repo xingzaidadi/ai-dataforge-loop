@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import time
 from pathlib import Path
 from typing import Any
@@ -13,6 +14,29 @@ from typing import Any
 import yaml
 
 from common import StepResult, write_json
+
+
+_ENV_PATTERN = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)(?::-(.*?))?\}")
+
+
+def _expand_env(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {key: _expand_env(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_expand_env(item) for item in value]
+    if not isinstance(value, str):
+        return value
+
+    def repl(match: re.Match[str]) -> str:
+        current = os.getenv(match.group(1))
+        if current is not None:
+            return current
+        default = match.group(2)
+        if default is not None:
+            return default
+        return match.group(0)
+
+    return _ENV_PATTERN.sub(repl, value)
 
 
 def _load_yaml(path: str | None) -> dict[str, Any]:
@@ -44,7 +68,7 @@ def verify_ui(
     dry_run: bool = False,
 ) -> StepResult:
     context = context or {}
-    config = _substitute(_load_yaml(config_path), context)
+    config = _expand_env(_substitute(_load_yaml(config_path), context))
     screenshots_dir = run_dir / "screenshots"
     screenshots_dir.mkdir(parents=True, exist_ok=True)
 
