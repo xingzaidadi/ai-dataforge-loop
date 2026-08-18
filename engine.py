@@ -26,6 +26,13 @@ import time
 import argparse
 from pathlib import Path
 
+# Windows 控制台默认 GBK，打印 emoji/中文会 UnicodeEncodeError —— 强制 UTF-8 输出
+try:
+    sys.stdout.reconfigure(encoding="utf-8")
+    sys.stderr.reconfigure(encoding="utf-8")
+except (AttributeError, ValueError):
+    pass
+
 # 加载 .env 文件
 try:
     from dotenv import load_dotenv

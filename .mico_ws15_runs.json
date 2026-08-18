@@ -1,0 +1,25 @@
+[
+  {
+    "agent_id": "25aa0e8b-a296-4743-87e9-2cf3f9b11d3d",
+    "attempt": 1,
+    "completed_at": null,
+    "connector_required_mode": "optional",
+    "connector_warning": "connector_owner_mismatch",
+    "created_at": "2026-08-10T20:10:17+08:00",
+    "delivered_comment_ids": [],
+    "dispatched_at": "2026-08-10T20:10:17+08:00",
+    "error": null,
+    "id": "41133444-358b-41df-b14b-fb5fd3a73310",
+    "issue_id": "f7de0534-f54c-4a6b-b749-611bbbb668c0",
+    "kind": "direct",
+    "max_attempts": 2,
+    "priority": 3,
+    "relative_work_dir": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923/41133444/workdir",
+    "result": null,
+    "runtime_id": "78a9c13b-752f-4a19-9917-2a1e497486a9",
+    "started_at": "2026-08-10T20:10:18+08:00",
+    "status": "running",
+    "work_dir": "C:\\Users\\MI\\mico_workspaces_desktop-mico.mioffice.cn\\65aa02d1-f59f-44ae-8c19-ccc3c79e2923\\41133444\\workdir",
+    "workspace_id": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923"
+  }
+]

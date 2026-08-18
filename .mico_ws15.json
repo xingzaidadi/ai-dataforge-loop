@@ -1,0 +1,23 @@
+{
+  "assignee_id": "25aa0e8b-a296-4743-87e9-2cf3f9b11d3d",
+  "assignee_type": "agent",
+  "created_at": "2026-08-10T20:10:17+08:00",
+  "creator_id": "2ce6cec0-d4b4-4bd3-8776-9f04bd61778a",
+  "creator_type": "member",
+  "description": "# 【演示·完整数据 v2】全链路 + 拉料指令：寻源→PRPO→就绪闸→拉料指令→ASN大货承接\n\n## 关键变更（本次新增阶段2.5）\nASN 之前失败的真实原因是**缺拉料指令(pullCommand)**。已在 PO 创建后、ASN 前接入「阶段2.5 拉料指令创建」：\n- 新工具 `tools/srm_pull_command.py` + 配置 `configs/srm-pull-command.yaml`\n- 调 datacube scene/execute（sceneId=199 无预占，taskId=136，字节级拷自真实工作流「创建拉料指令」）产出 **commandCode(4500...)**\n- runner 把 commandCode 注入 `pullCommand` 且强制 `asnCategory=CIN`，阶段3 走 378 大货承接（有 pullCommand 槽）\n\n## 组合（已审批样单 8440030110 反推，合同真实存在）\n- orderType=ZNB, stockOrg=MI_PHONE, purchaseOrg=1110, supplierCode=100171\n- materials={\"materialCode1\":\"22CK1AC225AC\"}, projectCode=L16-CN\n- shipLocCode=L16-CN, businessModel=BS\n\n## 请这样跑（重要）\n### 第一步：先静默冷却 60 秒（避免 429 限流）\n\n### 第二步：只跑一次这条完整命令\n```\ncd C:\\Users\\MI\\Desktop\\AI学习任务\\mify造数skill\\01_源码_source\\ai-dataforge-loop\npython tools/closed_loop_runner.py \\\n  --config configs/znb-prpo.yaml \\\n  --pre-clean-config configs/srm-price-clean.yaml \\\n  --pull-command-config configs/srm-pull-command.yaml \\\n  --asn-config configs/srm-asn-create.yaml \\\n  --ui-config configs/ui-verify-prpo.yaml \\\n  orderType=ZNB stockOrg=MI_PHONE purchaseOrg=1110 supplierCode=100171 \\\n  materials='{\"materialCode1\":\"22CK1AC225AC\"}' projectCode=L16-CN \\\n  shipLocCode=L16-CN businessModel=BS\n```\n\n## 交付物（务必真实、脱敏）\n1. run_id\n2. summary.json 这六个键的真实值：priceReady / prNo / poNo / erpNo / commandCode / zasnNo\n3. pull-command-result.json 的 status + commandCode（拿到 4500... 还是没拿到，如实说）\n4. asn-result.json 的 status + zasnNo（CIN/378 场景是否真出 ASN 单号）\n5. 若某阶段因 mify 丢响应体失败，如实标注——不要伪造。\n\n## 约束\n- 仅测试环境。不碰生产库/生产接口/生产日志。\n- 凭据走临时文件、用后删除；任何输出不得回显凭据明文。\n- 不编造任何单号或状态。取不到就说取不到。",
+  "due_date": null,
+  "id": "f7de0534-f54c-4a6b-b749-611bbbb668c0",
+  "identifier": "WS-15",
+  "metadata": {},
+  "number": 15,
+  "parent_issue_id": null,
+  "position": -1,
+  "priority": "high",
+  "project_id": null,
+  "stage": null,
+  "start_date": null,
+  "status": "todo",
+  "title": "演示完整数据v2·全链路+拉料指令(CIN大货承接)",
+  "updated_at": "2026-08-10T20:10:17+08:00",
+  "workspace_id": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923"
+}

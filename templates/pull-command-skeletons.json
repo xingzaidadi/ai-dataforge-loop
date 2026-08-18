@@ -1,0 +1,52 @@
+{
+  "396": {
+    "sceneName": "拉料指令创建-预占95FPO",
+    "taskId": 411,
+    "title": "预占模式为95FPO的拉料指令",
+    "fields": [
+      "EXECUTE_PERSON",
+      "businessModel",
+      "destLocCode",
+      "materialCode",
+      "materialCode1",
+      "projectCode",
+      "purchaseOrg",
+      "shipLocCode",
+      "stockOrg",
+      "supplierCode"
+    ],
+    "body": "{\"taskId\": 411, \"sceneName\": \"拉料指令创建-预占95FPO\", \"sceneInput\": [{\"apiId\": 7741, \"protocol\": \"http\", \"apiName\": \"获取SCM系统Cookie\", \"order\": 1}, {\"apiId\": 10287, \"protocol\": \"http\", \"apiName\": \"SCM系统拉料指令创建-95fpo\", \"apiVariables\": [{\"name\": \"shipLocCode\", \"id\": 84073, \"type\": 1, \"value\": \"__shipLocCode__\"}, {\"name\": \"materialCode1\", \"id\": 84074, \"type\": 1, \"value\": \"__materialCode1__\"}, {\"name\": \"businessModel\", \"id\": 84075, \"type\": 1, \"value\": \"__businessModel__\"}, {\"name\": \"supplierCode\", \"id\": 84076, \"type\": 1, \"value\": \"__supplierCode__\"}, {\"name\": \"purchaseOrg\", \"id\": 84077, \"type\": 1, \"value\": \"__purchaseOrg__\"}, {\"name\": \"stockOrg\", \"id\": 84078, \"type\": 1, \"value\": \"__stockOrg__\"}, {\"name\": \"destLocCode\", \"id\": 84079, \"type\": 1, \"value\": \"__destLocCode__\"}, {\"name\": \"projectCode\", \"id\": 84080, \"type\": 1, \"value\": \"__projectCode__\"}, {\"name\": \"materialCode\", \"id\": 84081, \"type\": 1, \"value\": \"__materialCode__\"}, {\"name\": \"factoryAreaCode\", \"id\": 84082, \"type\": 1, \"value\": \"BDEQ\"}], \"order\": 2}, {\"apiId\": 7814, \"protocol\": \"http\", \"apiName\": \"拉料指令列表-审批中\", \"order\": 3}, {\"apiId\": 7841, \"protocol\": \"http\", \"apiName\": \"拉料指令详情页\", \"order\": 4}, {\"apiId\": 7828, \"protocol\": \"http\", \"apiName\": \"SCM一键审批\", \"order\": 5}], \"sceneOutput\": {\"name\": \"commandCode\", \"id\": 84083, \"type\": 6}, \"sceneId\": 396, \"forCounter\": 1, \"executePerson\": \"__EXECUTE_PERSON__\"}"
+  },
+  "199": {
+    "sceneName": "拉料指令创建&审批-无预占模式",
+    "taskId": 136,
+    "title": "无预占模式的拉料指令",
+    "fields": [
+      "EXECUTE_PERSON",
+      "businessModel",
+      "materialCode1",
+      "materialCode2",
+      "purchaseOrg",
+      "shipLocCode",
+      "stockOrg",
+      "supplierCode"
+    ],
+    "body": "{\"taskId\": 136, \"sceneName\": \"拉料指令创建&审批-无预占模式\", \"sceneInput\": [{\"apiId\": 7741, \"protocol\": \"http\", \"apiName\": \"获取SCM系统Cookie\", \"order\": 1}, {\"apiId\": 10285, \"protocol\": \"http\", \"apiName\": \"SCM系统拉料指令创建__COPY\", \"apiVariables\": [{\"name\": \"shipLocCode\", \"id\": 83691, \"type\": 1, \"value\": \"__shipLocCode__\"}, {\"name\": \"materialCode1\", \"id\": 83692, \"type\": 1, \"value\": \"__materialCode1__\"}, {\"name\": \"businessModel\", \"id\": 83693, \"type\": 1, \"value\": \"__businessModel__\"}, {\"name\": \"supplierCode\", \"id\": 83694, \"type\": 1, \"value\": \"__supplierCode__\"}, {\"name\": \"purchaseOrg\", \"id\": 83695, \"type\": 1, \"value\": \"__purchaseOrg__\"}, {\"name\": \"materialCode2\", \"id\": 83696, \"type\": 1, \"value\": \"__materialCode2__\"}, {\"name\": \"stockOrg\", \"id\": 83697, \"type\": 1, \"value\": \"__stockOrg__\"}], \"order\": 2}, {\"apiId\": 7814, \"protocol\": \"http\", \"apiName\": \"拉料指令列表-审批中\", \"order\": 3}, {\"apiId\": 7841, \"protocol\": \"http\", \"apiName\": \"拉料指令详情页\", \"order\": 4}, {\"apiId\": 7828, \"protocol\": \"http\", \"apiName\": \"SCM一键审批\", \"order\": 5}], \"sceneOutput\": {\"name\": \"commandCode\", \"id\": 83698, \"type\": 6}, \"sceneId\": 199, \"forCounter\": 1, \"executePerson\": \"__EXECUTE_PERSON__\"}"
+  },
+  "398": {
+    "sceneName": "拉料指令创建&审批-无预占模式-电视",
+    "taskId": 414,
+    "title": "电视，拉料指令",
+    "fields": [
+      "EXECUTE_PERSON",
+      "businessModel",
+      "materialCode1",
+      "materialCode2",
+      "purchaseOrg",
+      "shipLocCode",
+      "stockOrg",
+      "supplierCode"
+    ],
+    "body": "{\"taskId\": 414, \"sceneName\": \"拉料指令创建&审批-无预占模式-电视\", \"sceneInput\": [{\"apiId\": 7741, \"protocol\": \"http\", \"apiName\": \"获取SCM系统Cookie\", \"order\": 1}, {\"apiId\": 10360, \"protocol\": \"http\", \"apiName\": \"SCM系统拉料指令创建__电视\", \"apiVariables\": [{\"name\": \"stockOrg\", \"id\": 88419, \"type\": 1, \"value\": \"__stockOrg__\"}, {\"name\": \"supplierCode\", \"id\": 88420, \"type\": 1, \"value\": \"__supplierCode__\"}, {\"name\": \"shipLocCode\", \"id\": 88421, \"type\": 1, \"value\": \"__shipLocCode__\"}, {\"name\": \"businessModel\", \"id\": 88423, \"type\": 1, \"value\": \"__businessModel__\"}, {\"name\": \"purchaseOrg\", \"id\": 88424, \"type\": 1, \"value\": \"__purchaseOrg__\"}, {\"name\": \"materialCode1\", \"id\": 88425, \"type\": 1, \"value\": \"__materialCode1__\"}, {\"name\": \"materialCode2\", \"id\": 88426, \"type\": 1, \"value\": \"__materialCode2__\"}, {\"name\": \"projectCode\", \"id\": 88422, \"type\": 2, \"value\": \"TVOEMCopyTeam01EUTEST01TEST02\"}], \"order\": 2}, {\"apiId\": 7814, \"protocol\": \"http\", \"apiName\": \"拉料指令列表-审批中\", \"order\": 3}, {\"apiId\": 7841, \"protocol\": \"http\", \"apiName\": \"拉料指令详情页\", \"order\": 4}, {\"apiId\": 7828, \"protocol\": \"http\", \"apiName\": \"SCM一键审批\", \"order\": 5}], \"sceneOutput\": {\"name\": \"commandCode\", \"id\": 88427, \"type\": 6}, \"sceneId\": 398, \"forCounter\": 1, \"executePerson\": \"__EXECUTE_PERSON__\"}"
+  }
+}

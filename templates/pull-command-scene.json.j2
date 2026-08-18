@@ -1,0 +1,18 @@
+{#- SRM datacube scene/execute 请求体（拉料指令创建&审批）。
+    优先使用 Python 侧按 sceneId 注入的真实骨架 sceneBody（含 cookie→创建→审批 内嵌
+    API 编排 + 占位符已替换）；仅在缺骨架时回退最小结构（仅够发出、无法真正建指令）。 -#}
+{%- if sceneBody %}
+{{ sceneBody | safe }}
+{%- else %}
+{
+  "taskId": {{ taskId | default(0, true) }},
+  "sceneName": "{{ sceneName }}",
+  "sceneInput": [
+    { "apiId": 7741, "protocol": "http", "apiName": "获取SCM系统Cookie", "order": 1 }
+  ],
+  "sceneOutput": { "name": "commandCode", "id": 0, "type": 6 },
+  "sceneId": {{ sceneId | default(0, true) }},
+  "forCounter": 1,
+  "executePerson": "{{ executePerson }}"
+}
+{%- endif %}

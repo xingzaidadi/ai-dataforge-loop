@@ -70,6 +70,30 @@ def read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def _repair_jsonish(value: str) -> Any:
+    """尝试修复被 shell 剥掉引号的 JSON 对象/数组。
+
+    某些 shell（尤其 Windows/Mico runtime 转发命令时）会把
+    `materials='{"materialCode1":"1710301000006A"}'` 的引号吞掉，
+    最终 argv 里变成裸串 `{materialCode1:1710301000006A}`，
+    json.loads 直接失败 → 下游模板对字符串调用 .items() 崩溃。
+
+    这里对形如 {...} / [...] 的裸串做保守修复：给未加引号的 key 和
+    未加引号的标量 value 补上双引号，再交给 json.loads。修不动就原样返回。
+    """
+    s = value.strip()
+    if not (s.startswith("{") and s.endswith("}")):
+        return value  # 只处理对象；数组等留给调用方
+    # 给未加引号的 key 补引号： {key: 或 ,key:  →  {"key": / ,"key":
+    repaired = re.sub(r'([{,]\s*)([A-Za-z_][A-Za-z0-9_]*)(\s*:)', r'\1"\2"\3', s)
+    # 给未加引号的标量 value 补引号： :val,  或  :val}  （不含引号/大括号/逗号的裸值）
+    repaired = re.sub(r'(:\s*)([^"\s{}\[\],][^{}\[\],]*?)(\s*[,}])', r'\1"\2"\3', repaired)
+    try:
+        return json.loads(repaired)
+    except json.JSONDecodeError:
+        return value
+
+
 def parse_kv_pairs(values: list[str]) -> dict[str, Any]:
     parsed: dict[str, Any] = {}
     for raw in values:
@@ -83,7 +107,8 @@ def parse_kv_pairs(values: list[str]) -> dict[str, Any]:
         try:
             parsed[key] = json.loads(value)
         except json.JSONDecodeError:
-            parsed[key] = value
+            # json.loads 失败：可能是被 shell 剥了引号的 dict，尝试修复
+            parsed[key] = _repair_jsonish(value)
     return parsed
 
 

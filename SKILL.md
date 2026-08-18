@@ -177,13 +177,16 @@ python3 ~/.openclaw/plugin-skills/mimo-omni/scripts/mimo_api.py \
 命令示例:
 
 ```bash
+# 默认即真实造数（会真实写入测试环境 SAP/SRM，并回填真实 PR/PO/ERP/ASN 单号）
 python tools/closed_loop_runner.py \
   --config configs/znb-prpo.yaml \
   --ui-config configs/ui-verify-prpo.yaml \
   --screenshot-json evidence/screenshot-input.json \
-  --text "根据飞书上传的 SCM 截图自动造数" \
-  --dry-run
+  --text "根据飞书上传的 SCM 截图自动造数"
 ```
+
+> ⚠️ **关于 `--dry-run`（重要）**：`--dry-run` 是**预检开关**，只在「验证参数收口/演示链路结构、不想真实落库」时**手动加**。加上后**不会真实造数**，报告里的单号全是 `*-DRYRUN-PLACEHOLDER` 占位值。
+> **默认（不加此 flag）就是真实造数**——Agent 执行造数任务时**不要**带 `--dry-run`，否则报告数据不会回填真实单号。
 
 边界说明:本仓库不在 Python 内部直接调用视觉大模型;真正的图片理解由 OpenClaw/飞书通道完成。本 Skill 负责提供 Prompt、字段契约、参数适配、执行编排和报告留痕,避免云端 OpenClaw 无浏览器权限时依赖 Playwright。
 

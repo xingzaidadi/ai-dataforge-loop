@@ -1,0 +1,94 @@
+# configs/srm-pull-command.yaml
+# SRM 侧 拉料指令创建&审批（阶段2.5）— 在 PO 创建后、ASN 承接前接入
+#
+# 独立运行：python engine.py configs/srm-pull-command.yaml --stockOrg MI_PHONE ...
+# 闭环运行：python tools/closed_loop_runner.py --pull-command-config configs/srm-pull-command.yaml
+#
+# 业务真相（对齐 mify 工作流「原材料-PRPO拉料」+「创建拉料指令」）：
+#   大货 ZNB 材料的 ASN 是「根据拉料指令创建」(CIN 场景)，必须先有 pullCommand(commandCode)。
+#   规范链路：PRPO 建 PO → 本阶段建拉料指令拿 commandCode(2608...16位) → ASN 用 commandCode 承接。
+#   （commandCode 不在「创建」响应里，取自「拉料指令列表-审批中」步骤 $.data.list[0].commandCode）
+#   purchaseOrg 含 111K 的（如某些采组）不走拉料指令；1110 等常规采组必须走。
+#
+# 三步骨架（把「创建拉料指令」mify 工作流的 cookie→创建→审批 内嵌编排收口）：
+#   ① build_scene_body   按 sceneId(199 无预占/396 95FPO/398 电视) 组装真实场景体
+#   ② execute_scene      datacube scene/execute 建拉料指令并一键审批
+#   ③ query_scene_log    轮询场景日志 → 取 commandCode（列表步骤 $.data.list[0].commandCode / sceneOutput type 6）
+#
+# 底层执行范式：SRM datacube 场景编排（异构于 SAP-YAML 引擎），复用同一套三道闸 + 证据包。
+# scene 元数据（sceneId/sceneName/taskId）由 tools/srm_pull_command.py 依据
+# 交料模式/预占模式/采组 解析后注入。
+
+name: SRM侧拉料指令创建
+description: PO 创建后建拉料指令(commandCode)，供大货 ZNB(CIN)场景 ASN 承接；按 预占模式(无预占199/95FPO396)×电视(398) 路由 datacube 场景编排
+
+inputs:
+  stockOrg:      { label: 库存组织, required: true, example: "MI_PHONE" }
+  purchaseOrg:   { label: 采购组织, required: true, example: "1110" }
+  supplierCode:  { label: 供应商编码, required: true, example: "100171" }
+  materialCode1: { label: 物料编码1, required: true, example: "22CK1AC225AC" }
+  materialCode2: { label: 物料编码2(可选), required: false }
+  shipLocCode:   { label: 代工厂/发货地点, required: true, example: "L16-CN" }
+  businessModel: { label: 交料模式(BS寄售/CS非寄售), required: false, example: "BS" }
+  projectCode:   { label: 项目编码(95FPO/电视必填), required: false }
+  destLocCode:   { label: 目的地(95FPO必填), required: false }
+  # 以下由 srm_pull_command.py 解析后注入；独立运行时可显式传入
+  sceneId:       { label: datacube 场景ID(199无预占/396_95FPO/398电视), required: false }
+  sceneName:     { label: datacube 场景名, required: false }
+  taskId:        { label: datacube 任务ID, required: false }
+  sceneBody:     { label: "真实 scene/execute 请求体骨架(按 sceneId 注入、占位符已替换)；由 srm_pull_command.py 从 pull-command-skeletons.json 取，缺失时模板回退最小结构", required: false }
+
+config:
+  srm_toolkit_base: "${SRM_TOOLKIT_BASE_URL}"
+  # datacube host 在真实工作流「创建拉料指令」里写死为 toolskit.test.mi.com（测试环境，出现 6 次）。
+  # 执行器环境常未定义 SRM_DATACUBE_BASE_URL → 占位符原样发出 → 502。给测试 host 兜底默认值。
+  srm_datacube_base: "${SRM_DATACUBE_BASE_URL:-https://toolskit.test.mi.com}"
+  execute_person: "${SRM_SCENE_EXECUTE_PERSON}"
+
+steps:
+  # ① 组装场景执行入参（scene 元数据 + sceneBody 已由 Python 侧注入 inputs）
+  - id: build_scene_body
+    action: template
+    template: "templates/pull-command-scene.json.j2"
+    context:
+      taskId: "{{inputs.taskId}}"
+      sceneId: "{{inputs.sceneId}}"
+      sceneName: "{{inputs.sceneName}}"
+      executePerson: "{{config.execute_person}}"
+      sceneBody: "{{inputs.sceneBody}}"
+
+  # ② 执行建拉料指令场景（datacube scene/execute，含一键审批）
+  #    commandCode 不在「创建」响应里（create 只回 {code:0,message:成功}）；
+  #    它来自「拉料指令列表-审批中」步骤 $.data.list[0].commandCode，datacube 通过
+  #    sceneOutput(type 6,name commandCode) 汇总回吐。故此处整体取 data + sceneOutput，
+  #    再由 srm_pull_command._extract_command_code_from_log 从响应文本按真实格式(2608 16位)捞取。
+  - id: execute_scene
+    action: http_call
+    params:
+      url: "${SRM_DATACUBE_BASE_URL:-https://toolskit.test.mi.com}/datacube/scene/execute"
+      method: POST
+      body: "{{steps.build_scene_body.output}}"
+    extract:
+      scene_id: "{{inputs.sceneId}}"
+      execute_result: "$.body.data"
+      command_code: "$.body.data.sceneOutput.commandCode"
+
+  # ③ 轮询场景日志 → 取 commandCode
+  - id: query_scene_log
+    action: http_call
+    retry: { max: 5, interval_ms: 3000 }
+    params:
+      url: "${SRM_DATACUBE_BASE_URL:-https://toolskit.test.mi.com}/datacube/scene/executeRecordLog"
+      method: GET
+      query:
+        sceneId: "{{steps.execute_scene.extracted.scene_id}}"
+        username: "${SRM_SCENE_EXECUTE_PERSON}"
+    extract:
+      scene_log: "$.body.data"
+
+  - id: normalize_output
+    action: noop
+    goto: SUCCESS
+
+terminals:
+  SUCCESS: { type: success, message: "SRM 侧 拉料指令创建完成" }

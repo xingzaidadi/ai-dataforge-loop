@@ -1,0 +1,4 @@
+  📌 asl_verify = {'price_list': '价格中心存在【materialFee】类型的定价单,单号为：XMS202604270002，有效期为：20260427至20260727；', 'price_type'
+  📌 detection_result = {'price_list': '价格中心存在【materialFee】类型的定价单,单号为：XMS202604270002，有效期为：20260427至20260727；', 'price_type'
+  📌 fix_result = {'code': 200, 'msg': 'success', 'data': 'ASL更新成功: MPN=1710301000006A, 供应商=108062, 采购组织=2120'}
+  📌 asl_verify = {'price_list': '价格中心存在【materialFee】类型的定价单,单号为：XMS202604270002，有效期为：20260427至20260727；', 'price_type'

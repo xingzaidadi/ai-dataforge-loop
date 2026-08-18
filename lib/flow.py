@@ -375,6 +375,15 @@ class FlowEngine:
                 print(f"  🔴 create_pr request body length: {len(body)}")
                 print(f"  🔴 create_pr request body (first 3000): {body[:3000]}")
 
+            # datacube 场景接口：无条件打印原始返回体，用于核实 commandCode/zasnNo
+            # 到底是「接口没回」还是「回了但我们抽取路径没对上」。历史误判为「mify 丢体」，
+            # 实为从未打印过原始 body。scene/execute 与 executeRecordLog 都覆盖。
+            if "scene/execute" in url or "executeRecordLog" in url or "scene/scene" in url:
+                _raw = result.get("body", "")
+                _raws = json.dumps(_raw, ensure_ascii=False) if not isinstance(_raw, str) else _raw
+                print(f"  🧪 datacube 原始返回 status={result.get('status_code')} bodyType={type(_raw).__name__} len={len(_raws)}")
+                print(f"  🧪 datacube body[:2500]: {_raws[:2500]}")
+
             # 检测 mify 平台限制：非 2xx 响应 body 为空
             resp_status = result.get("status_code", 0)
             resp_body = result.get("body", {})

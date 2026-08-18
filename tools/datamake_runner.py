@@ -14,20 +14,30 @@ from common import ROOT, StepResult, parse_kv_pairs, write_json
 
 
 def parse_business_data(output: str, params: dict[str, Any]) -> dict[str, Any]:
-    """Extract user-facing business data from engine output."""
+    """Extract user-facing business data from engine output.
+
+    注意：engine.py 会把 SQL 原样打印，例如
+      SELECT p.purchase_no ... ON p.purchase_no=i.purchase_no ...
+    早期用 `purchase_no[:=]([A-Za-z0-9_-]+)` 会先命中 JOIN 片段 `purchase_no=i`
+    捕获到垃圾值 "i"。这里改为优先匹配引擎的「📌 变量 = 值」回查输出，
+    且订单号一律是长数字串，用 [0-9]{6,} 收口，避免命中 SQL/别名。
+    """
     patterns = {
         "prNo": [
+            r"📌\s*purchase_no\s*=\s*([0-9]{6,})",
             r"PR号[:：]\s*([A-Za-z0-9_-]+)",
-            r"purchase_no['\"]?\s*[:=]\s*['\"]?([A-Za-z0-9_-]+)",
+            r"purchase_no['\"]?\s*[:=]\s*['\"]?([0-9]{6,})",
         ],
         "poNo": [
+            r"📌\s*purchase_order_no\s*=\s*([0-9]{6,})",
             r"PO号[:：]\s*([A-Za-z0-9_-]+)",
-            r"purchase_order_no['\"]?\s*[:=]\s*['\"]?([A-Za-z0-9_-]+)",
+            r"purchase_order_no['\"]?\s*[:=]\s*['\"]?([0-9]{6,})",
         ],
         "erpNo": [
+            r"📌\s*erp[_a-z]*no\s*=\s*([0-9]{6,})",
             r"ERP单号[:：]\s*([A-Za-z0-9_-]+)",
-            r"erp_no['\"]?\s*[:=]\s*['\"]?([A-Za-z0-9_-]+)",
-            r"erp_purchase_order_no['\"]?\s*[:=]\s*['\"]?([A-Za-z0-9_-]+)",
+            r"erp_no['\"]?\s*[:=]\s*['\"]?([0-9]{6,})",
+            r"erp_purchase_order_no['\"]?\s*[:=]\s*['\"]?([0-9]{6,})",
         ],
     }
     business_data: dict[str, Any] = {

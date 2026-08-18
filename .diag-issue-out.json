@@ -1,0 +1,23 @@
+{
+  "assignee_id": "25aa0e8b-a296-4743-87e9-2cf3f9b11d3d",
+  "assignee_type": "agent",
+  "created_at": "2026-08-10T20:37:27+08:00",
+  "creator_id": "2ce6cec0-d4b4-4bd3-8776-9f04bd61778a",
+  "creator_type": "member",
+  "description": "# 【诊断·只跑一步】拉料指令 datacube 原始返回体核验\n\n## 背景（重要）\n之前判定 commandCode 取不到是「mify 丢响应体/平台天花板」——这个结论**未经证实**：\nengine 从没打印过 datacube 的原始返回，只打印了抽取后的 None。现已加诊断日志\n（`lib/flow.py`：命中 scene/execute 或 executeRecordLog 时无条件打印原始 body）。\n\n本 issue 只做一件事：**把 datacube `scene/execute` 的原始返回体打出来**，\n判定到底是「接口真没回」还是「回了但我们抽取路径 `$.body.data.commandCode` 没对上」。\n\n## 请这样跑（只跑拉料指令这一步，不跑整链，避免 429）\n\n### 第一步：静默冷却 30 秒（避免 429）\n\n### 第二步：开 DEBUG，单独跑拉料指令配置\n```\ncd C:\\Users\\MI\\Desktop\\AI学习任务\\mify造数skill\\01_源码_source\\ai-dataforge-loop\nDATAFORGE_DEBUG=1 python tools/srm_pull_command.py \\\n  --config configs/srm-pull-command.yaml \\\n  --run-dir . \\\n  stockOrg=MI_PHONE purchaseOrg=1110 supplierCode=100171 \\\n  materialCode1=22CK1AC225AC shipLocCode=L16-CN businessModel=BS\n```\n\n（Windows 若 `DATAFORGE_DEBUG=1 python` 前缀无效，改用：\n`set DATAFORGE_DEBUG=1 \u0026\u0026 python tools/srm_pull_command.py ...`\n或 PowerShell：`$env:DATAFORGE_DEBUG=1; python tools/srm_pull_command.py ...`）\n\n## 交付物（务必贴真实输出，脱敏）\n1. `🧪 datacube 原始返回 status=... bodyType=... len=...` 这一行\n2. `🧪 datacube body[:2500]:` 后面的**完整原始返回内容**（这是核心——它到底回了什么）\n3. execute_scene 和 query_scene_log **两个接口**的上述两行都要\n4. 最终 `pull-command-result.json` 的 status + commandCode\n\n## 约束\n- 仅测试环境。不碰生产库/生产接口/生产日志。\n- 凭据走临时文件、用后删除；任何输出不得回显凭据明文（Cookie/Bearer/token 一律打码）。\n- 不编造任何返回内容。datacube 回了什么就贴什么，回空也如实说「回空」。",
+  "due_date": null,
+  "id": "230ebbf1-be7d-47ea-b0d6-b10d56cb1286",
+  "identifier": "WS-16",
+  "metadata": {},
+  "number": 16,
+  "parent_issue_id": null,
+  "position": -1,
+  "priority": "high",
+  "project_id": null,
+  "stage": null,
+  "start_date": null,
+  "status": "todo",
+  "title": "【诊断】拉料指令 datacube 原始返回体核验（只跑一步+DEBUG）",
+  "updated_at": "2026-08-10T20:37:27+08:00",
+  "workspace_id": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923"
+}

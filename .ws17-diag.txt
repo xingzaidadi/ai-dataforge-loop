@@ -1,0 +1,9 @@
+STATUS=FAILED
+cmdCode=None
+
+  ⏱️ mify 返回 (1.2s), SSE lines: 11
+  🧪 datacube 原始返回 status=502 bodyType=dict len=126
+  🧪 datacube body[:2500]: {"_error": "mify 调用失败: Reached maximum retries (0) for URL ${INTERNAL_TOOLSKIT_URL}", "_status": 0}
+  ❌ HTTP 502 错误: mify 调用失败: Reached maximum retries (0) for URL ${INTERNAL_TOOLSKIT_URL}
+❌ 步骤 [execute_scene] 执行异常: HTTP 502: mify 调用失败: Reached maximum retries (0) for URL ${INTERNAL_TOOLSKIT_URL}
+    steps.execute_scene = {'result': {'status_code': 502, 'body': {'_error': 'mify 调用失败: Reached maximum r

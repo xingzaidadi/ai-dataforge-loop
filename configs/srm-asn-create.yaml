@@ -32,7 +32,9 @@ inputs:
 
 config:
   srm_toolkit_base: "${SRM_TOOLKIT_BASE_URL}"
-  srm_datacube_base: "${SRM_DATACUBE_BASE_URL}"
+  # datacube host 真实工作流写死为 toolskit.test.mi.com（测试环境）。执行器环境常未定义
+  # SRM_DATACUBE_BASE_URL → 占位符原样发出 → 502。给测试 host 兜底默认值。
+  srm_datacube_base: "${SRM_DATACUBE_BASE_URL:-https://toolskit.test.mi.com}"
   execute_person: "${SRM_SCENE_EXECUTE_PERSON}"
 
 steps:
@@ -57,7 +59,7 @@ steps:
   - id: execute_asn_scene
     action: http_call
     params:
-      url: "${SRM_DATACUBE_BASE_URL}/datacube/scene/execute"
+      url: "${SRM_DATACUBE_BASE_URL:-https://toolskit.test.mi.com}/datacube/scene/execute"
       method: POST
       body: "{{steps.build_scene_body.output}}"
     extract:

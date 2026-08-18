@@ -103,7 +103,9 @@ def _parse_clean_output(stdout: str) -> dict[str, Any]:
                 value = parts[1].strip()
                 result["steps_extracted"][key] = value
         # 提取最终状态
-        elif line.startswith("✅ 流程执行完毕"):
+        # 注意：flow.py 命中 terminal 时直接 return，永远不会打印 "✅ 流程执行完毕"，
+        # 只会打印 terminal.message（如 "✅ SRM 寻源价格造数完成"）。此处两种都认。
+        elif line.startswith("✅ 流程执行完毕") or line.startswith("✅ SRM 寻源价格造数完成"):
             result["final_status"] = "SUCCESS"
         elif line.startswith("❌ 步骤"):
             result["final_status"] = "FAILED"
@@ -136,22 +138,35 @@ def _assert_clean_result(parsed: dict[str, Any]) -> tuple[bool, str]:
     if final_status == "FAILED":
         return False, "清洗流程执行失败"
 
-    # 明确成功 → 通过
-    if final_status == "SUCCESS":
-        # 额外检查：是否提取到了关键变量
-        has_price_data = any(
-            k in extracted
-            for k in ("price_id", "price_type_data", "detection_result", "asl_verify")
-        )
-        detail = "清洗断言通过"
-        if has_price_data:
-            detail += f" (提取到 {len(extracted)} 个变量)"
-        return True, detail
+    # ── 过程闸：不回查=没做 ──
+    # 「提取到 N 个变量」只代表流程跑完了每一步，不代表这些步骤拿到了真实数据。
+    # mify HTTP 通道对部分接口会丢响应体，导致回查变量值为空（None / '' / {'_raw': ''}）。
+    # 这种情况下即便 final_status=SUCCESS，也必须判为「无法确认」，绝不谎报 priceReady。
+    def _is_empty(v: Any) -> bool:
+        # stdout 里变量值是字符串化的，空态包括：None、空串、空 dict、{'_raw': ''}
+        if v is None:
+            return True
+        s = str(v).strip()
+        return s in ("", "None", "{}", "{'_raw': ''}", '{"_raw": ""}')
 
-    # 未解析到状态（可能 stdout 格式变化），保守判断
-    if extracted:
-        return True, f"清洗完成，提取到 {len(extracted)} 个变量"
-    return False, "无法解析清洗结果"
+    # 回查类关键变量：任一非空，才说明 SRM 侧真的返回了可核对的数据
+    verify_keys = ("asl_verify", "final_verify", "price_id", "detection_result")
+    verify_vals = {k: extracted.get(k) for k in verify_keys if k in extracted}
+    has_real_verify = any(not _is_empty(v) for v in verify_vals.values())
+
+    if not has_real_verify:
+        # 回查全空：无法确认 ASL/定价单是否真建成 → 判为失败（诚实报告，让下游降级或阻断）
+        empty_summary = ", ".join(f"{k}=空" for k in verify_vals) or "无回查变量"
+        return False, (
+            f"回查未拿到真实数据（{empty_summary}）；"
+            "疑似 mify 通道丢响应体，无法确认 ASL/定价单是否生效，不放行 priceReady"
+        )
+
+    # 走到这：回查拿到了非空数据
+    if final_status == "SUCCESS":
+        return True, f"清洗断言通过（回查命中真实数据，提取 {len(extracted)} 个变量）"
+    # 状态未知但回查有真实数据 → 保守通过并标注
+    return True, f"回查命中真实数据（{len(verify_vals)} 项非空），流程未报终态，谨慎放行"
 
 
 def run_srm_price_clean(

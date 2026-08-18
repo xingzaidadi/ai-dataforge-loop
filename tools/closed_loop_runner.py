@@ -24,6 +24,7 @@ from failure_diagnose import diagnose_failure
 from screenshot_params_adapter import adapt_file
 from srm_asn_create import run_srm_asn_create
 from srm_price_clean import run_srm_price_clean
+from srm_pull_command import run_srm_pull_command
 from ui_verify import verify_ui
 from vision_extract import extract_intent
 
@@ -132,6 +133,29 @@ def _evaluate_po_ready(datamake_result: Any, dry_run: bool,
     )
 
 
+def _flatten_for_pull_command(params: dict[str, Any]) -> dict[str, Any]:
+    """将闭环参数展平为 srm_pull_command 需要的拉料指令入参。
+
+    拉料指令场景要 materialCode1（engine 用 materials dict），并透传
+    交料模式/预占模式/目的地/项目编码/采组等分支字段。
+    """
+    flat = dict(params)
+    materials = params.get("materials")
+    if isinstance(materials, dict):
+        for src, dst in (("materialCode1", "materialCode1"), ("materialCode2", "materialCode2")):
+            if materials.get(src) and not flat.get(dst):
+                flat[dst] = materials[src]
+        # 单物料时 materials 可能只有 materialCode1/materialCode/code
+        if not flat.get("materialCode1"):
+            for key in ("materialCode1", "materialCode", "code"):
+                if materials.get(key):
+                    flat["materialCode1"] = materials[key]
+                    break
+    elif isinstance(materials, str) and materials and not flat.get("materialCode1"):
+        flat["materialCode1"] = materials
+    return flat
+
+
 def _flatten_for_asn(params: dict[str, Any], erp_no: str | None) -> dict[str, Any]:
     """将闭环参数展平为 srm_asn_create 需要的 ASN 承接参数。
 
@@ -147,7 +171,7 @@ def _flatten_for_asn(params: dict[str, Any], erp_no: str | None) -> dict[str, An
 
 
 def _build_chain_summary(pre_clean_result, datamake_result, po_ready_result, asn_result,
-                         dry_run: bool = False) -> dict[str, Any]:
+                         dry_run: bool = False, pull_command_result=None) -> dict[str, Any]:
     """汇总全链路关键单号与放行状态，供证据包与结果卡片直接消费。
 
     dry-run 下没有真实单号，用占位值填充四个关键键（priceReady/prNo/poNo/zasnNo），
@@ -166,12 +190,19 @@ def _build_chain_summary(pre_clean_result, datamake_result, po_ready_result, asn
     # ASN 被阻断/失败时，绝不给占位单号——否则报告会把"场景未接入"显示成"已有 ASN"（谎报）
     asn_not_done = asn_result is not None and asn_result.status in {"BLOCKED", "FAILED"}
     zasn_no = None if asn_not_done else ph(asn_business.get("zasnNo"), "ASN-DRYRUN-PLACEHOLDER")
+    pull_business = {}
+    if pull_command_result and isinstance(pull_command_result.data, dict):
+        pull_business = pull_command_result.data.get("businessData", {}) or {}
+    # 拉料指令未成功（FAILED/BLOCKED）时不给占位号，避免谎报
+    pull_not_done = pull_command_result is not None and pull_command_result.status in {"BLOCKED", "FAILED"}
+    command_code = None if pull_not_done else pull_business.get("commandCode")
     return {
         "priceReady": price_ready,
         "prNo": ph(dm_business.get("prNo"), "PR-DRYRUN-PLACEHOLDER"),
         "poNo": ph(dm_business.get("poNo") or po_ready_result.data.get("poNo"), "PO-DRYRUN-PLACEHOLDER"),
         "erpNo": ph(dm_business.get("erpNo") or po_ready_result.data.get("erpNo"), "ERP-DRYRUN-PLACEHOLDER"),
         "approved": po_ready_result.data.get("approved"),
+        "commandCode": command_code,
         "asnScene": asn_business.get("asnScene"),
         "zasnNo": zasn_no,
     }
@@ -185,10 +216,12 @@ def run_closed_loop(
     sop: str | None = None,
     ui_config: str | None = None,
     pre_clean_config: str | None = None,
+    pull_command_config: str | None = None,
     asn_config: str | None = None,
     screenshot_json: str | None = None,
     skip_pre_clean: bool = False,
     strict_pre_clean: bool = False,
+    skip_pull_command: bool = False,
     skip_asn: bool = False,
     skip_datamake: bool = False,
     dry_run: bool = False,
@@ -275,6 +308,35 @@ def run_closed_loop(
     po_no = po_ready_result.data.get("poNo")
     erp_no = po_ready_result.data.get("erpNo")
 
+    # ── 阶段 2.5：SRM 侧 拉料指令创建（大货 ZNB → CIN ASN 前置）──
+    # 规范链路：PO 建成后建拉料指令拿 commandCode(4500...)，阶段3 ASN 用它当 pullCommand。
+    # 仅在 PO 就绪 + 配了 pull-command-config 时执行；采组含 111K 的会在工具内自行豁免跳过。
+    pull_command_result = None
+    if not skip_pull_command and pull_command_config and po_ready_result.data.get("approved"):
+        print("▶ 阶段2.5 · SRM 侧 拉料指令创建")
+        pull_params = _flatten_for_pull_command(final_params)
+        pull_command_result = run_srm_pull_command(
+            config=pull_command_config,
+            params=pull_params,
+            run_dir=run_dir,
+            dry_run=dry_run,
+        )
+        pull_biz = pull_command_result.data.get("businessData", {}) if isinstance(pull_command_result.data, dict) else {}
+        command_code = pull_biz.get("commandCode")
+        # 拿到真实 commandCode → 注入 pullCommand，并强制阶段3 ASN 走大货(CIN)承接。
+        # ⚠️ 为何强制 CIN：本单既然建了拉料指令，承接路径就是「根据拉料指令创建ASN」(CIN/378 场景，
+        #    有 __pullCommand__ 槽)；而 resolve_category 对高通/TI/MTK 供应商默认优先返回 EDI 类别
+        #    (GAOTONG/369，无 pullCommand 槽)——那条路不消费 commandCode，正是 WS-14 撞墙的原因。
+        #    此处仅对"本单已建拉料指令"这一事实显式改判，不动全局供应商优先级（真 EDI 单不受影响）。
+        if command_code and command_code != "PULLCMD-DRYRUN-PLACEHOLDER" and not final_params.get("pullCommand"):
+            final_params["pullCommand"] = command_code
+            final_params["asnCategory"] = "CIN"
+            print(f"  🔗 拉料指令 commandCode={command_code} → 注入 ASN pullCommand + 强制 CIN 大货承接")
+        elif pull_command_result.status == "SKIPPED":
+            pass  # 采组豁免/ dry-run：不阻断，ASN 走原有分类
+        elif not command_code:
+            print("  ⚠️ 未取到 commandCode，阶段3 ASN 将按无拉料指令分类（非 CIN）")
+
     # ── 阶段 3：SRM 侧 ASN 承接 ──
     asn_result = None
     if not skip_asn and asn_config:
@@ -323,6 +385,11 @@ def run_closed_loop(
             f"造数失败: {datamake_result.detail}"
         )
     else:
+        if pull_command_result and pull_command_result.status in {"FAILED", "BLOCKED"}:
+            overall_status = "PARTIAL"
+            clean_warnings.append(
+                f"拉料指令创建{'失败' if pull_command_result.status == 'FAILED' else '阻断'}: {pull_command_result.detail}"
+            )
         if asn_result and asn_result.status == "FAILED":
             overall_status = "PARTIAL"
             clean_warnings.append(
@@ -338,7 +405,8 @@ def run_closed_loop(
             clean_warnings.append(
                 f"UI验收失败: {ui_verify_result.detail}"
             )
-    chain = _build_chain_summary(pre_clean_result, datamake_result, po_ready_result, asn_result, dry_run)
+    chain = _build_chain_summary(pre_clean_result, datamake_result, po_ready_result, asn_result,
+                                 dry_run, pull_command_result)
     summary = {
         "runId": run_id,
         "status": overall_status,
@@ -354,6 +422,7 @@ def run_closed_loop(
         "preClean": pre_clean_result.to_dict() if pre_clean_result else None,
         "datamake": datamake_result.to_dict(),
         "poReady": po_ready_result.to_dict(),
+        "pullCommand": pull_command_result.to_dict() if pull_command_result else None,
         "asn": asn_result.to_dict() if asn_result else None,
         "uiVerify": ui_verify_result.to_dict(),
         "diagnosis": diagnosis_result.to_dict() if diagnosis_result else None,
@@ -378,11 +447,14 @@ def main() -> int:
     parser.add_argument("--sop", help="SOP 文本路径")
     parser.add_argument("--run-id", help="指定 run id")
     parser.add_argument("--pre-clean-config", default=None, help="阶段0 SRM 寻源价格前置治理配置")
+    parser.add_argument("--pull-command-config", default=None,
+                        help="阶段2.5 SRM 侧 拉料指令创建配置（大货 ZNB → CIN ASN 前置）")
     parser.add_argument("--asn-config", default=None, help="阶段3 SRM 侧 ASN 承接配置")
     parser.add_argument("--screenshot-json", help="OpenClaw 多模态截图识别后的 JSON 文件")
     parser.add_argument("--skip-pre-clean", action="store_true", help="跳过阶段0 前置治理")
     parser.add_argument("--strict-pre-clean", action="store_true",
                         help="严格模式：阶段0 前置治理失败即阻断下游（默认降级继续造数并标 PARTIAL）")
+    parser.add_argument("--skip-pull-command", action="store_true", help="跳过阶段2.5 拉料指令创建")
     parser.add_argument("--skip-asn", action="store_true", help="跳过阶段3 ASN 承接")
     parser.add_argument("--asn-mode", choices=["auto", "existing-po"], default="auto",
                         help="ASN 承接模式：auto=全链路承接；existing-po=已有PO直接建ASN")
@@ -402,10 +474,12 @@ def main() -> int:
         sop=args.sop,
         ui_config=args.ui_config,
         pre_clean_config=args.pre_clean_config,
+        pull_command_config=args.pull_command_config,
         asn_config=args.asn_config,
         screenshot_json=args.screenshot_json,
         skip_pre_clean=skip_pre_clean,
         strict_pre_clean=args.strict_pre_clean,
+        skip_pull_command=args.skip_pull_command,
         skip_asn=args.skip_asn,
         skip_datamake=existing_po,
         dry_run=args.dry_run,

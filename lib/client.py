@@ -57,19 +57,38 @@ class MifyClient:
         body = json.dumps(payload).encode()
 
         t0 = time.time()
-        try:
-            resp = self._request(
-                self.endpoint, method="POST", data=body,
-                headers={
-                    "Authorization": f"Bearer {use_token}",
-                    "Content-Type": "application/json",
-                },
-                timeout=timeout + 60,
-            )
-        except Exception as e:
-            elapsed = time.time() - t0
-            print(f"  ❌ _post 请求失败 ({elapsed:.1f}s): {type(e).__name__}: {e}")
-            return {"status": "error", "outputs": {}, "error": str(e)}
+        # ── 429 限流退避重试 ──
+        # mify 端在短时间高频调用（如连续多次 approve_pr / pr_to_po）会返回 HTTP 429。
+        # 这是瞬时限流，非业务错误：指数退避重试（2s/5s/10s），最多 3 次。
+        max_retries = 3
+        backoffs = [2, 5, 10]
+        resp = None
+        for attempt in range(max_retries + 1):
+            try:
+                resp = self._request(
+                    self.endpoint, method="POST", data=body,
+                    headers={
+                        "Authorization": f"Bearer {use_token}",
+                        "Content-Type": "application/json",
+                    },
+                    timeout=timeout + 60,
+                )
+                break  # 成功拿到响应流
+            except urllib.error.HTTPError as e:
+                if e.code == 429 and attempt < max_retries:
+                    wait = backoffs[attempt]
+                    print(f"  ⏳ HTTP 429 限流，第 {attempt+1} 次退避 {wait}s 后重试...", flush=True)
+                    time.sleep(wait)
+                    continue
+                elapsed = time.time() - t0
+                print(f"  ❌ _post 请求失败 ({elapsed:.1f}s): {type(e).__name__}: {e}")
+                return {"status": "error", "outputs": {}, "error": str(e)}
+            except Exception as e:
+                elapsed = time.time() - t0
+                print(f"  ❌ _post 请求失败 ({elapsed:.1f}s): {type(e).__name__}: {e}")
+                return {"status": "error", "outputs": {}, "error": str(e)}
+        if resp is None:
+            return {"status": "error", "outputs": {}, "error": "HTTP 429 限流重试耗尽"}
 
         # 逐行读 SSE（带总超时保护）
         line_count = 0

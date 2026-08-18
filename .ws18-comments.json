@@ -1,0 +1,19 @@
+[
+  {
+    "attachments": [],
+    "author_id": "492df3d3-b35e-4e2b-9e58-48327f86ea48",
+    "author_type": "agent",
+    "content": "## WS-18 全链路执行结果：链路被真实卡在 mify token 月度配额耗尽（HTTP 429），本次取不到任何真实单号\n\n按 issue 要求本机 local runtime 直读源码执行，未 dry-run、不复用历史单号、不编造。结论如下——**本次卡点与 WS-16/17 的 `${INTERNAL_TOOLSKIT_URL}` 归因无关**，是更上游的硬瓶颈。\n\n### 一、真实卡点（已抓到原始 body，非猜测）\n用文档样单参数（orderType=ZNB, stockOrg=MI_PHONE, purchaseOrg=1110, supplierCode=100171, materialCode1=22CK1AC225AC, projectCode=L16-CN, shipLocCode=L16-CN, businessModel=BS）跑阶段2.5 拉料指令（`tools/srm_pull_command.py` + `configs/srm-pull-command.yaml`，开 `DATAFORGE_DEBUG=1`）。\n\n所有阶段（get_cookie / PR / SQL 查询 / PO / ERP / datacube 场景）都经同一个 mify 代理 token 出网。**直连 mify 端点单发一次请求**拿到的真实原始返回：\n\n- **HTTP status = 429**\n- **原始 body（已脱敏、原文转述）**：`额度不足，当前流控配置：2000 per 1 month。如需提额详见：\u003c小米内部 wiki 提额说明链接\u003e`\n- Retry-After 头：无；X-RateLimit 头：无\n\n即：这个 mify token 的**月度调用配额 2000 次/月已用尽**，触发全局流控。这不是瞬时限流（冷却无效），也不是 `${INTERNAL_TOOLSKIT_URL}` 未解析——请求根本没走到 datacube 那一层，在 mify 网关就被 429 挡回。\n\n### 二、和 issue「三」的预期对照（诚实澄清）\nissue 预判「若再报 502，就是 mify HTTP 代理调 datacube 的可达性问题」。本次**没有复现 502**，而是更靠前的 **429 配额耗尽**：\n- 502（WS-16/17）：请求进了 mify、mify 转发 datacube 时失败；\n- 429（本次）：请求在 mify 网关就被配额流控拒绝，datacube 没被调用。\n所以 `${INTERNAL_TOOLSKIT_URL}` 脱敏占位符一说本次不适用——它是 `tools/common.py:24` 日志脱敏规则把真实 toolskit URL 打码，非 env 未解析（`lib/config.py` 的 `${VAR:-默认}` 解析正常，datacube host 有测试兜底 `toolskit.test.mi.com`）。\n\n### 三、为什么冷却不管用\n`lib/client.py::_post` 已内置 429 指数退避（2s/5s/10s×3）。本次连试 3 轮、含单轮 210s 冷却仍全 429，每次约 17s 耗在退避后放弃。因为流控是**月配额**级别，不是秒级限流，冷却/退避对它无效。\n\n### 四、交付物（按 issue「四」逐条如实回答）\n1. 各阶段真实单号 prNo/poNo/erpNo/**commandCode**/**zasnNo**：**全部取不到**。链路首个出网调用即被 429 挡回，无任何真实单号产生。**未复用任何历史单号**（尤其未用 2608110000000006 冒充）。\n2. 拉料指令 datacube 真实原始返回：本次未走到 datacube；mify 网关层真实返回 **status=429, body=「额度不足，当前流控配置：2000 per 1 month」**（见上，已脱敏）。\n3. run 目录 / report.html：本次因首调即 429，未生成完整证据包 run 目录；临时结果文件（status=FAILED）已按脱敏与清理规范删除。\n4. 取不到单号的真实报错：`HTTP Error 429: TOO MANY REQUESTS` → 原始 body「额度不足，当前流控配置：2000 per 1 month」。\n\n### 五、要你确认/提供的（缺项不编，先问你）\n链路要跑通，需先解 token 配额：\n- **A. 提额**：按 429 body 里的小米内部 wiki 说明给现用 mify token（当前经 `RPA_MIFY_KEY` 注入）提月度配额；或\n- **B. 换 token**：提供一个未耗尽配额的测试环境 mify token（HTTP workflow + SQL workflow 两个 app 的 token），我用完即弃、全程脱敏；或\n- **C. 等本月配额自然重置**后重跑（不确定重置时点，需你确认）。\n\n任一就绪，我立即重跑全链路（PR→PO→ERP→commandCode→zasnNo），每步冷却 90s 规避秒级 429，产出全环节真实单号 + 证据包。\n\n### 附：合规与边界\n- 仅测试环境；凭证经环境变量注入、用后不落库；输出已脱敏（Cookie/Bearer/token/内网 URL 打码）。\n- 未改动任何源码（工作区里的 `M` 文件均为 8-10 前序 WS 轮次遗留，非本轮产生）。\n- Read 真实源码 + 抓真实 429 原始 body 得出结论，未靠记忆断言。",
+    "created_at": "2026-08-11T10:24:42+08:00",
+    "id": "433eb8f1-5b8a-4a3b-8ce8-7afa63706d17",
+    "issue_id": "1c3158db-4b7b-4b94-9d81-631436385bef",
+    "parent_id": null,
+    "reactions": [],
+    "resolved_at": null,
+    "resolved_by_id": null,
+    "resolved_by_type": null,
+    "source_task_id": "82c71ef4-a54f-4dea-8c96-7b57320e5422",
+    "type": "comment",
+    "updated_at": "2026-08-11T10:24:42+08:00"
+  }
+]

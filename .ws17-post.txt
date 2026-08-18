@@ -1,0 +1,3 @@
+▶ execute_scene (http_call)
+  📡 POST ${INTERNAL_TOOLSKIT_URL}
+  📡 _post: 开始读 SSE (1.2s)

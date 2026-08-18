@@ -1,0 +1,23 @@
+{
+  "assignee_id": "25aa0e8b-a296-4743-87e9-2cf3f9b11d3d",
+  "assignee_type": "agent",
+  "created_at": "2026-08-10T19:30:29+08:00",
+  "creator_id": "2ce6cec0-d4b4-4bd3-8776-9f04bd61778a",
+  "creator_type": "member",
+  "description": "# 【演示·完整数据】全链路一次跑通：寻源→PRPO→就绪闸→ASN高通承接\n\n## 目标\n演示需要**完整数据**。请用已审批有效组合，**一次跑完整闭环四段**，把每一段的真实产物都补齐：\n- 阶段0 寻源（SRM 价格前置治理）\n- 阶段1 PRPO（SAP：PR→审批→查合同→PR转PO→PO审批→查ERP）\n- 阶段2 PO Ready Gate\n- 阶段3 ASN 承接（供应商 100171=高通 → GAOTONG 场景，用 ERP 号建 ASN）\n\n## 组合（已审批样单 8440030110 反推，合同真实存在）\n- orderType=ZNB\n- stockOrg=MI_PHONE\n- purchaseOrg=1110\n- supplierCode=100171（高通 Qualcomm）\n- materials={\"materialCode1\":\"22CK1AC225AC\"}\n- projectCode=L16-CN\n\n上一次已证实此组合 query_contract 命中真实合同 gfa_no=4600009572, gfa_row_no=10。\n\n## 请这样跑（重要）\n\n### 第一步：先静默冷却 60 秒（避免 429 限流；client.py 已加 429 退避，但仍先冷却）\n\n### 第二步：只跑一次这条完整命令\n```\ncd C:\\Users\\MI\\Desktop\\AI学习任务\\mify造数skill\\01_源码_source\\ai-dataforge-loop\npython tools/closed_loop_runner.py \\\n  --config configs/znb-prpo.yaml \\\n  --pre-clean-config configs/srm-price-clean.yaml \\\n  --asn-config configs/srm-asn-create.yaml \\\n  --ui-config configs/ui-verify-prpo.yaml \\\n  orderType=ZNB stockOrg=MI_PHONE purchaseOrg=1110 supplierCode=100171 \\\n  materials='{\"materialCode1\":\"22CK1AC225AC\"}' projectCode=L16-CN\n```\n\n说明：\n- 供应商 100171 会被自动识别为高通(GAOTONG)类别，命中场景 sceneId=369（高通1行），阶段3 会用阶段1 回填的 ERP 号真实建 ASN。\n- 若阶段1 因 429 或其他原因没跑出 ERP 号，阶段2 会判 NOT_READY，阶段3 会被正确阻断（不谎报）——如实报即可。\n\n### 备选（若阶段1 又卡 PR→PO，但你已有真实 ERP 4500236637）\n可单独用 existing-po 模式补 ASN 数据：\n```\npython tools/closed_loop_runner.py \\\n  --config configs/znb-prpo.yaml \\\n  --asn-config configs/srm-asn-create.yaml \\\n  --ui-config configs/ui-verify-prpo.yaml \\\n  --asn-mode existing-po \\\n  supplierCode=100171 poNo=4500236637\n```\n（existing-po 模式下 poNo 直接当 ERP 号传给 ASN。）\n\n## 交付物（务必真实、脱敏）\n1. run_id\n2. summary.json 的这五个键的真实值：priceReady / prNo / poNo / erpNo / zasnNo\n3. asn-result.json 的 status 与 detail（ASN 成功出 zasnNo，还是 BLOCKED/FAILED，如实说）\n4. 若寻源(阶段0)因 mify 丢响应体导致 priceReady=false，如实标注——这是已知平台天花板，不要伪造。\n\n## 约束\n- 仅测试环境。不碰生产库/生产接口/生产日志。\n- 凭据走临时文件、用后删除；任何输出不得回显凭据明文。\n- 不编造任何单号或状态。取不到就说取不到。",
+  "due_date": null,
+  "id": "70f42fdc-b5d9-483a-8f32-401caa710885",
+  "identifier": "WS-14",
+  "metadata": {},
+  "number": 14,
+  "parent_issue_id": null,
+  "position": -1,
+  "priority": "high",
+  "project_id": null,
+  "stage": null,
+  "start_date": null,
+  "status": "todo",
+  "title": "【演示完整数据】全链路一次跑通 寻源+PRPO+就绪闸+ASN高通承接",
+  "updated_at": "2026-08-10T19:30:29+08:00",
+  "workspace_id": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923"
+}

@@ -1,0 +1,295 @@
+[
+  {
+    "archived_at": null,
+    "archived_by": null,
+    "avatar_url": "/mico/provider-logos/claude.svg",
+    "created_at": "2026-08-08T08:43:02+08:00",
+    "custom_args": [],
+    "custom_env_key_count": 0,
+    "description": "",
+    "has_custom_env": false,
+    "id": "ddb0caf4-a26c-41b6-b303-0c6ca9431555",
+    "instructions": "",
+    "invocation_targets": [],
+    "max_concurrent_tasks": 6,
+    "mcp_config": null,
+    "mcp_config_redacted": false,
+    "model": "",
+    "name": "刘四星的 claude",
+    "owner_id": "2ce6cec0-d4b4-4bd3-8776-9f04bd61778a",
+    "permission_mode": "private",
+    "runtime_config": {},
+    "runtime_id": "9a001c99-d247-4a33-9297-42ff2e175d38",
+    "runtime_mode": "local",
+    "skills": [],
+    "status": "idle",
+    "thinking_level": "",
+    "updated_at": "2026-08-08T10:03:15+08:00",
+    "visibility": "private",
+    "workspace_id": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923"
+  },
+  {
+    "archived_at": null,
+    "archived_by": null,
+    "avatar_url": "/mico/provider-logos/codex.svg",
+    "created_at": "2026-08-08T08:43:14+08:00",
+    "custom_args": [],
+    "custom_env_key_count": 0,
+    "description": "",
+    "has_custom_env": false,
+    "id": "1e105326-f76f-46af-8b2c-688b222faadd",
+    "instructions": "",
+    "invocation_targets": [],
+    "max_concurrent_tasks": 6,
+    "mcp_config": null,
+    "mcp_config_redacted": false,
+    "model": "",
+    "name": "刘四星的 codex",
+    "owner_id": "2ce6cec0-d4b4-4bd3-8776-9f04bd61778a",
+    "permission_mode": "private",
+    "runtime_config": {},
+    "runtime_id": "78a9c13b-752f-4a19-9917-2a1e497486a9",
+    "runtime_mode": "local",
+    "skills": [],
+    "status": "idle",
+    "thinking_level": "",
+    "updated_at": "2026-08-08T08:43:14+08:00",
+    "visibility": "private",
+    "workspace_id": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923"
+  },
+  {
+    "archived_at": null,
+    "archived_by": null,
+    "avatar_url": "/mico/provider-logos/opencode.svg",
+    "created_at": "2026-08-08T08:43:26+08:00",
+    "custom_args": [],
+    "custom_env_key_count": 0,
+    "description": "",
+    "has_custom_env": false,
+    "id": "c2a9771b-fc72-4816-aa69-035cb691f288",
+    "instructions": "",
+    "invocation_targets": [],
+    "max_concurrent_tasks": 6,
+    "mcp_config": null,
+    "mcp_config_redacted": false,
+    "model": "",
+    "name": "刘四星的 opencode",
+    "owner_id": "2ce6cec0-d4b4-4bd3-8776-9f04bd61778a",
+    "permission_mode": "private",
+    "runtime_config": {},
+    "runtime_id": "4ecd44e2-bcd0-4a60-bc7a-c0dbee54ea13",
+    "runtime_mode": "local",
+    "skills": [],
+    "status": "idle",
+    "thinking_level": "",
+    "updated_at": "2026-08-08T08:43:27+08:00",
+    "visibility": "private",
+    "workspace_id": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923"
+  },
+  {
+    "archived_at": null,
+    "archived_by": null,
+    "avatar_url": null,
+    "created_at": "2026-08-08T09:18:51+08:00",
+    "custom_args": [],
+    "custom_env_key_count": 0,
+    "description": "DataForge 造数小队队长：编排路由 + 唯一验收门禁",
+    "has_custom_env": false,
+    "id": "492df3d3-b35e-4e2b-9e58-48327f86ea48",
+    "instructions": "你是 DataForge 造数小队的队长。职责：(1) 接收造数需求，拆成 multica issue 并指派给执行Agent；(2) 编排全链路调度——调用 ai-dataforge-loop skill 的 closed_loop_runner，把控阶段0寻源→阶段1 PRPO→阶段2 PO就绪闸→阶段3 ASN→阶段4验收的顺序；(3) 你是唯一的验收门禁：只有执行Agent交单号(评论[造数完成])、查数Agent核对通过(评论[查数完成])后，你才评论[验收通过]。纪律：仅测试环境，凭证走env外部化，绝不硬编码或碰生产。阶段一先跑 --dry-run 验证链路。",
+    "invocation_targets": [
+      {
+        "target_id": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923",
+        "target_type": "workspace"
+      }
+    ],
+    "max_concurrent_tasks": 6,
+    "mcp_config": null,
+    "mcp_config_redacted": false,
+    "model": "",
+    "name": "造数-队长",
+    "owner_id": "2ce6cec0-d4b4-4bd3-8776-9f04bd61778a",
+    "permission_mode": "public_to",
+    "runtime_config": {},
+    "runtime_id": "9a001c99-d247-4a33-9297-42ff2e175d38",
+    "runtime_mode": "local",
+    "skills": [
+      {
+        "description": "SRM+SAP 供应链测试造数全链路闭环引擎：阶段0寻源价格治理→阶段1 PRPO造数→阶段2 PO就绪闸→阶段3 SRM ASN承接→阶段4 UI验收+证据包。支持dry-run预检、existing-po、只造PRPO等模式。凭证走env外部化，仅测试环境。",
+        "enabled": true,
+        "id": "33ec1f53-6b6d-447c-8410-53f231c20637",
+        "name": "ai-dataforge-loop"
+      }
+    ],
+    "status": "idle",
+    "thinking_level": "",
+    "updated_at": "2026-08-10T16:50:21+08:00",
+    "visibility": "workspace",
+    "workspace_id": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923"
+  },
+  {
+    "archived_at": null,
+    "archived_by": null,
+    "avatar_url": null,
+    "created_at": "2026-08-08T09:19:10+08:00",
+    "custom_args": [],
+    "custom_env_key_count": 12,
+    "description": "DataForge 造数小队执行Agent：staging 真造一单，交单号",
+    "has_custom_env": true,
+    "id": "25aa0e8b-a296-4743-87e9-2cf3f9b11d3d",
+    "instructions": "你是 DataForge 造数小队的执行Agent。职责：接队长指派的 issue，调用 ai-dataforge-loop skill 在测试环境真造一单——按需跑 closed_loop_runner 的全链路/只造PRPO/existing-po 模式，产出 prNo/poNo/erpNo/zasnNo 关键单号与证据包。造完后在 issue 评论 [造数完成] 并附上所有单号 + run_id。纪律：仅测试环境；凭证走env外部化，绝不硬编码；不碰生产库和生产接口。执行造数任务时默认真实造数（不带 --dry-run），报告须回填真实 PR/PO/ERP/ASN 单号；仅在明确要求\"预检/演示不落库\"时才手动加 --dry-run。不做核对——核对交给查数Agent。",
+    "invocation_targets": [
+      {
+        "target_id": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923",
+        "target_type": "workspace"
+      }
+    ],
+    "max_concurrent_tasks": 6,
+    "mcp_config": null,
+    "mcp_config_redacted": false,
+    "model": "",
+    "name": "造数-执行",
+    "owner_id": "2ce6cec0-d4b4-4bd3-8776-9f04bd61778a",
+    "permission_mode": "public_to",
+    "runtime_config": {},
+    "runtime_id": "78a9c13b-752f-4a19-9917-2a1e497486a9",
+    "runtime_mode": "local",
+    "skills": [
+      {
+        "description": "SRM+SAP 供应链测试造数全链路闭环引擎：阶段0寻源价格治理→阶段1 PRPO造数→阶段2 PO就绪闸→阶段3 SRM ASN承接→阶段4 UI验收+证据包。支持dry-run预检、existing-po、只造PRPO等模式。凭证走env外部化，仅测试环境。",
+        "enabled": true,
+        "id": "33ec1f53-6b6d-447c-8410-53f231c20637",
+        "name": "ai-dataforge-loop"
+      }
+    ],
+    "status": "idle",
+    "thinking_level": "",
+    "updated_at": "2026-08-10T20:19:20+08:00",
+    "visibility": "workspace",
+    "workspace_id": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923"
+  },
+  {
+    "archived_at": null,
+    "archived_by": null,
+    "avatar_url": null,
+    "created_at": "2026-08-08T09:19:10+08:00",
+    "custom_args": [],
+    "custom_env_key_count": 5,
+    "description": "DataForge 造数小队查数Agent：只查测库核对单号链路，不造数",
+    "has_custom_env": true,
+    "id": "97cf6252-48ae-4fe3-8167-559cf68507c1",
+    "instructions": "你是 DataForge 造数小队的查数Agent。职责：执行Agent交单号后，用 ai-dataforge-loop skill 的 sql_query 在测试库核对单号血缘链路——prNo→poNo→erpNo→zasnNo 是否真实贯通、状态是否就绪。核对时绑定本次链路上游主键、加 LIMIT 1、区分'异步未完成'与'业务失败'。核对完在 issue 评论 [查数完成] 并给出核对结论。纪律：你只读、只查，绝不造数、绝不写；仅测试库，不碰生产库和生产日志。",
+    "invocation_targets": [
+      {
+        "target_id": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923",
+        "target_type": "workspace"
+      }
+    ],
+    "max_concurrent_tasks": 6,
+    "mcp_config": null,
+    "mcp_config_redacted": false,
+    "model": "",
+    "name": "造数-查数",
+    "owner_id": "2ce6cec0-d4b4-4bd3-8776-9f04bd61778a",
+    "permission_mode": "public_to",
+    "runtime_config": {},
+    "runtime_id": "4ecd44e2-bcd0-4a60-bc7a-c0dbee54ea13",
+    "runtime_mode": "local",
+    "skills": [
+      {
+        "description": "SRM+SAP 供应链测试造数全链路闭环引擎：阶段0寻源价格治理→阶段1 PRPO造数→阶段2 PO就绪闸→阶段3 SRM ASN承接→阶段4 UI验收+证据包。支持dry-run预检、existing-po、只造PRPO等模式。凭证走env外部化，仅测试环境。",
+        "enabled": true,
+        "id": "33ec1f53-6b6d-447c-8410-53f231c20637",
+        "name": "ai-dataforge-loop"
+      }
+    ],
+    "status": "idle",
+    "thinking_level": "",
+    "updated_at": "2026-08-08T19:21:06+08:00",
+    "visibility": "workspace",
+    "workspace_id": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923"
+  },
+  {
+    "archived_at": null,
+    "archived_by": null,
+    "avatar_url": "https://cnbj1-fds.api.xiaomi.net/openclaw-config/claw/position/avatar/1c75ecd8a3da41c2afab3089f66c52cb/5cce4720-b52b-4494-8c08-fba93d528c97_0.jpg?GalaxyAccessKeyId=AKSOYE1XDDKCVOCMGF\u0026Expires=4936683007399\u0026Signature=cCKSVnyDvGMeI97omvDUZA+Irig=",
+    "created_at": "2026-08-08T09:47:52+08:00",
+    "custom_args": [],
+    "custom_env_key_count": 0,
+    "description": "",
+    "has_custom_env": false,
+    "id": "ba28d09d-fbc3-416a-9f17-7f6271e540e4",
+    "instructions": "",
+    "invocation_targets": [
+      {
+        "target_id": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923",
+        "target_type": "workspace"
+      }
+    ],
+    "max_concurrent_tasks": 6,
+    "mcp_config": null,
+    "mcp_config_redacted": false,
+    "model": "",
+    "name": "剑锋测试 6 - 分布式",
+    "owner_id": "260f2f82-6e66-4a49-8f28-d69f119a80a8",
+    "permission_mode": "public_to",
+    "runtime_config": {
+      "_clawSync": {
+        "external_agent_id": "1c75ecd8a3da41c2afab3089f66c52cb",
+        "last_synced_at": "2026-08-08T01:48:23Z",
+        "last_synced_avatar": "https://cnbj1-fds.api.xiaomi.net/openclaw-config/claw/position/avatar/1c75ecd8a3da41c2afab3089f66c52cb/5cce4720-b52b-4494-8c08-fba93d528c97_0.jpg?GalaxyAccessKeyId=AKSOYE1XDDKCVOCMGF\u0026Expires=4936683007399\u0026Signature=cCKSVnyDvGMeI97omvDUZA+Irig=",
+        "last_synced_name": "剑锋测试 6 - 分布式",
+        "subject_type": "position"
+      }
+    },
+    "runtime_id": "c1f76125-0bb7-4ea8-a55c-20bf673d3a9d",
+    "runtime_mode": "local",
+    "skills": [],
+    "status": "idle",
+    "thinking_level": "",
+    "updated_at": "2026-08-08T09:48:23+08:00",
+    "visibility": "workspace",
+    "workspace_id": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923"
+  },
+  {
+    "archived_at": null,
+    "archived_by": null,
+    "avatar_url": null,
+    "created_at": "2026-08-08T10:08:50+08:00",
+    "custom_args": [],
+    "custom_env_key_count": 0,
+    "description": "",
+    "has_custom_env": false,
+    "id": "e06fc850-e5c2-439a-a24d-71277a109e97",
+    "instructions": "",
+    "invocation_targets": [
+      {
+        "target_id": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923",
+        "target_type": "workspace"
+      }
+    ],
+    "max_concurrent_tasks": 6,
+    "mcp_config": null,
+    "mcp_config_redacted": false,
+    "model": "",
+    "name": "MIT质量运营虾",
+    "owner_id": "680a3be6-22b7-4aa5-b35c-8e2d5ba42a5e",
+    "permission_mode": "public_to",
+    "runtime_config": {
+      "_clawSync": {
+        "external_agent_id": "f0007046eea44f39889450b835ca856a",
+        "last_synced_at": "2026-08-08T02:08:50Z",
+        "last_synced_name": "MIT质量运营虾",
+        "subject_type": "position"
+      }
+    },
+    "runtime_id": "c1f9a2c1-0fc0-4a77-bd24-bd3880908d34",
+    "runtime_mode": "local",
+    "skills": [],
+    "status": "idle",
+    "thinking_level": "",
+    "updated_at": "2026-08-08T10:08:50+08:00",
+    "visibility": "workspace",
+    "workspace_id": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923"
+  }
+]

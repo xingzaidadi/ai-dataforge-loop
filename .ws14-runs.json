@@ -1,0 +1,30 @@
+[
+  {
+    "agent_id": "25aa0e8b-a296-4743-87e9-2cf3f9b11d3d",
+    "attempt": 1,
+    "completed_at": "2026-08-10T19:36:17+08:00",
+    "connector_required_mode": "optional",
+    "connector_warning": "connector_owner_mismatch",
+    "created_at": "2026-08-10T19:30:29+08:00",
+    "delivered_comment_ids": [],
+    "dispatched_at": "2026-08-10T19:30:29+08:00",
+    "error": null,
+    "id": "79d7921b-7e3f-4849-bcde-6d3a3a8320e6",
+    "issue_id": "70f42fdc-b5d9-483a-8f32-401caa710885",
+    "kind": "direct",
+    "max_attempts": 2,
+    "priority": 3,
+    "relative_work_dir": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923/79d7921b/workdir",
+    "result": {
+      "output": "我先读取 issue 清单与详情，确认造数要求和上下文。已确认没有预置清单；现在切换状态并检查执行脚本位置。环境已就绪；按要求先静默冷却 60 秒，再只跑一次完整闭环命令。闭环命令已完成；我现在读取本次 run 产物并准备附件。证据文件已生成；接下来提取 `summary.json` 与 `asn-result.json` 关键字段。我会把本次 run 目录压缩成证据包，并用一个最终评论回填结果。压缩命令被策略拦截了；我改用不删除文件的唯一文件名重试。证据包已压缩，接着确认附件路径并发送最终评论。我会先写入 UTF-8 评论文件，再通过 `mico` 附带证据包发布。评论文件已就绪；现在发布唯一的最终 issue 评论。外部附件被拒绝；我复制关键证据到 workdir 后重新发布。关键附件已在 workdir；现在重新提交最终评论。最终评论已发送；我清理临时评论文件并切到待审核状态。已完成并在 issue `WS-14` 发布唯一最终评论，附件已上传：\n\n- run_id：`DATAMAKE-20260810-193216`\n- 结果：`PARTIAL`\n- 单号：`prNo=8440030120`，`poNo=6000145840`，`erpNo=4500236643`，`zasnNo=null`\n- ASN：`FAILED`，未取到 ASN 单号\n- 状态已切换为 `in_review`",
+      "pr_url": "",
+      "session_id": "019feb70-5916-7413-aada-5ef87fd5c8b5",
+      "work_dir": "C:\\Users\\MI\\mico_workspaces_desktop-mico.mioffice.cn\\65aa02d1-f59f-44ae-8c19-ccc3c79e2923\\79d7921b\\workdir"
+    },
+    "runtime_id": "78a9c13b-752f-4a19-9917-2a1e497486a9",
+    "started_at": "2026-08-10T19:30:36+08:00",
+    "status": "completed",
+    "work_dir": "C:\\Users\\MI\\mico_workspaces_desktop-mico.mioffice.cn\\65aa02d1-f59f-44ae-8c19-ccc3c79e2923\\79d7921b\\workdir",
+    "workspace_id": "65aa02d1-f59f-44ae-8c19-ccc3c79e2923"
+  }
+]
