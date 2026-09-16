@@ -7,7 +7,7 @@ app:
 
     成品创建ASN
 
-    备注：可能有接单失败、ASN创建失败的情况。具体错误可以联系陈雷、杨琛、刘四星排查；'
+    备注：可能有接单失败、ASN创建失败的情况。具体错误可以联系同事A、同事B、刘四星排查；'
   icon: 🤖
   icon_background: '#FFEAD5'
   mode: workflow

@@ -170,5 +170,5 @@ python engine.py configs/znb-prpo.yaml \
 ## 联系方式
 
 - 作者：刘四星
-- 邮箱：liusixing@xiaomi.com
+- 邮箱：liusixing@example.com
 - GitHub：[@xingzaidadi](https://github.com/xingzaidadi)
