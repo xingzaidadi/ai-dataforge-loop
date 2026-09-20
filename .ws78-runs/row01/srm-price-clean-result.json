@@ -1,0 +1,35 @@
+{
+  "name": "srm_price_clean",
+  "status": "FAILED",
+  "detail": "SRM 价格清洗执行超时（2 分钟上限）",
+  "data": {
+    "command": [
+      "D:\\tools\\python\\python.exe",
+      "C:\\Users\\MI\\Desktop\\AI学习任务\\mify造数skill\\01_源码_source\\ai-dataforge-loop\\engine.py",
+      "configs/srm-price-clean.yaml",
+      "--materialCode",
+      "1710301000006A",
+      "--purchaseOrg",
+      "2120",
+      "--supplierCode",
+      "108062",
+      "--materialType",
+      "material",
+      "--sourceType",
+      "ZWW",
+      "--purchaseMode",
+      "NORMAL",
+      "--gross",
+      "10000",
+      "--kpein",
+      "WPCS",
+      "--taxCode",
+      "J2",
+      "--taxrt",
+      "0.13",
+      "--priceType",
+      "mav_fee,odm_owned_fee"
+    ],
+    "timeout": 120
+  }
+}
