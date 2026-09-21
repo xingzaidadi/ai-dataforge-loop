@@ -1,0 +1,63 @@
+{
+  "name": "srm_price_clean",
+  "status": "FAILED",
+  "detail": "清洗执行完成但断言失败: 清洗执行出错: ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'; ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'; ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'",
+  "data": {
+    "returncode": 0,
+    "command": [
+      "D:\\tools\\python\\python.exe",
+      "C:\\Users\\MI\\Desktop\\AI学习任务\\mify造数skill\\01_源码_source\\ai-dataforge-loop\\engine.py",
+      "configs/srm-price-clean.yaml",
+      "--materialCode",
+      "1350102000290A",
+      "--purchaseOrg",
+      "1133",
+      "--supplierCode",
+      "160880",
+      "--materialType",
+      "material",
+      "--sourceType",
+      "ZWW",
+      "--purchaseMode",
+      "NORMAL",
+      "--gross",
+      "10000",
+      "--kpein",
+      "WPCS",
+      "--taxCode",
+      "J2",
+      "--taxrt",
+      "0.13",
+      "--priceType",
+      "mav_fee,odm_owned_fee"
+    ],
+    "assert_passed": false,
+    "assert_detail": "清洗执行出错: ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'; ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'; ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'",
+    "stdout": "TOOLKIT_BASE_URL}/isc/srm-data-produce/data/improvement\n  ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'\n  📌 detection_result = None\n\n==================================================\n▶ check_price_type (condition)\n==================================================\n  🔀 if: {{inputs.priceType}} contains 'machine_fee' → False → ❌ else\n  🔄 跳转 to check_asl (第 1 次)\n\n==================================================\n▶ check_asl (http_call)\n==================================================\n  📡 POST ${SRM_TOOLKIT_BASE_URL}/isc/srm-tools/create/asl\n  ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'\n  📌 fix_result = {'_raw': ''}\n  🔄 跳转 to verify_asl (第 1 次)\n\n==================================================\n▶ verify_asl (http_call)\n==================================================\n  📡 POST ${SRM_TOOLKIT_BASE_URL}/isc/srm-data-produce/data/improvement\n  ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'\n  📌 asl_verify = None\n  🔄 跳转 to create_price_list (第 1 次)\n\n==================================================\n▶ create_price_list (http_call)\n==================================================\n  📡 POST ${SRM_TOOLKIT_BASE_URL}/isc/srm-data-produce/material\n  ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'\n  📌 price_id = None\n  🔄 跳转 to check_price_push (第 1 次)\n\n==================================================\n▶ check_price_push (http_call)\n==================================================\n  📡 POST ${SRM_TOOLKIT_BASE_URL}/isc/srm-tools/price/status\n  ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'\n  📌 push_result = None\n  🔄 跳转 to verify_price_list (第 1 次)\n\n==================================================\n▶ verify_price_list (http_call)\n==================================================\n  📡 POST ${SRM_TOOLKIT_BASE_URL}/isc/srm-data-produce/data/improvement\n  ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'\n  📌 final_verify = None\n\n✅ SRM 寻源价格造数完成\n",
+    "stderr": "",
+    "parsed": {
+      "steps_extracted": {
+        "price_type_data": "None",
+        "cost_pn_raw": "None",
+        "detection_result": "None",
+        "fix_result": "{'_raw': ''}",
+        "asl_verify": "None",
+        "price_id": "None",
+        "push_result": "None",
+        "final_verify": "None"
+      },
+      "final_status": "SUCCESS",
+      "errors": [
+        "❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'",
+        "❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'",
+        "❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'",
+        "❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'",
+        "❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'",
+        "❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'",
+        "❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'",
+        "❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'"
+      ],
+      "raw_stdout": "=================================================\n▶ get_price_types (http_call)\n==================================================\n  📡 GET ${SRM_TOOLKIT_BASE_URL}/isc/data-pool/get/priceType?materialCategory=material&pr...\n  ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'\n  📌 price_type_data = None\n\n==================================================\n▶ get_cost_pn (http_call)\n==================================================\n  📡 POST ${SRM_TOOLKIT_BASE_URL}/isc/srm-data-produce/get/pnCost\n  ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'\n  📌 cost_pn_raw = None\n\n==================================================\n▶ resolve_cost_pn (condition)\n==================================================\n  🔀 if: {{inputs.costPn}} != '' && {{inputs.costPn}} != null → False → ❌ else\n  🔄 跳转 to detect_issues (第 1 次)\n\n==================================================\n▶ detect_issues (http_call)\n==================================================\n  📡 POST ${SRM_TOOLKIT_BASE_URL}/isc/srm-data-produce/data/improvement\n  ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'\n  📌 detection_result = None\n\n==================================================\n▶ check_price_type (condition)\n==================================================\n  🔀 if: {{inputs.priceType}} contains 'machine_fee' → False → ❌ else\n  🔄 跳转 to check_asl (第 1 次)\n\n==================================================\n▶ check_asl (http_call)\n==================================================\n  📡 POST ${SRM_TOOLKIT_BASE_URL}/isc/srm-tools/create/asl\n  ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'\n  📌 fix_result = {'_raw': ''}\n  🔄 跳转 to verify_asl (第 1 次)\n\n==================================================\n▶ verify_asl (http_call)\n==================================================\n  📡 POST ${SRM_TOOLKIT_BASE_URL}/isc/srm-data-produce/data/improvement\n  ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'\n  📌 asl_verify = None\n  🔄 跳转 to create_price_list (第 1 次)\n\n==================================================\n▶ create_price_list (http_call)\n==================================================\n  📡 POST ${SRM_TOOLKIT_BASE_URL}/isc/srm-data-produce/material\n  ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'\n  📌 price_id = None\n  🔄 跳转 to check_price_push (第 1 次)\n\n==================================================\n▶ check_price_push (http_call)\n==================================================\n  📡 POST ${SRM_TOOLKIT_BASE_URL}/isc/srm-tools/price/status\n  ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'\n  📌 push_result = None\n  🔄 跳转 to verify_price_list (第 1 次)\n\n==================================================\n▶ verify_price_list (http_call)\n==================================================\n  📡 POST ${SRM_TOOLKIT_BASE_URL}/isc/srm-data-produce/data/improvement\n  ❌ _post 请求失败 (0.0s): ValueError: unknown url type: '${MIFY_ENDPOINT}'\n  📌 final_verify = None\n\n✅ SRM 寻源价格造数完成\n"
+    }
+  }
+}
