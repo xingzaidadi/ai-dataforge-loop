@@ -1,0 +1,47 @@
+{
+  "name": "srm_price_clean",
+  "status": "SKIPPED",
+  "detail": "dry-run 模式未真实执行 SRM 价格清洗",
+  "data": {
+    "command": [
+      "C:\\Users\\MI\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+      "C:\\Users\\MI\\Desktop\\AI学习任务\\L1_被测形态\\mify造数skill\\01_源码_source\\ai-dataforge-loop\\engine.py",
+      "configs/srm-price-clean.yaml",
+      "--materialCode",
+      "1680606000004A",
+      "--purchaseOrg",
+      "1134",
+      "--supplierCode",
+      "101131",
+      "--materialType",
+      "material",
+      "--sourceType",
+      "ZWW",
+      "--purchaseMode",
+      "NORMAL",
+      "--gross",
+      "10000",
+      "--kpein",
+      "WPCS",
+      "--taxCode",
+      "J2",
+      "--taxrt",
+      "0.13",
+      "--priceType",
+      "mav_fee,odm_owned_fee"
+    ],
+    "filled_params": {
+      "materialCode": "1680606000004A",
+      "purchaseOrg": 1134,
+      "supplierCode": 101131,
+      "materialType": "material",
+      "sourceType": "ZWW",
+      "purchaseMode": "NORMAL",
+      "gross": "10000",
+      "kpein": "WPCS",
+      "taxCode": "J2",
+      "taxrt": "0.13",
+      "priceType": "mav_fee,odm_owned_fee"
+    }
+  }
+}
